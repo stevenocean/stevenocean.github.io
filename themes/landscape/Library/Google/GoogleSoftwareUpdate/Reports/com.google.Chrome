@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>_numaccounts</key>
+	<dict>
+		<key>aggregation</key>
+		<integer>0</integer>
+		<key>expiresAt</key>
+		<date>2018-05-03T14:17:16Z</date>
+		<key>type</key>
+		<string>KSUnsignedReportingAttribute</string>
+		<key>value</key>
+		<integer>1</integer>
+	</dict>
+	<key>_numsignedin</key>
+	<dict>
+		<key>aggregation</key>
+		<integer>0</integer>
+		<key>expiresAt</key>
+		<date>2018-05-03T14:17:16Z</date>
+		<key>type</key>
+		<string>KSUnsignedReportingAttribute</string>
+		<key>value</key>
+		<integer>1</integer>
+	</dict>
+</dict>
+</plist>

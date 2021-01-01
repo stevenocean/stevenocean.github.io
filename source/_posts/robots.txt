@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Allow: /archives/ 
+Disallow: /js/
+Disallow: /css/
+Disallow: /fonts/
+Disallow: /vendors/
+Disallow: /fancybox/
+Sitemap: https://tangmi.me/sitemap.xml
+Sitemap: https://tangmi.me/baidusitemap.xml
