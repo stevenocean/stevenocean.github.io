@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"stevenocean.github.io","root":"/","scheme":"Mist","version":"7.8.0","sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"appID":"PJYZ7OZEJB","apiKey":"78ff9194440a75eba3a1be76689c2b0c","indexName":"steven-blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="关于 gRPC gRPC 是一个高性能、通用的开源 RPC 框架，其由 Google 主要面向移动应用开发并基于 HTTP&#x2F;2 协议标准而设计，基于 ProtoBuf (Protocol Buffers) 序列化协议开发，且支持众多开发语言（）。 gRPC 提供了一种简单的方法来精确地定义服务和为iOS、Android 和 后台支持服务自动生成可靠性很强的客户端功能库。客户端充分利用高级流和链接功">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 grpc-web, vue 和 Nginx 搭建一个简单 todo 示例">
+<meta property="og:url" content="http://stevenocean.github.io/2020/06/20/nginx-grpc-web-go.html">
+<meta property="og:site_name" content="未来边缘">
+<meta property="og:description" content="关于 gRPC gRPC 是一个高性能、通用的开源 RPC 框架，其由 Google 主要面向移动应用开发并基于 HTTP&#x2F;2 协议标准而设计，基于 ProtoBuf (Protocol Buffers) 序列化协议开发，且支持众多开发语言（）。 gRPC 提供了一种简单的方法来精确地定义服务和为iOS、Android 和 后台支持服务自动生成可靠性很强的客户端功能库。客户端充分利用高级流和链接功">
+<meta property="og:locale">
+<meta property="og:image" content="http://stevenocean.github.io/2020/06/20/nginx-grpc-web-go/2020-06-19_22-40-38.jpg">
+<meta property="og:image" content="http://stevenocean.github.io/2020/06/20/nginx-grpc-web-go/gRPC-nginx-proxy.png">
+<meta property="og:image" content="http://stevenocean.github.io/2020/06/20/nginx-grpc-web-go/2020-06-20_17-16-36.jpg">
+<meta property="article:published_time" content="2020-06-20T07:03:00.000Z">
+<meta property="article:modified_time" content="2020-06-20T09:38:03.000Z">
+<meta property="article:author" content="Steven">
+<meta property="article:tag" content="grpc">
+<meta property="article:tag" content="grpc-web">
+<meta property="article:tag" content="go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://stevenocean.github.io/2020/06/20/nginx-grpc-web-go/2020-06-19_22-40-38.jpg">
+
+<link rel="canonical" href="http://stevenocean.github.io/2020/06/20/nginx-grpc-web-go.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>使用 grpc-web, vue 和 Nginx 搭建一个简单 todo 示例 | 未来边缘</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="未来边缘" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">未来边缘</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://stevenocean.github.io/2020/06/20/nginx-grpc-web-go.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Steven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来边缘">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用 grpc-web, vue 和 Nginx 搭建一个简单 todo 示例
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-06-20 15:03:00 / Modified: 17:38:03" itemprop="dateCreated datePublished" datetime="2020-06-20T15:03:00+08:00">2020-06-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/grpc/" itemprop="url" rel="index"><span itemprop="name">grpc</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/grpc/grpc-web/" itemprop="url" rel="index"><span itemprop="name">grpc-web</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/grpc/grpc-web/Nginx/" itemprop="url" rel="index"><span itemprop="name">Nginx</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1>关于 gRPC</h1>
+<p><a target="_blank" rel="noopener" href="https://www.grpc.io/">gRPC</a> 是一个高性能、通用的开源 RPC 框架，其由 Google 主要面向移动应用开发并基于 HTTP/2 协议标准而设计，基于 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/">ProtoBuf (Protocol Buffers)</a> 序列化协议开发，且支持众多开发语言（）。</p>
+<p>gRPC 提供了一种简单的方法来精确地定义服务和为iOS、Android 和 后台支持服务自动生成可靠性很强的客户端功能库。客户端充分利用高级流和链接功能，从而有助于节省带宽、降低的 TCP 链接次数、节省 CPU 使用、和电池寿命。下图为 gRPC 结构图：</p>
+<a id="more"></a>
+<img src="/2020/06/20/nginx-grpc-web-go/2020-06-19_22-40-38.jpg" class="">
+<p>gRPC 具有如下一些重要的特性：</p>
+<ul>
+<li>gRPC 默认通过 Protocol Buffers 来定义接口，可以制定更加严格规范的接口约束；</li>
+<li>而基于 ProtoBuf 可以将数据序列化为二进制格式，从而大幅度减少数据量，进而大幅度的提升性能；</li>
+<li>支持流式通信（Streaming），基于 HTTP/2 协议传输可以实现 Streaming 功能模式，可提供更快的响应和更高的性能；</li>
+<li>支持多种语言，包括：Android Java、C++、C#/.NET、Dart、Go、Python、Web 等等；</li>
+</ul>
+<h1>关于 grpc-web</h1>
+<p><a target="_blank" rel="noopener" href="https://github.com/grpc/grpc-web">gRPC-web</a> 是针对浏览器端的 gRPC 的 Javascript 实现，是需要配合代理来一起使用的。</p>
+<p>在官网上的示例都是使用 Envoy 作为代理，本文主要采用 Nginx 作为代理，从 nginx-1.13.10 引入了对 grpc 的支持（grpc_pass），可以代理 gRPC TCP 连接，还可以终止、检查和跟踪 gRPC 的方法调用，可以如下：</p>
+<ul>
+<li>发布 gRPC 服务，然后使用 NGINX 应用 HTTP/2 TLS 加密、限速、基于 IP 的访问控制列表和日志记录；也可以使用未加密的 HTTP/2（h2c cleartext）或者在服务之上封装 TLS 加密和认证信息；</li>
+<li>通过单个端点发布多个 gRPC 服务，使用 NGINX 检查并跟踪每个内部服务的调用；</li>
+<li>使用 Round Robin, Least Connections 或其他方法在集群分配调用，对 gRPC 服务集群进行负载均衡；</li>
+</ul>
+<p>下图为一种简单的使用 Nginx 暴露 gRPC 服务的方案：</p>
+<img src="/2020/06/20/nginx-grpc-web-go/gRPC-nginx-proxy.png" class="">
+<p>在客户端和服务端之间的 Nginx 可以为服务端的应用提供一个稳定可靠的网关。</p>
+<p>下面通过一个简单完整的 todo 示例来演示 gRPC-web + Nginx + Go 服务端的应用。</p>
+<h1>创建 todo.proto 协议文件</h1>
+<p>定义接口和数据类型：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"><span class="keyword">package</span> todo;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">message</span> <span class="title">getTodoParams</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">message</span> <span class="title">addTodoParams</span> </span>&#123;</span><br><span class="line">  <span class="built_in">string</span> task = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">message</span> <span class="title">deleteTodoParams</span> </span>&#123;</span><br><span class="line">  <span class="built_in">string</span> id = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">message</span> <span class="title">todoObject</span> </span>&#123;</span><br><span class="line">  <span class="built_in">string</span> id = <span class="number">1</span>;</span><br><span class="line">  <span class="built_in">string</span> task = <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">message</span> <span class="title">todoResponse</span> </span>&#123;</span><br><span class="line">  <span class="keyword">repeated</span> todoObject todos = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">message</span> <span class="title">deleteResponse</span> </span>&#123;</span><br><span class="line">  <span class="built_in">string</span> <span class="class"><span class="keyword">message</span> = 1;</span></span><br><span class="line"><span class="class">&#125;  </span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class"><span class="title">service</span> todoService </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">rpc</span> addTodo(addTodoParams) <span class="keyword">returns</span> (todoObject) </span>&#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">rpc</span> deleteTodo(deleteTodoParams) <span class="keyword">returns</span> (deleteResponse) </span>&#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">rpc</span> getTodos(getTodoParams) <span class="keyword">returns</span> (todoResponse) </span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里使用的是 protobuf 的 v3 版本规范。通过 service 定义了一个 todoService，其中包含了 addTodo、deleteTodo、getTodos 等是三个 RPC 方法，以及通过 message 定义这些方法中请求参数和返回类型。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/proto3">详细的 protobuf 规范参考</a></p>
+</blockquote>
+<h1>服务端代码生成</h1>
+<p>本示例的服务端采用 Go，下面使用 protoc 编译生成工具来生成服务端代码，执行如下命令行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">➜  todo protoc -I ./todo/ --go_out=plugins=grpc:./todo/ ./todo/todo.proto</span><br><span class="line">➜  todo tree</span><br><span class="line">.</span><br><span class="line">├── todo</span><br><span class="line">│   ├── todo.pb.go</span><br><span class="line">│   └── todo.proto</span><br><span class="line">└── todo-client</span><br></pre></td></tr></table></figure>
+<p>在上面的 protoc 命令中，指定 proto 文件的路径在 ./todo/ 下面，且指定了生成的源码文件 todo.pb.go 输出路径也为 ./todo/。</p>
+<p>下面我们创建一个 handler.go 来处理这些 RPC 方法：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> todo</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">  <span class="string">&quot;log&quot;</span></span><br><span class="line">  <span class="string">&quot;golang.org/x/net/context&quot;</span></span><br><span class="line">  <span class="string">&quot;github.com/satori/go.uuid&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Server <span class="keyword">struct</span> &#123;</span><br><span class="line">  Todos []*TodoObject</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Server)</span> <span class="title">AddTodo</span><span class="params">(ctx context.Context, newTodo *AddTodoParams)</span> <span class="params">(*TodoObject, error)</span></span> &#123;</span><br><span class="line">  log.Printf(<span class="string">&quot;Received new task %s&quot;</span>, newTodo.Task)</span><br><span class="line">  todoObject := &amp;TodoObject&#123;</span><br><span class="line">    Id: uuid.NewV1().String(),</span><br><span class="line">    Task: newTodo.Task,</span><br><span class="line">  &#125;</span><br><span class="line">  s.Todos = <span class="built_in">append</span>(s.Todos, todoObject)</span><br><span class="line">  <span class="keyword">return</span> todoObject, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Server)</span> <span class="title">GetTodos</span><span class="params">(ctx context.Context, _ *GetTodoParams)</span> <span class="params">(*TodoResponse, error)</span></span> &#123;</span><br><span class="line">  log.Printf(<span class="string">&quot;get tasks&quot;</span>)</span><br><span class="line">  <span class="keyword">return</span> &amp;TodoResponse&#123;Todos: s.Todos&#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Server)</span> <span class="title">DeleteTodo</span><span class="params">(ctx context.Context, delTodo *DeleteTodoParams)</span> <span class="params">(*DeleteResponse, error)</span></span> &#123;</span><br><span class="line">  <span class="keyword">var</span> updatedTodos []*TodoObject</span><br><span class="line">  <span class="keyword">for</span> index, todo := <span class="keyword">range</span> s.Todos &#123;</span><br><span class="line">    <span class="keyword">if</span>(todo.Id == delTodo.Id) &#123;</span><br><span class="line">      updatedTodos = <span class="built_in">append</span>(s.Todos[:index], s.Todos[index + <span class="number">1</span>:]...)</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  s.Todos = updatedTodos</span><br><span class="line">  <span class="keyword">return</span> &amp;DeleteResponse&#123;Message: <span class="string">&quot;success&quot;</span>&#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上示例，在服务运行时的 Todos 数组中存储所有 todo 记录，所有的 RPC 方法都 “绑定” 在 Server 结构体下，其中：</p>
+<ul>
+<li><strong>AddTodo</strong>：其中使用了 uuid 包来为每一条 todo 记录生成唯一的标识，并被 append 到 Todos 数组后；</li>
+<li><strong>DeleteTodo</strong>：根据 todo.id 找到对应的 todo 记录并从 Todos 列表中移除和更新；</li>
+<li><strong>GetTodo</strong>：简单的返回整个 Todo 列表；</li>
+</ul>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/golang/protobuf">Go support for Protocol Buffers</a></p>
+</blockquote>
+<h1>服务端入口程序</h1>
+<p>我们还需要启动 RPC 服务器的入口程序 server.go，位于 todo 根目录下，此时目录结构如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">➜  todo tree</span><br><span class="line">.</span><br><span class="line">├── server.go</span><br><span class="line">├── todo</span><br><span class="line">│   ├── handler.go</span><br><span class="line">│   ├── todo.pb.go</span><br><span class="line">│   └── todo.proto</span><br><span class="line">└── todo-client</span><br></pre></td></tr></table></figure>
+<p>server.go 的源码如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">    <span class="string">&quot;log&quot;</span></span><br><span class="line">    <span class="string">&quot;net&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="string">&quot;github.com/thearavind/grpc-todo/todo&quot;</span></span><br><span class="line">    <span class="string">&quot;google.golang.org/grpc&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    lis, err: = net.Listen(<span class="string">&quot;tcp&quot;</span>, fmt.Sprintf(<span class="string">&quot;:%d&quot;</span>, <span class="number">50096</span>))</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatalf(<span class="string">&quot;failed to listen: %v&quot;</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    s: = todo.Server &#123;&#125;</span><br><span class="line">    grpcServer: = grpc.NewServer()</span><br><span class="line">    <span class="comment">// attach the todo service to the server</span></span><br><span class="line">    todo.RegisterTodoServiceServer(grpcServer, &amp; s)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> err: = grpcServer.Serve(lis);</span><br><span class="line">    err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatalf(<span class="string">&quot;failed to serve: %s&quot;</span>, err)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        log.Printf(<span class="string">&quot;Server started successfully&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 main() 主函数入口中，首先启动 TCP 监听，端口为 50096，之后创建 Server 和 grpcServer 实例，并通过 RegisterTodoServiceServer 将我们的 todo 服务注册到这个新建的 grpcServer 上，最后启动 grpc server。</p>
+<p>我们可以通过 go run server.go 来启动服务端：</p>
+<h1>Nginx 代理配置</h1>
+<p>Nginx 配置如下：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span>       <span class="number">9080</span>;</span><br><span class="line">    <span class="attribute">server_name</span>  localhost;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">location</span> / &#123;</span><br><span class="line">        <span class="attribute">grpc_set_header</span>     Content-Type application/grpc;</span><br><span class="line">        <span class="attribute">grpc_pass</span>           grpc://localhost:50098;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">if</span> ($request_method = <span class="string">&#x27;OPTIONS&#x27;</span>) &#123;</span><br><span class="line">            <span class="attribute">add_header</span> <span class="string">&#x27;Access-Control-Allow-Origin&#x27;</span> <span class="string">&quot;*&quot;</span>;</span><br><span class="line">            <span class="attribute">add_header</span> <span class="string">&#x27;Access-Control-Allow-Methods&#x27;</span> <span class="string">&#x27;GET, POST, OPTIONS, DELETE&#x27;</span>;</span><br><span class="line">            <span class="attribute">add_header</span> <span class="string">&#x27;Access-Control-Allow-Headers&#x27;</span> <span class="string">&#x27;DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Transfer-Encoding,Custom-Header-1,X-Accept-Content-Transfer-Encoding,X-Accept-Response-Streaming,X-User-Agent,X-Grpc-Web&#x27;</span>;</span><br><span class="line">            <span class="attribute">add_header</span> <span class="string">&#x27;Access-Control-Max-Age&#x27;</span> <span class="number">1728000</span>;</span><br><span class="line">            <span class="attribute">add_header</span> <span class="string">&#x27;Content-Type&#x27;</span> <span class="string">&#x27;text/plain charset=UTF-8&#x27;</span>;</span><br><span class="line">            <span class="attribute">add_header</span> <span class="string">&#x27;Content-Length&#x27;</span> <span class="number">0</span>;</span><br><span class="line">            <span class="attribute">return</span> <span class="number">204</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">if</span> ($request_method = <span class="string">&#x27;POST&#x27;</span>) &#123;</span><br><span class="line">            <span class="attribute">add_header</span> <span class="string">&#x27;Access-Control-Allow-Origin&#x27;</span> <span class="string">&#x27;*&#x27;</span>;</span><br><span class="line">            <span class="attribute">add_header</span> <span class="string">&#x27;Access-Control-Allow-Methods&#x27;</span> <span class="string">&#x27;GET, POST, OPTIONS&#x27;</span>;</span><br><span class="line">            <span class="attribute">add_header</span> <span class="string">&#x27;Access-Control-Allow-Headers&#x27;</span> <span class="string">&#x27;DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Transfer-Encoding,Custom-Header-1,X-Accept-Content-Transfer-Encoding,X-Accept-Response-Streaming,X-User-Agent,X-Grpc-Web&#x27;</span>;</span><br><span class="line">            <span class="attribute">add_header</span> <span class="string">&#x27;Access-Control-Expose-Headers&#x27;</span> <span class="string">&#x27;Content-Transfer-Encoding,Grpc-Message,Grpc-Status&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过 grpc_pass 来实现 grpc 协议的代理，重定向至服务端 50098 端口。</p>
+<p>注意：这里需要通过 grpc_set_header 来设置 Content-Type 为 application/grpc，默认为 application/grpc-web。</p>
+<h1>使用 vuejs 实现的前端应用</h1>
+<p>我们通过 vue 来创建一个简单的 todo-client：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">➜  todo vue create todo-client</span><br><span class="line">➜  todo tree -L 2 </span><br><span class="line">.</span><br><span class="line">├── go.mod</span><br><span class="line">├── go.sum</span><br><span class="line">├── server.go</span><br><span class="line">├── todo</span><br><span class="line">│   ├── handler.go</span><br><span class="line">│   ├── todo.pb.go</span><br><span class="line">│   └── todo.proto</span><br><span class="line">└── todo-client</span><br><span class="line">    ├── babel.config.js</span><br><span class="line">    ├── node_modules</span><br><span class="line">    ├── package.json</span><br><span class="line">    ├── package-lock.json</span><br><span class="line">    ├── public</span><br><span class="line">    ├── README.md</span><br><span class="line">    └── src</span><br></pre></td></tr></table></figure>
+<p>下面通过 grpc-web 插件生成 Javascript 的接口代码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">➜  todo protoc -I=./todo todo.proto --js_out=import_style=commonjs:./todo-client/src --grpc-web_out=import_style=commonjs,mode=grpcweb:./todo-client/src</span><br><span class="line">➜  todo tree -L 2</span><br><span class="line">.</span><br><span class="line">├── go.mod</span><br><span class="line">├── go.sum</span><br><span class="line">├── server.go</span><br><span class="line">├── todo</span><br><span class="line">│   ├── handler.go</span><br><span class="line">│   ├── todo.pb.go</span><br><span class="line">│   └── todo.proto</span><br><span class="line">└── todo-client</span><br><span class="line">    ├── babel.config.js</span><br><span class="line">    ├── node_modules</span><br><span class="line">    ├── package.json</span><br><span class="line">    ├── package-lock.json</span><br><span class="line">    ├── public</span><br><span class="line">    ├── README.md</span><br><span class="line">    └── src</span><br><span class="line">        ├── App.vue</span><br><span class="line">        ├── assets</span><br><span class="line">        ├── components</span><br><span class="line">        ├── main.js</span><br><span class="line">        ├── todo_grpc_web_pb.js</span><br><span class="line">        └── todo_pb.js</span><br></pre></td></tr></table></figure>
+<p>在 todo-client/src 目录下生成 todo_grpc_web_pb.js 和 todo_pb.js 文件，下面我们在 App.vue 中引入：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line"><span class="keyword">import</span> &#123; addTodoParams, getTodoParams, deleteTodoParams &#125; <span class="keyword">from</span> <span class="string">&quot;./todo_pb&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; todoServiceClient &#125; <span class="keyword">from</span> <span class="string">&quot;./todo_grpc_web_pb&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  name: <span class="string">&#x27;App&#x27;</span>,</span><br><span class="line">  components: &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  data: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      inputField: <span class="string">&quot;&quot;</span>,</span><br><span class="line">      todos: []</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  created: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.client = <span class="keyword">new</span> todoServiceClient(<span class="string">&quot;http://192.168.1.188:9080&quot;</span>, <span class="literal">null</span>, <span class="literal">null</span>);</span><br><span class="line">    <span class="built_in">this</span>.getTodos();</span><br><span class="line">  &#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    getTodos: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">let</span> getRequest = <span class="keyword">new</span> getTodoParams();</span><br><span class="line">      <span class="built_in">this</span>.client.getTodos(getRequest, &#123;&#125;, <span class="function">(<span class="params">err, response</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.todos = response.toObject().todosList;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.todos);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">    addTodo: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">let</span> request = <span class="keyword">new</span> addTodoParams();</span><br><span class="line">      request.setTask(<span class="built_in">this</span>.inputField);</span><br><span class="line">      <span class="built_in">this</span>.client.addTodo(request, &#123;&#125;, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.inputField = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        <span class="built_in">this</span>.getTodos();</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">    deleteTodo: <span class="function"><span class="keyword">function</span>(<span class="params">todo</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">let</span> deleteRequest = <span class="keyword">new</span> deleteTodoParams();</span><br><span class="line">      deleteRequest.setId(todo.id);</span><br><span class="line">      <span class="built_in">this</span>.client.deleteTodo(deleteRequest, &#123;&#125;, <span class="function">(<span class="params">err, response</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (response.getMessage() === <span class="string">&quot;success&quot;</span>) &#123;</span><br><span class="line">          <span class="built_in">this</span>.getTodos();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">&quot;todo -&gt; &quot;</span>, todo.id);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>在 created 阶段创建 todoServiceClient 实例，其中第一个参数为代理的主机地址端口，这里为 Nginx 的（HTTP）服务地址和端口。在 getTodos, addTodo, deleteTodo 等方法中可以创建 RPC 访问的请求参数实例，并且在异步调用后，通过 response 来获取相应信息。如下为示例图：</p>
+<img src="/2020/06/20/nginx-grpc-web-go/2020-06-20_17-16-36.jpg" class="">
+<h1>References</h1>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.grpc.io/">gRPC 官网</a></li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/">Protocol Buffer 官网</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md">gRPC over HTTP/2</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/grpc/grpc-web">gRPC-web 官网</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.nginx.com/blog/nginx-1-13-10-grpc/">Introducing gRPC Support with NGINX 1.13.10</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/grpc/" rel="tag"># grpc</a>
+              <a href="/tags/grpc-web/" rel="tag"># grpc-web</a>
+              <a href="/tags/go/" rel="tag"># go</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/05/02/first-meet-asr-and-kaldi-install-use.html" rel="prev" title="初识语音识别及 Kaldi 的安装使用">
+      <i class="fa fa-chevron-left"></i> 初识语音识别及 Kaldi 的安装使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/31/spring-cloud-config-refresh.html" rel="next" title="使用 Spring Cloud Config 搭建轻型配置中心">
+      使用 Spring Cloud Config 搭建轻型配置中心 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">关于 gRPC</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">关于 grpc-web</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">创建 todo.proto 协议文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">服务端代码生成</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">服务端入口程序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">6.</span> <span class="nav-text">Nginx 代理配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">7.</span> <span class="nav-text">使用 vuejs 实现的前端应用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">8.</span> <span class="nav-text">References</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Steven"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Steven</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Steven</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"stevenocean.github.io","root":"/","scheme":"Mist","version":"7.8.0","sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"appID":"PJYZ7OZEJB","apiKey":"78ff9194440a75eba3a1be76689c2b0c","indexName":"steven-blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Overview 我们想通过手机来模拟成智能卡(Smart Card)，很多情况下，都是通过设备上的称为 Secure Element (以下简称 SE)的安全芯片来模拟的，譬如很多运营商提供的 SIM 卡中也会内嵌有这样的 SE 芯片（例如：中国移动和银联推的 NFC-SIM 卡-云闪付）。SE 芯片一般在设备出厂前就已经内嵌在板子上了，无法替换，并且 SE 上的系统主要负责处理安全支付方面的工">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android NFC Demo (2) - Card Emulator">
+<meta property="og:url" content="http://stevenocean.github.io/2019/03/12/android-nfc-demo-card-emulator.html">
+<meta property="og:site_name" content="未来边缘">
+<meta property="og:description" content="Overview 我们想通过手机来模拟成智能卡(Smart Card)，很多情况下，都是通过设备上的称为 Secure Element (以下简称 SE)的安全芯片来模拟的，譬如很多运营商提供的 SIM 卡中也会内嵌有这样的 SE 芯片（例如：中国移动和银联推的 NFC-SIM 卡-云闪付）。SE 芯片一般在设备出厂前就已经内嵌在板子上了，无法替换，并且 SE 上的系统主要负责处理安全支付方面的工">
+<meta property="og:locale">
+<meta property="og:image" content="http://stevenocean.github.io/2019/03/12/android-nfc-demo-card-emulator/card-emulator-with-secure-element.png">
+<meta property="og:image" content="http://stevenocean.github.io/2019/03/12/android-nfc-demo-card-emulator/card-emulator-with-hce.png">
+<meta property="og:image" content="http://stevenocean.github.io/2019/03/12/android-nfc-demo-card-emulator/hce-protocol-stack.png">
+<meta property="og:image" content="http://stevenocean.github.io/2019/03/12/android-nfc-demo-card-emulator/apdu-command-response-pair.jpg">
+<meta property="og:image" content="http://stevenocean.github.io/2019/03/12/android-nfc-demo-card-emulator/apdu-ins-commands.jpg">
+<meta property="og:image" content="http://stevenocean.github.io/2019/03/12/android-nfc-demo-card-emulator/structural-scheme-of-sw1-sw2.jpg">
+<meta property="og:image" content="http://stevenocean.github.io/2019/03/12/android-nfc-demo-card-emulator/reader-sample-result-card-resp.png">
+<meta property="article:published_time" content="2019-03-12T12:20:20.000Z">
+<meta property="article:modified_time" content="2019-03-12T08:36:04.000Z">
+<meta property="article:author" content="Steven">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="NFC">
+<meta property="article:tag" content="HCE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://stevenocean.github.io/2019/03/12/android-nfc-demo-card-emulator/card-emulator-with-secure-element.png">
+
+<link rel="canonical" href="http://stevenocean.github.io/2019/03/12/android-nfc-demo-card-emulator.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>Android NFC Demo (2) - Card Emulator | 未来边缘</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="未来边缘" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">未来边缘</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://stevenocean.github.io/2019/03/12/android-nfc-demo-card-emulator.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Steven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来边缘">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android NFC Demo (2) - Card Emulator
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2019-03-12 20:20:20 / Modified: 16:36:04" itemprop="dateCreated datePublished" datetime="2019-03-12T20:20:20+08:00">2019-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/NFC/" itemprop="url" rel="index"><span itemprop="name">NFC</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/NFC/HCE/" itemprop="url" rel="index"><span itemprop="name">HCE</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1>Overview</h1>
+<p>我们想通过手机来模拟成智能卡(Smart Card)，很多情况下，都是通过设备上的称为 Secure Element (以下简称 SE)的安全芯片来模拟的，譬如很多运营商提供的 SIM 卡中也会内嵌有这样的 SE 芯片（例如：中国移动和银联推的 NFC-SIM 卡-云闪付）。SE 芯片一般在设备出厂前就已经内嵌在板子上了，无法替换，并且 SE 上的系统主要负责处理安全支付方面的工作。</p>
+<p>通过下面的使用 SE 来模拟 Card 的结构图，可以看到，这里的 transactions 都是由 SE 芯片直接和 NFC 读卡器进行通信和交互的，而不需要其他 Android 应用的参与，在 transaction 完成之后，Android 应用可以查询状态并通知用户：</p>
+<a id="more"></a>
+<img src="/2019/03/12/android-nfc-demo-card-emulator/card-emulator-with-secure-element.png" class="">
+<p>而我们这里是想用另外一种不依赖于 SE 芯片的方案来模拟 Card，也就是基于主机的卡模拟（Host-based Card Emulator），在此方案下，交互的数据被直接路由到主机 CPU 上，而不是 SE 芯片上，这样直接运行在主机 CPU 上的 Android 应用就可以与 NFC 读卡器“直接”交互了，如下图：</p>
+<img src="/2019/03/12/android-nfc-demo-card-emulator/card-emulator-with-hce.png" class="">
+<h1>HCE 支持的卡和协议栈</h1>
+<p>NFC 标准提供了对许多不同协议的支持，以及许多可以被模拟的卡类型。</p>
+<p>从 Android 4.4 开始就已经支持目前市场上的一些常见类型的卡，如非接触式的支付卡，下图为 Android HCE 支持的协议栈：</p>
+<img src="/2019/03/12/android-nfc-demo-card-emulator/hce-protocol-stack.png" class="">
+<p>上图列出了协议栈的分层，以及各层基于的规范。</p>
+<p>目前市场上的许多NFC读卡器也都支持这些协议，包括作为读卡器的Android NFC设备。这样我们就可以基于 HCE 方案仅使用 Android 设备来构建和部署端到端NFC解决方案。</p>
+<p>另外，Android 4.4 主要支持模拟的是基于 NFC-Forum ISO-DEP 规范（ISO/IEC 14443-4）以及处理定义于 ISO/IEC 7816-4 规范中的 APDU（Application Protocol Data Units）协议数据。Android 目前要求仅在 Nfc-A (ISO/IEC 14443-3 Type A) 技术之上模拟 ISO-DEP，对于 Nfc-B (ISO/IEC 14443-3 Type B) 技术的支持是可选的。</p>
+<h1>HCE Service</h1>
+<p>在 Android 中 HCE 架构是基于 Service 组件的（也就是 HCE services），这样可以在后台运行，</p>
+<p>在 ISO/IEC 7816-4 规范中定义了一种选择应用的方式，即以 Application ID（AID）为中心，AID 由最多 16 个字节组成的标识，如果要为现有的NFC读卡器设施模拟卡片，那些 reader 寻找的AID通常都是 well-known 并且是公开注册的，例如：支付领域的 Visa, MasterCard 的 AID。</p>
+<p>如果你需要部署自己应用的新读卡器设施，就需要注册自己的 AID，注册过程参考 ISO/IEC 7816-5 规范。</p>
+<h2 id="关于-AID-组"><a class="header-anchor" href="#关于-AID-组"></a>关于 AID 组</h2>
+<p>有时，HCE 服务可能需要注册多个 AID 来实现某个应用程序，并且需要确保它是所有这些 AID 的默认处理程序（而不是这个 AID 组中的某些 AID 是另外的 HCE 服务来处理）。</p>
+<p>一个组中的所有 AID 要么都被路由到 HCE 服务，要么所有 AID 都不会被路由到 HCE 服务。</p>
+<p>每一个 AID 组都可以被关联到某个分类，从 Android 4.4 开始支持两个分类，分别为：<em>CATEGORY_PAYMENT</em> 和 <em>CATEGORY_OTHER</em>，关于分类，还有些规则和限制：</p>
+<ul>
+<li>在任何给定时间，系统中只能启用 <em>CATEGORY_PAYMENT</em> 类别中的一个AID组。</li>
+<li>对于仅在某个指定商家使用的卡，应该设置为 <em>CATEGORY_OTHER</em> 。此类别中的AID组可以始终处于活动状态，并且必要时可以在 AID 选择期间由 NFC 读卡器给予优先级。</li>
+</ul>
+<h2 id="实现-HCE-服务"><a class="header-anchor" href="#实现-HCE-服务"></a>实现 HCE 服务</h2>
+<p>为了能够使用 HCE 模式来模拟 NFC 卡，需要实现一个 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/android/nfc/cardemulation/HostApduService.html">HostApduService</a> 接口的 Service 组件来处理 NFC 交互 transactions。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyHostApduService</span> <span class="keyword">extends</span> <span class="title">HostApduService</span> </span>&#123; </span><br><span class="line">    <span class="meta">@Override</span> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] processCommandApdu(<span class="keyword">byte</span>[] apdu, Bundle extras) &#123;</span><br><span class="line">       ... </span><br><span class="line">    &#125; </span><br><span class="line">    <span class="meta">@Override</span> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDeactivated</span><span class="params">(<span class="keyword">int</span> reason)</span> </span>&#123;</span><br><span class="line">       ... </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/android/nfc/cardemulation/HostApduService.html">HostApduService</a> 中声明了两个需要重载和实现的抽象方法：</p>
+<h3 id="processCommandApdu"><a class="header-anchor" href="#processCommandApdu"></a>processCommandApdu()</h3>
+<p>NFC 读卡器发送 APDU 到服务时调用此方法。APDU 定义在 ISO/IEC 7816-4 规范中，APDU 是 NFC 读卡器 和 HCE 服务之间传递数据的应用层协议单元，并且该协议是半双工的，即 NFC 读卡器在发送一个 APDU 命令后，会同步等待 HCE 服务返回一个 APDU 的响应。</p>
+<h4 id="APDU"><a class="header-anchor" href="#APDU"></a>APDU</h4>
+<p>下图为 APDU 协议的 command-response 结构，主要由 Header 和 Body 两个部分组成，并且 Body 部分由 Lc, Data 和 Le 组成。</p>
+<img src="/2019/03/12/android-nfc-demo-card-emulator/apdu-command-response-pair.jpg" class="">
+<ul>
+<li>
+<p><em>CLA</em>: Class byte, 表示命令的类别，占 1 个字节，8 个 bit 位的使用有一定的规范，如：Bit 8 用于区分产业还是专有分类（详细定义参考 <em>ISO/IEC 7816-4 5.1.1</em>）；</p>
+</li>
+<li>
+<p><em>INS</em>: Instruction byte，表示处理的指令，占 1 个字节，不同指令表示不同的意义，如下图定义：</p>
+</li>
+</ul>
+<img src="/2019/03/12/android-nfc-demo-card-emulator/apdu-ins-commands.jpg" class="">
+<ul>
+<li><em>P1 &amp; P2</em>: Parameter bytes，可用于指令的参数；</li>
+<li><em>Lc</em>: 表示发送的 command data 字段的长度；</li>
+<li><em>Le</em>：表示期待的 response data 字段的长度；</li>
+<li><em>Command Data Field</em>：表示实际的指令数据；</li>
+<li><em>Response Data Field</em>：响应数据；</li>
+<li><em>SW1 &amp; SW2</em>：Status bytes，根据规范，状态码均为 6xxx 和 9xxx，并且 60xx 也是无效的，其他的详细规范参考 <em>ISO/IEC 7816-3</em>，下图是规范定义状态码值结构图：</li>
+</ul>
+<img src="/2019/03/12/android-nfc-demo-card-emulator/structural-scheme-of-sw1-sw2.jpg" class="">
+<h4 id="交互处理"><a class="header-anchor" href="#交互处理"></a>交互处理</h4>
+<p>如前所述，Android 是通过 AID 来决定 读卡器 需要交互的 HCE 服务。通常情况下， NFC 读卡器发送的第一条 APDU 就是 “选择 AID&quot;，该条 APDU 中就包含了 读卡器 希望与之交互的 AID，Android 从该 APDU 中解析出 AID 并转发至相应的 HCE 服务。</p>
+<p>应用层可以在 processCommandApdu 方法中返回响应 APDU，要注意的是，该方法会在主线程中被调用，因此不能被阻塞，可以在其他线程中做些复杂计算，并通过 sendResponseApdu() 方法来返回响应。</p>
+<h3 id="onDeactivated"><a class="header-anchor" href="#onDeactivated"></a>onDeactivated()</h3>
+<p>在此过程中，Android 会持续向你的 HCE 服务转发新的 APDU，直到：</p>
+<ul>
+<li>NFC 读卡器发送了另外一个 “SELECT AID&quot; APDU，并且解析到了其他的 HCE 服务；</li>
+<li>NFC 读卡器和设备之间的链路断开；</li>
+</ul>
+<p>上面两种情形下 onDeactivated() 方法都会被调用，传入的参数 reason 就是指明是什么原因引起的。</p>
+<h1>示例</h1>
+<p>下面我们分别来写两个程序，并且分别安装在两台不同的 Android 手机上：</p>
+<ul>
+<li><em>CardEmulatorSample</em>: 用于模拟卡，主要实现 HCE 服务；</li>
+<li><em>CardReaderSample</em>: 作为 NFC 读卡器来读取 <em>CardEmulatorSample</em> 中模拟的卡信息；</li>
+</ul>
+<h2 id="CardEmulatorSample"><a class="header-anchor" href="#CardEmulatorSample"></a>CardEmulatorSample</h2>
+<h3 id="实现卡模拟服务"><a class="header-anchor" href="#实现卡模拟服务"></a>实现卡模拟服务</h3>
+<p>如下 <strong>HostCardEmulatorService</strong> 派生于 HostApduService 并重载实现了 processCommandApdu 和 onDeactivated 方法。另外，我们根据规范自定义了一些常量，如：成功状态，失败状态，AID 等等。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HostCardEmulatorService</span> <span class="keyword">extends</span> <span class="title">HostApduService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = HostCardEmulatorService.class.getName();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// self-defined APDU</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String STATUS_SUCCESS = <span class="string">&quot;9000&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String STATUS_FAILED = <span class="string">&quot;6F00&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String CLA_NOT_SUPPORTED = <span class="string">&quot;6E00&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String INS_NOT_SUPPORTED = <span class="string">&quot;6D00&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String AID = <span class="string">&quot;A0000002471001&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String SELECT_INS = <span class="string">&quot;A4&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String DEFAULT_CLA = <span class="string">&quot;00&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MIN_APDU_LENGTH = <span class="number">12</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] processCommandApdu(<span class="keyword">byte</span>[] commandApdu, Bundle extras) &#123;</span><br><span class="line"></span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>, <span class="string">&quot;processCommandApdu&quot;</span>, Toast.LENGTH_LONG).show();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (commandApdu == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> hexStringToByteArray(STATUS_SUCCESS);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> String hexCommandApdu = encodeHexString(commandApdu);</span><br><span class="line">        <span class="keyword">if</span> (hexCommandApdu.length() &lt; MIN_APDU_LENGTH) &#123;</span><br><span class="line">            <span class="keyword">return</span> hexStringToByteArray(STATUS_FAILED);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!hexCommandApdu.substring(<span class="number">0</span>, <span class="number">2</span>).equals(DEFAULT_CLA)) &#123;</span><br><span class="line">            <span class="keyword">return</span> hexStringToByteArray(CLA_NOT_SUPPORTED);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!hexCommandApdu.substring(<span class="number">2</span>, <span class="number">4</span>).equals(SELECT_INS)) &#123;</span><br><span class="line">            <span class="keyword">return</span> hexStringToByteArray(INS_NOT_SUPPORTED);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (hexCommandApdu.substring(<span class="number">10</span>, <span class="number">24</span>).equals(AID))  &#123;</span><br><span class="line">            <span class="keyword">return</span> hexStringToByteArray(STATUS_SUCCESS);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> hexStringToByteArray(STATUS_FAILED);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDeactivated</span><span class="params">(<span class="keyword">int</span> reason)</span> </span>&#123;</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>, <span class="string">&quot;Deactivated - reason:&quot;</span> + reason, Toast.LENGTH_LONG).show();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>另外，这里涉及到一些十六进制和字符串的转换，都是用的如下三个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">byteToHex</span><span class="params">(<span class="keyword">byte</span> num, <span class="keyword">boolean</span> upper)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">char</span>[] hexDigits = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">2</span>];</span><br><span class="line">    <span class="keyword">if</span> (upper) &#123;</span><br><span class="line">        hexDigits[<span class="number">0</span>] = Character.toUpperCase(Character.forDigit((num &gt;&gt; <span class="number">4</span>) &amp; <span class="number">0xF</span>, <span class="number">16</span>));</span><br><span class="line">        hexDigits[<span class="number">1</span>] = Character.toUpperCase(Character.forDigit((num &amp; <span class="number">0xF</span>), <span class="number">16</span>));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        hexDigits[<span class="number">0</span>] = Character.forDigit((num &gt;&gt; <span class="number">4</span>) &amp; <span class="number">0xF</span>, <span class="number">16</span>);</span><br><span class="line">        hexDigits[<span class="number">1</span>] = Character.forDigit((num &amp; <span class="number">0xF</span>), <span class="number">16</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> String(hexDigits);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">encodeHexString</span><span class="params">(<span class="keyword">byte</span>[] byteArray, <span class="keyword">boolean</span> upper)</span> </span>&#123;</span><br><span class="line">    StringBuilder hexStringBuffer = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">byte</span> aByteArray : byteArray) &#123;</span><br><span class="line">        hexStringBuffer.append(byteToHex(aByteArray, upper));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> hexStringBuffer.toString();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] hexStringToByteArray(String s) &#123;</span><br><span class="line">    <span class="keyword">int</span> len = s.length();</span><br><span class="line">    <span class="keyword">byte</span>[] data = <span class="keyword">new</span> <span class="keyword">byte</span>[len / <span class="number">2</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i += <span class="number">2</span>) &#123;</span><br><span class="line">        data[i / <span class="number">2</span>] = (<span class="keyword">byte</span>) ((Character.digit(s.charAt(i), <span class="number">16</span>) &lt;&lt; <span class="number">4</span>)</span><br><span class="line">                + Character.digit(s.charAt(i+<span class="number">1</span>), <span class="number">16</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>之后，我们还需要在 AndroidManifest.xml 中添加如下 service 配置项及相应的 Intent-Filter：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">package</span>=<span class="string">&quot;io.github.stevenocean.cardemulatorsample&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">&quot;android.permission.NFC&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-feature</span> <span class="attr">android:name</span>=<span class="string">&quot;android.hardware.nfc.hce&quot;</span> <span class="attr">android:required</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    &lt;application</span><br><span class="line">        android:allowBackup=&quot;true&quot;</span><br><span class="line">        android:icon=&quot;@mipmap/ic_launcher&quot;</span><br><span class="line">        android:label=&quot;@string/app_name&quot;</span><br><span class="line">        android:roundIcon=&quot;@mipmap/ic_launcher_round&quot;</span><br><span class="line">        android:supportsRtl=&quot;true&quot;</span><br><span class="line">        android:theme=&quot;@style/AppTheme&quot;&gt;</span><br><span class="line">        <span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">&quot;.MainActivity&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.action.MAIN&quot;</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.category.LAUNCHER&quot;</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        &lt;service</span><br><span class="line">            android:name=&quot;.HostCardEmulatorService&quot;</span><br><span class="line">            android:exported=&quot;true&quot;</span><br><span class="line">            android:permission=&quot;android.permission.BIND_NFC_SERVICE&quot;&gt;</span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">&quot;android.nfc.cardemulation.action.HOST_APDU_SERVICE&quot;</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">            &lt;meta-data</span><br><span class="line">                android:name=&quot;android.nfc.cardemulation.host_apdu_service&quot;</span><br><span class="line">                android:resource=&quot;@xml/apduservice&quot; /&gt;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">service</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">application</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><em>android:name</em>：启动的 HostApduService 实现类，这里为 HostCardEmulatorService；</li>
+<li><em>android:exported</em>：这里设置为 true，可以被其他应用访问；</li>
+<li><em>android:permission</em>：需要有绑定 NFC 服务的权限；</li>
+<li><em>intent-filter</em>：当系统检测到有外部 NFC 读卡器尝试读取卡信息的时候，就会触发一个 <strong>HOST_APDU_SERVICE</strong> 的 action，因此我们的服务需要注册该 action；</li>
+<li><em>meta-data</em>：为了让系统能够选择正确 AID 的服务来调用，需要配置 AID 的信息，这里指向 apduservice.xml 文件；</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">host-apdu-service</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:description</span>=<span class="string">&quot;@string/servicedesc&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:requireDeviceUnlock</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aid-group</span> <span class="attr">android:description</span>=<span class="string">&quot;@string/aiddescription&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:category</span>=<span class="string">&quot;other&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">aid-filter</span> <span class="attr">android:name</span>=<span class="string">&quot;A0000002471001&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">aid-group</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">host-apdu-service</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这里配置了 AID 组分类（为 CATEGORY_OTHER），以及组中的 AID（为 A0000002471001）。</p>
+<h2 id="实现-NFC-读卡器"><a class="header-anchor" href="#实现-NFC-读卡器"></a>实现 NFC 读卡器</h2>
+<p>我们这里的 NFC 读卡器示例还是基于前一篇文章中的示例进行扩展，首先在 MainActivity 的 中添加对 IsoDep 的处理，其中 onTagDiscovered(Tag tag) 方法为 NfcAdapter.ReaderCallback 回调，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onResume</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onResume();</span><br><span class="line">    mNfcAdapter.enableReaderMode(<span class="keyword">this</span>, <span class="keyword">this</span>,</span><br><span class="line">            NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,</span><br><span class="line">            <span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPause</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onPause();</span><br><span class="line">    mNfcAdapter.disableReaderMode(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onTagDiscovered</span><span class="params">(Tag tag)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Card response for IsoDep</span></span><br><span class="line">    <span class="keyword">final</span> StringBuilder cardResp = <span class="keyword">new</span> StringBuilder(<span class="string">&quot;Card response: \n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// read card data of CardEmulator</span></span><br><span class="line">    IsoDep isoDep = IsoDep.get(tag);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        isoDep.connect();</span><br><span class="line">        <span class="keyword">byte</span> [] resp = isoDep.transceive(hexStringToByteArray(DEFAULT_CLA + SELECT_INS + <span class="string">&quot;0400&quot;</span> + LC + AID));</span><br><span class="line">        String respStatus = encodeHexString(resp, <span class="keyword">true</span>);</span><br><span class="line">        <span class="keyword">if</span> (respStatus.equals(STATUS_SUCCESS)) &#123;</span><br><span class="line">            cardResp.append(<span class="string">&quot;Success response&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            cardResp.append(<span class="string">&quot;Failed response, code:&quot;</span>).append(respStatus);</span><br><span class="line">        &#125;</span><br><span class="line">        runOnUiThread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                mNfcInfoText.setText(cardResp.toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="测试"><a class="header-anchor" href="#测试"></a>测试</h2>
+<p>分别在两台 Android 手机上安装并打开 CardEmulatorSample 和 CardReaderSample 程序，之后将两台手机靠近，可以在 CardReaderSample 中看到如下信息：</p>
+<img src="/2019/03/12/android-nfc-demo-card-emulator/reader-sample-result-card-resp.png" class="">
+<h2 id="示例代码"><a class="header-anchor" href="#示例代码"></a>示例代码</h2>
+<p>在 github 上可以下载和尝试本文示例代码</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/stevenocean/CardEmulatorSample">CardEmulatorSample</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/stevenocean/CardReaderSample">CardReaderSample</a></li>
+</ul>
+<h1>参考资料</h1>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developer.android.com/guide/topics/connectivity/nfc/hce">Host-based card emulation overview</a></li>
+<li><a target="_blank" rel="noopener" href="http://read.pudn.com/downloads132/doc/comm/563504/ISO-IEC%207816/ISO%2BIEC%207816-3-2006.pdf">ISO/IEC 7816-3</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.embedx.com/pdfs/ISO_STD_7816/info_isoiec7816-4%7Bed21.0%7Den.pdf">ISO/IEC 7816-4</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/NFC/" rel="tag"># NFC</a>
+              <a href="/tags/HCE/" rel="tag"># HCE</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/05/android-nfc-reader-demo.html" rel="prev" title="Android NFC Demo (1) - NFC Reader">
+      <i class="fa fa-chevron-left"></i> Android NFC Demo (1) - NFC Reader
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/05/02/first-meet-asr-and-kaldi-install-use.html" rel="next" title="初识语音识别及 Kaldi 的安装使用">
+      初识语音识别及 Kaldi 的安装使用 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">Overview</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">HCE 支持的卡和协议栈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">HCE Service</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-AID-%E7%BB%84"><span class="nav-number">3.1.</span> <span class="nav-text">关于 AID 组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-HCE-%E6%9C%8D%E5%8A%A1"><span class="nav-number">3.2.</span> <span class="nav-text">实现 HCE 服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#processCommandApdu"><span class="nav-number">3.2.1.</span> <span class="nav-text">processCommandApdu()</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#APDU"><span class="nav-number">3.2.1.1.</span> <span class="nav-text">APDU</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%A4%E4%BA%92%E5%A4%84%E7%90%86"><span class="nav-number">3.2.1.2.</span> <span class="nav-text">交互处理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#onDeactivated"><span class="nav-number">3.2.2.</span> <span class="nav-text">onDeactivated()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">示例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CardEmulatorSample"><span class="nav-number">4.1.</span> <span class="nav-text">CardEmulatorSample</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8D%A1%E6%A8%A1%E6%8B%9F%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.1.1.</span> <span class="nav-text">实现卡模拟服务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-NFC-%E8%AF%BB%E5%8D%A1%E5%99%A8"><span class="nav-number">4.2.</span> <span class="nav-text">实现 NFC 读卡器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95"><span class="nav-number">4.3.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">4.4.</span> <span class="nav-text">示例代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Steven"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Steven</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Steven</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

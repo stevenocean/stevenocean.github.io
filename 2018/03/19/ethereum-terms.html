@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"stevenocean.github.io","root":"/","scheme":"Mist","version":"7.8.0","sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"appID":"PJYZ7OZEJB","apiKey":"78ff9194440a75eba3a1be76689c2b0c","indexName":"steven-blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="EVM：Ethereum Virtual Machine，以太坊虚拟机，这是一个隔离的轻量级的VM，运行在其中的智能合约代码无法访问本地网络、文件系统和其他进程；   EOA: External Owned Accounts，以太坊外部账号，通过与其关联的私钥（private key）来发送 ether 和 消息；   Contracts Accounts：合约账户，存储可在 EVM 中执行的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="以太坊中的各种术语解释(持续更新)">
+<meta property="og:url" content="http://stevenocean.github.io/2018/03/19/ethereum-terms.html">
+<meta property="og:site_name" content="未来边缘">
+<meta property="og:description" content="EVM：Ethereum Virtual Machine，以太坊虚拟机，这是一个隔离的轻量级的VM，运行在其中的智能合约代码无法访问本地网络、文件系统和其他进程；   EOA: External Owned Accounts，以太坊外部账号，通过与其关联的私钥（private key）来发送 ether 和 消息；   Contracts Accounts：合约账户，存储可在 EVM 中执行的">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-03-19T06:58:00.000Z">
+<meta property="article:modified_time" content="2018-04-17T02:31:30.000Z">
+<meta property="article:author" content="Steven">
+<meta property="article:tag" content="Ethereum">
+<meta property="article:tag" content="以太坊">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="blockchain">
+<meta property="article:tag" content="合约账户">
+<meta property="article:tag" content="账户">
+<meta property="article:tag" content="Account">
+<meta property="article:tag" content="Constract Account">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://stevenocean.github.io/2018/03/19/ethereum-terms.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>以太坊中的各种术语解释(持续更新) | 未来边缘</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="未来边缘" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">未来边缘</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://stevenocean.github.io/2018/03/19/ethereum-terms.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Steven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来边缘">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          以太坊中的各种术语解释(持续更新)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-03-19 14:58:00" itemprop="dateCreated datePublished" datetime="2018-03-19T14:58:00+08:00">2018-03-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-04-17 10:31:30" itemprop="dateModified" datetime="2018-04-17T10:31:30+08:00">2018-04-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/" itemprop="url" rel="index"><span itemprop="name">Ethereum(以太坊)</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/blockchain-%E5%8C%BA%E5%9D%97%E9%93%BE/" itemprop="url" rel="index"><span itemprop="name">blockchain(区块链)</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <ul>
+<li>
+<p><strong>EVM</strong>：Ethereum Virtual Machine，以太坊虚拟机，这是一个隔离的轻量级的VM，运行在其中的智能合约代码无法访问本地网络、文件系统和其他进程；</p>
+</li>
+<li>
+<p><strong>EOA</strong>: External Owned Accounts，以太坊<strong>外部账号</strong>，通过与其关联的私钥（private key）来发送 ether 和 消息；</p>
+</li>
+<li>
+<p><strong>Contracts Accounts</strong>：<strong>合约账户</strong>，存储可在 <strong>EVM</strong> 中执行的<strong>智能合约</strong>代码，只能被 <strong>EOA</strong> 来调用激活，当<strong>合约账户</strong>被调用时，存储其中的<strong>智能合约</strong>会在矿工处的<strong>EVM</strong>中自动执行，并消耗一定的 <strong>Gas</strong>，<strong>Gas</strong> 通过 <strong>EOA</strong> 中的以太币进行购买；</p>
+</li>
+<li>
+<p><strong>Transaction</strong>: 以太坊中的<strong>交易</strong>是指从 <strong>EOA</strong> 发送给另一个账户的消息的签过名的数据包，一笔交易主要包括：接收方、发送方、gasLimit、gasPrice、Value(交易金额)等等；</p>
+</li>
+<li>
+<p><strong>Message</strong>：<strong>消息</strong>是一个不能序列化的，并且只存在于以太坊运行环境中的虚拟对象，一条消息主要包括：消息的发送方、接收方、gasLimit等等；</p>
+</li>
+<li>
+<p><strong>Smart Contract</strong>: <strong>智能合约</strong>，是以太坊中最重要的一个概念，以太坊支持通过图灵完备的高级语言，如：Solidity、Serpent等来开发智能合约，其可以接受来自外部的交易请求和事件来触发合约代码逻辑，进一步生成新的交易和事件，甚至进一步调用其他的智能合约；<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Smart_contract">Smart Contract Wiki</a></p>
+</li>
+</ul>
+<a id="more"></a>
+<ul>
+<li>
+<p><strong>Gas</strong>：<strong>燃料</strong>，没执行一条合约指令就会消耗一定的燃料（Gas），当某个交易还未执行结束，而 <strong>Gas</strong> 已经消耗完时，则合约执行终止并回滚状态；<strong>Gas</strong> 可以和 ether 进行兑换，但是有个注意点就是，ether 的价格是波动的，但运行某段智能合约的费用可以是固定的，可以通过设定 <strong>Gas Price</strong> 等来进行调节；</p>
+</li>
+<li>
+<p><strong>GPO</strong>: Gas Price Oracle，Gas 价格预测；<a target="_blank" rel="noopener" href="https://github.com/ethereum/go-ethereum/wiki/Gas-Price-Oracle">GPO Wiki</a></p>
+</li>
+<li>
+<p><strong>LES</strong>: Light Ethereum Subprotocol，以太坊客户端的轻量级的子协议，只需要下载区块头，其他详细信息可以按需获取；<a target="_blank" rel="noopener" href="https://github.com/ethereum/wiki/wiki/Light-client-protocol">LES Wiki</a></p>
+</li>
+<li>
+<p><strong>Whisper</strong>: 是一个结合了分布式哈希表(DHT)和P2P通信技术，用来实现以太坊节点之间通信的协议，通过 Whisper 协议，以太坊节点可以将信息发送给某个特定节点，或者通过附加在信息中的标签或主题将信息发送给多个节点，主要用于大规模的点对点数据发现、信号协商、最小传输通信、完全隐私保护的 DApp 而设计的；<a target="_blank" rel="noopener" href="https://github.com/ethereum/wiki/wiki/Whisper">Whisper Wiki</a></p>
+</li>
+<li>
+<p><strong>Swarm</strong>: Swarm is a distributed storage platform and content distribution service, a native base layer service of the ethereum web 3 stack；<a target="_blank" rel="noopener" href="https://github.com/ethersphere/swarm">Swarm Wiki</a></p>
+</li>
+<li>
+<p><strong>Uncle Block</strong>: 叔块，是一种激励机制，用于降低矿池的优势，并减少区块产生的间隔（从 10 分钟降低到 15 秒左右）；</p>
+</li>
+<li>
+<p><strong>Patricia Trie</strong>: 一种压缩前缀树，是一种更节省空间的树，对于 trie 的每个节点，如果该节点是其父节点唯一的儿子的话，就和父节点结合；</p>
+</li>
+<li>
+<p><strong>Merkle Tree</strong>: 默克尔树，也称为 <strong>Hash Tree</strong>，该树的叶子节点存储的是数据块的 Hash 值，非叶子节点是其对应子节点的串联字符串的 Hash 值；</p>
+</li>
+<li>
+<p><strong>RLP</strong>: RLP (递归长度前缀)提供了一种适用于任意二进制数据数组的编码，RLP已经成为以太坊中对对象进行序列化的主要编码方式；<a target="_blank" rel="noopener" href="https://github.com/ethereum/wiki/wiki/%5B%E4%B8%AD%E6%96%87%5D-RLP">RLP Wiki</a>；</p>
+</li>
+<li>
+<p><strong>MPT</strong>：<strong>Merkle Patricia Tree</strong>，是 <strong>Merkle Tree</strong> 和 <strong>Patricia Tree</strong> 混合后的产物，在以太坊中，是采用了 RLP 算法进行编码，MPT 树中主要包括空节点、叶子节点、扩展节点和分支节点；</p>
+</li>
+</ul>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://steemit.com/cryptocurrency/@nadifsd/merkle-patricia-tree">Merkle Patricia Tree from steemit</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.ethereum.org/2015/11/15/merkling-in-ethereum/">Merkling in Ethereum by Vitalik Buterin</a></p>
+</blockquote>
+<ul>
+<li>
+<p><strong>ZKP</strong>: <strong>Zero Knowledge Proof</strong>，<strong>零知识证明</strong>；</p>
+</li>
+<li>
+<p><strong>ERC20</strong>: 可以理解成 Ethereum 的一个 Token 协议规范，所有基于 Ethereum 开发的 Token 合约都遵守这个规范。遵守 ERC20 协议规范的 Token 可以被各种 Ethereum 钱包支持。<a target="_blank" rel="noopener" href="https://theethereum.wiki/w/index.php/ERC20_Token_Standard">ERC20 Token Standard</a>；</p>
+</li>
+<li>
+<p><strong>Address</strong>: 地址的合法校验参考 <a target="_blank" rel="noopener" href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md"><strong>EIP-55 规范</strong></a>；</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Ethereum/" rel="tag"># Ethereum</a>
+              <a href="/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/" rel="tag"># 以太坊</a>
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+              <a href="/tags/blockchain/" rel="tag"># blockchain</a>
+              <a href="/tags/%E5%90%88%E7%BA%A6%E8%B4%A6%E6%88%B7/" rel="tag"># 合约账户</a>
+              <a href="/tags/%E8%B4%A6%E6%88%B7/" rel="tag"># 账户</a>
+              <a href="/tags/Account/" rel="tag"># Account</a>
+              <a href="/tags/Constract-Account/" rel="tag"># Constract Account</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/03/17/go-ethereum-source-analysize-1.html" rel="prev" title="go-ethereum 源码分析 - 区块结构(1)">
+      <i class="fa fa-chevron-left"></i> go-ethereum 源码分析 - 区块结构(1)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/03/31/go-ethereum-source-analysis-3.html" rel="next" title="go-ethereum 源码分析 - ethdb(3)">
+      go-ethereum 源码分析 - ethdb(3) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Steven"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Steven</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Steven</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

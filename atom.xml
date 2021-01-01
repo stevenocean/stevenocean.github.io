@@ -1,0 +1,720 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>未来边缘</title>
+  
+  
+  <link href="http://stevenocean.github.io/atom.xml" rel="self"/>
+  
+  <link href="http://stevenocean.github.io/"/>
+  <updated>2021-01-01T14:20:50.797Z</updated>
+  <id>http://stevenocean.github.io/</id>
+  
+  <author>
+    <name>Steven</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用 Spring Cloud Config 搭建轻型配置中心</title>
+    <link href="http://stevenocean.github.io/2020/12/31/spring-cloud-config-refresh.html"/>
+    <id>http://stevenocean.github.io/2020/12/31/spring-cloud-config-refresh.html</id>
+    <published>2020-12-31T14:38:00.000Z</published>
+    <updated>2021-01-01T14:20:50.797Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;关于-Spring-Cloud-Config&quot;&gt;&lt;a href=&quot;#关于-Spring-Cloud-Config&quot; class=&quot;headerlink&quot; title=&quot;关于 Spring Cloud Config&quot;&gt;&lt;/a&gt;关于 Spring Cloud Config&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;https://spring.io/projects/spring-cloud-config&quot;&gt;Spring Cloud Config&lt;/a&gt; 在分布式系统环境下为集中化的外部配置分别提供服务端和客户端支持的项目，不依赖于注册中心，是一个独立的配置中心，支持 git（缺省）、svn、jdbc、native等多种存储配置信息的形式。&lt;/p&gt;
+&lt;p&gt;Spring Cloud Config 的服务端特性如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;HTTP, resource-based API for external configuration (name-value pairs, or equivalent YAML content)&lt;/li&gt;
+&lt;li&gt;Encrypt and decrypt property values (symmetric or asymmetric)&lt;/li&gt;
+&lt;li&gt;Embeddable easily in a Spring Boot application using @EnableConfigServer&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Spring Cloud Config 的客户端特性如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Bind to the Config Server and initialize Spring Environment with remote property sources&lt;/li&gt;
+&lt;li&gt;Encrypt and decrypt property values (symmetric or asymmetric)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;本文主要记录的是 Spring Cloud Config 的使用，就直接略过什么是配置中心以及配置中心需要的特性之类的介绍了。&lt;/p&gt;
+&lt;/blockquote&gt;</summary>
+    
+    
+    
+    <category term="微服务" scheme="http://stevenocean.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
+    
+    <category term="Spring Cloud" scheme="http://stevenocean.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Spring-Cloud/"/>
+    
+    
+    <category term="Spring Cloud" scheme="http://stevenocean.github.io/tags/Spring-Cloud/"/>
+    
+    <category term="Spring Cloud Config" scheme="http://stevenocean.github.io/tags/Spring-Cloud-Config/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用 grpc-web, vue 和 Nginx 搭建一个简单 todo 示例</title>
+    <link href="http://stevenocean.github.io/2020/06/20/nginx-grpc-web-go.html"/>
+    <id>http://stevenocean.github.io/2020/06/20/nginx-grpc-web-go.html</id>
+    <published>2020-06-20T07:03:00.000Z</published>
+    <updated>2020-06-20T09:38:03.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1&gt;关于 gRPC&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.grpc.io/&quot;&gt;gRPC&lt;/a&gt; 是一个高性能、通用的开源 RPC 框架，其由 Google 主要面向移动应用开发并基于 HTTP/2 协议标准而设计，基于 &lt;a href=&quot;https://developers.google.com/protocol-buffers/&quot;&gt;ProtoBuf (Protocol Buffers)&lt;/a&gt; 序列化协议开发，且支持众多开发语言（）。&lt;/p&gt;
+&lt;p&gt;gRPC 提供了一种简单的方法来精确地定义服务和为iOS、Android 和 后台支持服务自动生成可靠性很强的客户端功能库。客户端充分利用高级流和链接功能，从而有助于节省带宽、降低的 TCP 链接次数、节省 CPU 使用、和电池寿命。下图为 gRPC 结构图：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="grpc" scheme="http://stevenocean.github.io/categories/grpc/"/>
+    
+    <category term="grpc-web" scheme="http://stevenocean.github.io/categories/grpc/grpc-web/"/>
+    
+    <category term="Nginx" scheme="http://stevenocean.github.io/categories/grpc/grpc-web/Nginx/"/>
+    
+    
+    <category term="grpc" scheme="http://stevenocean.github.io/tags/grpc/"/>
+    
+    <category term="grpc-web" scheme="http://stevenocean.github.io/tags/grpc-web/"/>
+    
+    <category term="go" scheme="http://stevenocean.github.io/tags/go/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>初识语音识别及 Kaldi 的安装使用</title>
+    <link href="http://stevenocean.github.io/2019/05/02/first-meet-asr-and-kaldi-install-use.html"/>
+    <id>http://stevenocean.github.io/2019/05/02/first-meet-asr-and-kaldi-install-use.html</id>
+    <published>2019-05-02T12:20:20.000Z</published>
+    <updated>2019-05-02T07:36:57.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;这两天一个朋友给我提了个涉及语音识别的“需求”（当然是不能调用如科大讯飞等各种开放平台的语音SDK），主要识别的当然是中文，不过因为之前从未接触过机器学习领域的技术，所以这里也只是属于快速了解语音识别相关技术、以及提供一个能够运行语音识别的示例。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;因为示例都是在自己的 PC 跑的，没有安装 CUDA，所以后面的训练和使用都没有采用 DNN-HMM 来训练，还是采用的传统的声学模型 GMM-HMM。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1&gt;初识语音识别&lt;/h1&gt;
+&lt;h2 id=&quot;定义&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#定义&quot;&gt;&lt;/a&gt;定义&lt;/h2&gt;
+&lt;p&gt;从 wiki 上摘抄一下，语音识别（speech recognition）技术，也被称为自动语音识别（英语：Automatic Speech Recognition, ASR）、计算机语音识别（英语：Computer Speech Recognition）或是语音转文本识别（英语：Speech To Text, STT），其目标是以计算机自动将人类的语音内容转换为相应的文字。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;https://zh.wikipedia.org/wiki/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB&lt;/p&gt;
+&lt;/blockquote&gt;</summary>
+    
+    
+    
+    <category term="人工智能" scheme="http://stevenocean.github.io/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+    <category term="语音识别" scheme="http://stevenocean.github.io/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB/"/>
+    
+    
+    <category term="语音识别" scheme="http://stevenocean.github.io/tags/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB/"/>
+    
+    <category term="机器识别" scheme="http://stevenocean.github.io/tags/%E6%9C%BA%E5%99%A8%E8%AF%86%E5%88%AB/"/>
+    
+    <category term="HMM" scheme="http://stevenocean.github.io/tags/HMM/"/>
+    
+    <category term="MFCC" scheme="http://stevenocean.github.io/tags/MFCC/"/>
+    
+    <category term="Kaldi" scheme="http://stevenocean.github.io/tags/Kaldi/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Android NFC Demo (2) - Card Emulator</title>
+    <link href="http://stevenocean.github.io/2019/03/12/android-nfc-demo-card-emulator.html"/>
+    <id>http://stevenocean.github.io/2019/03/12/android-nfc-demo-card-emulator.html</id>
+    <published>2019-03-12T12:20:20.000Z</published>
+    <updated>2019-03-12T08:36:04.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1&gt;Overview&lt;/h1&gt;
+&lt;p&gt;我们想通过手机来模拟成智能卡(Smart Card)，很多情况下，都是通过设备上的称为 Secure Element (以下简称 SE)的安全芯片来模拟的，譬如很多运营商提供的 SIM 卡中也会内嵌有这样的 SE 芯片（例如：中国移动和银联推的 NFC-SIM 卡-云闪付）。SE 芯片一般在设备出厂前就已经内嵌在板子上了，无法替换，并且 SE 上的系统主要负责处理安全支付方面的工作。&lt;/p&gt;
+&lt;p&gt;通过下面的使用 SE 来模拟 Card 的结构图，可以看到，这里的 transactions 都是由 SE 芯片直接和 NFC 读卡器进行通信和交互的，而不需要其他 Android 应用的参与，在 transaction 完成之后，Android 应用可以查询状态并通知用户：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Android" scheme="http://stevenocean.github.io/categories/Android/"/>
+    
+    <category term="NFC" scheme="http://stevenocean.github.io/categories/Android/NFC/"/>
+    
+    <category term="HCE" scheme="http://stevenocean.github.io/categories/Android/NFC/HCE/"/>
+    
+    
+    <category term="Android" scheme="http://stevenocean.github.io/tags/Android/"/>
+    
+    <category term="NFC" scheme="http://stevenocean.github.io/tags/NFC/"/>
+    
+    <category term="HCE" scheme="http://stevenocean.github.io/tags/HCE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Android NFC Demo (1) - NFC Reader</title>
+    <link href="http://stevenocean.github.io/2019/03/05/android-nfc-reader-demo.html"/>
+    <id>http://stevenocean.github.io/2019/03/05/android-nfc-reader-demo.html</id>
+    <published>2019-03-05T12:20:20.000Z</published>
+    <updated>2019-03-12T01:20:52.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1&gt;关于 NFC&lt;/h1&gt;
+&lt;p&gt;NFC，全称是Near Field Communication，中译为近场通信，也叫做近距离无线通信技术。2004 年，飞利浦、索尼和诺基亚创建了 NFC 论坛来推动推动 NFC 的发展普及和规范化。NFC 的工作频率为 13.56MHz，有效距离为 4cm 左右，目前所支持的数据传输速率有 106Kbps、212Kbps 和 424Kbps 三种。&lt;/p&gt;
+&lt;p&gt;NFC Forum 至今共推出了一系列的技术规范（下图为技术规范架构图）：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Android" scheme="http://stevenocean.github.io/categories/Android/"/>
+    
+    <category term="NFC" scheme="http://stevenocean.github.io/categories/Android/NFC/"/>
+    
+    
+    <category term="Android" scheme="http://stevenocean.github.io/tags/Android/"/>
+    
+    <category term="NFC" scheme="http://stevenocean.github.io/tags/NFC/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>通过 Android keystore 和 fingerprint 结合实现数据加密和解密</title>
+    <link href="http://stevenocean.github.io/2019/02/24/android-keystore-fingerprint-unpasswd.html"/>
+    <id>http://stevenocean.github.io/2019/02/24/android-keystore-fingerprint-unpasswd.html</id>
+    <published>2019-02-24T12:20:20.000Z</published>
+    <updated>2019-02-27T03:23:02.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;本文目标是通过结合 Android Keystore 和 Fingerprint 来安全的对数据进行加密，并且能够通过指纹身份验证之后对数据进行解密。&lt;/p&gt;
+&lt;h1&gt;了解 Keystore&lt;/h1&gt;
+&lt;p&gt;Android Keystore 系统可以在一个安全的容器中（如：借助于系统芯片中提供的可信执行环境 TEE）存储加密密钥，在我们的加密密钥进入 Keystore 之后，可以在不用导出密钥的前提下完成加密操作，Keystore 支持的操作有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;生成密钥&lt;/li&gt;
+&lt;li&gt;导入和导出非对称密钥&lt;/li&gt;
+&lt;li&gt;导入原始对称密钥&lt;/li&gt;
+&lt;li&gt;使用适当的填充模式（padding modes）进行非对称加密和解密&lt;/li&gt;
+&lt;li&gt;使用摘要和适当的填充模式（padding modes）进行非对称签名和验证&lt;/li&gt;
+&lt;li&gt;以适当模式（包括 AEAD 模式）进行对称加密和解密&lt;/li&gt;
+&lt;li&gt;生成和验证对称消息验证码(Message Authentication Codes, MAC)&lt;/li&gt;
+&lt;/ul&gt;</summary>
+    
+    
+    
+    <category term="Algorithm" scheme="http://stevenocean.github.io/categories/Algorithm/"/>
+    
+    <category term="Crypto" scheme="http://stevenocean.github.io/categories/Algorithm/Crypto/"/>
+    
+    
+    <category term="Android" scheme="http://stevenocean.github.io/tags/Android/"/>
+    
+    <category term="Keystore" scheme="http://stevenocean.github.io/tags/Keystore/"/>
+    
+    <category term="Fingerprint" scheme="http://stevenocean.github.io/tags/Fingerprint/"/>
+    
+    <category term="指纹" scheme="http://stevenocean.github.io/tags/%E6%8C%87%E7%BA%B9/"/>
+    
+    <category term="免密" scheme="http://stevenocean.github.io/tags/%E5%85%8D%E5%AF%86/"/>
+    
+    <category term="加密" scheme="http://stevenocean.github.io/tags/%E5%8A%A0%E5%AF%86/"/>
+    
+    <category term="Crypto" scheme="http://stevenocean.github.io/tags/Crypto/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>学习 btc 钱包私钥、公钥和地址的生成过程</title>
+    <link href="http://stevenocean.github.io/2018/09/26/generate-btc-wallet-key.html"/>
+    <id>http://stevenocean.github.io/2018/09/26/generate-btc-wallet-key.html</id>
+    <published>2018-09-26T08:20:00.000Z</published>
+    <updated>2018-09-26T10:14:05.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;一个 Bitcoin 钱包包含了一系列的密钥对，每个密钥对都是由一对公钥(public key)和私钥(private key)组成。私钥(k)通常是随机选出的一串数字串，之后我们就可以通过椭圆曲线密码学(ECC)算法来产生一个公钥(K)，然后再通过单向的 Hash 算法来生成 Bitcoin 地址。&lt;/p&gt;
+&lt;p&gt;如下图所示，描述了生成过程及主要的算法，以及整个过程的每一步都是不可逆的。&lt;/p&gt;
+&lt;img src=&quot;/2018/09/26/generate-btc-wallet-key/generate-process.jpg&quot; class=&quot;&quot;&gt;
+&lt;h1&gt;如何生成私钥(private key)&lt;/h1&gt;
+&lt;p&gt;本质上私钥就是一串随机选出的 256 个 bit 的 01 数字（32 字节 * 8 = 256 bits），但是这串数字却控制着你的比特币账号的所有权，因此这串数字相当重要，要具有足够的随机性，一般采用密码学安全的&lt;strong&gt;伪随机数生成器(CSPNG)&lt;/strong&gt;，并且需要有一个来自具有足够熵值的源的种子(seed)。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Bitcoin" scheme="http://stevenocean.github.io/categories/Bitcoin/"/>
+    
+    <category term="Wallet" scheme="http://stevenocean.github.io/categories/Bitcoin/Wallet/"/>
+    
+    <category term="Crypto" scheme="http://stevenocean.github.io/categories/Bitcoin/Wallet/Crypto/"/>
+    
+    
+    <category term="加密" scheme="http://stevenocean.github.io/tags/%E5%8A%A0%E5%AF%86/"/>
+    
+    <category term="Crypto" scheme="http://stevenocean.github.io/tags/Crypto/"/>
+    
+    <category term="ECDSA" scheme="http://stevenocean.github.io/tags/ECDSA/"/>
+    
+    <category term="比特币" scheme="http://stevenocean.github.io/tags/%E6%AF%94%E7%89%B9%E5%B8%81/"/>
+    
+    <category term="bitcoin" scheme="http://stevenocean.github.io/tags/bitcoin/"/>
+    
+    <category term="椭圆曲线" scheme="http://stevenocean.github.io/tags/%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于 BIP-32 和 BIP-39 规范生成 HD 钱包（分层确定性钱包）</title>
+    <link href="http://stevenocean.github.io/2018/09/23/generate-hd-wallet-by-bip39.html"/>
+    <id>http://stevenocean.github.io/2018/09/23/generate-hd-wallet-by-bip39.html</id>
+    <published>2018-09-23T08:20:00.000Z</published>
+    <updated>2018-09-30T09:24:54.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1&gt;关于 Bitcoin 的钱包&lt;/h1&gt;
+&lt;p&gt;在 Bitcoin 中有两种主要类型的钱包，分别为：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;非确定性钱包（Nodeterministic Wallet）&lt;/strong&gt;：该钱包中的每个密钥都是从不同的随机数独立生成的，密钥彼此之间没有任何关系，这种钱包也被称为 JBOK 钱包（Just a Bunch Of Keys）；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;确定性钱包（Deterministic Wallet）&lt;/strong&gt;：其中所有的密钥都是从一个主密钥派生出来的，这个主密钥就是种子（seed），在该类型的钱包中，所有的密钥之间都是相互关联的，如果有原始种子，就可以再次生成全部的密钥；在确定性钱包中，可以使用不同的密钥推导方式。目前最常用的推导方法是 树状结构，也称为 &lt;strong&gt;分层确定性钱包&lt;/strong&gt; 或 &lt;strong&gt;HD 钱包&lt;/strong&gt;；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我们文章的目的就是生成 &lt;strong&gt;HD 钱包&lt;/strong&gt;，&lt;strong&gt;HD 钱包&lt;/strong&gt; 可以允许用户在不安全的服务器上使用，或者在每笔交易中使用不同的公钥。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Bitcoin" scheme="http://stevenocean.github.io/categories/Bitcoin/"/>
+    
+    <category term="Wallet" scheme="http://stevenocean.github.io/categories/Bitcoin/Wallet/"/>
+    
+    
+    <category term="BIP39" scheme="http://stevenocean.github.io/tags/BIP39/"/>
+    
+    <category term="BIP32" scheme="http://stevenocean.github.io/tags/BIP32/"/>
+    
+    <category term="助记词" scheme="http://stevenocean.github.io/tags/%E5%8A%A9%E8%AE%B0%E8%AF%8D/"/>
+    
+    <category term="HD Wallet" scheme="http://stevenocean.github.io/tags/HD-Wallet/"/>
+    
+    <category term="确定性钱包" scheme="http://stevenocean.github.io/tags/%E7%A1%AE%E5%AE%9A%E6%80%A7%E9%92%B1%E5%8C%85/"/>
+    
+    <category term="Bitcoin" scheme="http://stevenocean.github.io/tags/Bitcoin/"/>
+    
+    <category term="比特币" scheme="http://stevenocean.github.io/tags/%E6%AF%94%E7%89%B9%E5%B8%81/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用以太坊的公钥和私钥对数据加解密</title>
+    <link href="http://stevenocean.github.io/2018/08/09/encrypt-and-decrypt-file-with-eth-key.html"/>
+    <id>http://stevenocean.github.io/2018/08/09/encrypt-and-decrypt-file-with-eth-key.html</id>
+    <published>2018-08-09T08:20:00.000Z</published>
+    <updated>2018-08-29T08:42:09.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1&gt;概述&lt;/h1&gt;
+&lt;p&gt;本篇主要尝试了采用 Ethereum 生成的私钥和公钥来对数据进行加解密。在进入示例之前先简单了解一下 Ethereum 私钥和公钥的生成过程。&lt;/p&gt;
+&lt;h1&gt;密钥对的生成&lt;/h1&gt;
+&lt;p&gt;其实无论是 Ethereum 还是 Bitcoin，他们的私钥本质上就是一个 256 个二进制位的随机数字（2^256 ~ 10^77，目前可见宇宙中估计只含有 10^80 个原子），譬如：你可以自己选择 256 个 0 作为自己的私钥，但是这明显是不安全的，而要选择足够安全的随机数，也就是要找到足够安全的熵源，即：随机性来源，最好选择密码学安全的伪随机数生成器（CSPRNG）。下面我们看下 Ethereum(go-ethereum) 的源码中如何生成公私钥对的：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Algorithm" scheme="http://stevenocean.github.io/categories/Algorithm/"/>
+    
+    <category term="Crypto" scheme="http://stevenocean.github.io/categories/Algorithm/Crypto/"/>
+    
+    
+    <category term="Ethereum" scheme="http://stevenocean.github.io/tags/Ethereum/"/>
+    
+    <category term="以太坊" scheme="http://stevenocean.github.io/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="Crypto" scheme="http://stevenocean.github.io/tags/Crypto/"/>
+    
+    <category term="ECDSA" scheme="http://stevenocean.github.io/tags/ECDSA/"/>
+    
+    <category term="ECC" scheme="http://stevenocean.github.io/tags/ECC/"/>
+    
+    <category term="BouncyCastle" scheme="http://stevenocean.github.io/tags/BouncyCastle/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用 web3.py 实现 ERC20 Token 空投</title>
+    <link href="http://stevenocean.github.io/2018/07/08/token-airdrop-with-web3py.html"/>
+    <id>http://stevenocean.github.io/2018/07/08/token-airdrop-with-web3py.html</id>
+    <published>2018-07-08T06:58:00.000Z</published>
+    <updated>2018-07-08T15:10:36.000Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;
+&lt;p&gt;随着一些交易所搞的上币排名的活动开展，也带来了空投的火爆，当然也给以太坊整个网络带来了很大的考验（极其拥堵、交易费水涨船高），本篇文章还是从技术上来看看实现空投的一种通用方案。&lt;/p&gt;
+&lt;p&gt;关于空投的实现需要提前了解一下 ERC20 标准中的下面几个函数：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;approve(_spender, value)&lt;/strong&gt;：该函数表示允许 _spender 多次取回调用此函数的的账户中的 token，最高为 value 个 token，后面再次调用此函数会覆盖之前设置的余额；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;allowance(_owner, _spender)&lt;/strong&gt;：返回 _spender 仍然可以从 _owner 中提取的 token 余额；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;transferFrom(_from, _to, _value)&lt;/strong&gt;: 该方法主要用于允许 contract 来自动执行转账流程，并代表所有者发送 _value 个 token；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;ERC20 标准的基础知识，可以看下这篇 &lt;strong&gt;&lt;a href=&quot;https://medium.com/@jgm.orinoco/understanding-erc-20-token-contracts-a809a7310aa5&quot;&gt;Understanding ERC-20 token contracts&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;实现和部署自己的符合 ERC20 Token 标准的文章，可以参考 &lt;strong&gt;&lt;a href=&quot;https://stevenocean.github.io/2018/04/06/web3j-ethereum-token.html&quot;&gt;使用 Web3J 发个以太坊 ERC20 Token&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;实现流程&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#实现流程&quot;&gt;&lt;/a&gt;实现流程&lt;/h2&gt;
+&lt;img src=&quot;/2018/07/08/token-airdrop-with-web3py/token-airdrop-with-web3py-1.png&quot; class=&quot;&quot;&gt;</summary>
+    
+    
+    
+    <category term="Smart Contract(智能合约)" scheme="http://stevenocean.github.io/categories/Smart-Contract-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6/"/>
+    
+    
+    <category term="Ethereum" scheme="http://stevenocean.github.io/tags/Ethereum/"/>
+    
+    <category term="以太坊" scheme="http://stevenocean.github.io/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="区块链" scheme="http://stevenocean.github.io/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
+    
+    <category term="blockchain" scheme="http://stevenocean.github.io/tags/blockchain/"/>
+    
+    <category term="合约账户" scheme="http://stevenocean.github.io/tags/%E5%90%88%E7%BA%A6%E8%B4%A6%E6%88%B7/"/>
+    
+    <category term="Contract" scheme="http://stevenocean.github.io/tags/Contract/"/>
+    
+    <category term="airdrop" scheme="http://stevenocean.github.io/tags/airdrop/"/>
+    
+    <category term="ERC20" scheme="http://stevenocean.github.io/tags/ERC20/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Swarm 基础</title>
+    <link href="http://stevenocean.github.io/2018/04/19/swarm-basic.html"/>
+    <id>http://stevenocean.github.io/2018/04/19/swarm-basic.html</id>
+    <published>2018-04-19T13:20:00.000Z</published>
+    <updated>2018-04-18T10:56:20.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;https://swarm-guide.readthedocs.io/en/latest/introduction.html&lt;/p&gt;
+&lt;h2 id=&quot;关于-Swarm&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#关于-Swarm&quot;&gt;&lt;/a&gt;关于</summary>
+        
+      
+    
+    
+    
+    <category term="Swarm" scheme="http://stevenocean.github.io/categories/Swarm/"/>
+    
+    
+    <category term="Ethereum" scheme="http://stevenocean.github.io/tags/Ethereum/"/>
+    
+    <category term="以太坊" scheme="http://stevenocean.github.io/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="区块链" scheme="http://stevenocean.github.io/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
+    
+    <category term="blockchain" scheme="http://stevenocean.github.io/tags/blockchain/"/>
+    
+    <category term="Swarm" scheme="http://stevenocean.github.io/tags/Swarm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于 Truffle 编写、编译、部署和调用合约</title>
+    <link href="http://stevenocean.github.io/2018/04/18/contract-with-truffle-1.html"/>
+    <id>http://stevenocean.github.io/2018/04/18/contract-with-truffle-1.html</id>
+    <published>2018-04-18T06:58:00.000Z</published>
+    <updated>2018-04-18T09:57:17.000Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;关于-Truffle&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#关于-Truffle&quot;&gt;&lt;/a&gt;关于 Truffle&lt;/h2&gt;
+&lt;p&gt;简单来说，Truffle 就是一个用于开发以太坊合约的集成框架，其支持的很多命令可以方便灵活的支持编译、测试、部署合约或者DApp。关于 Truffle 更详细的介绍，可以参考&lt;a href=&quot;http://truffleframework.com/docs/&quot;&gt;&lt;strong&gt;Truffle 官方文档&lt;/strong&gt;&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;下面从编写、编译和部署一个简单的合约来看一下 Truffle 框架的使用。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;下面以项目 &lt;strong&gt;HelloToken&lt;/strong&gt; 为例，各个步骤的操作都假设已安装了 truffle 和 geth 环境。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://truffleframework.com/docs/getting_started/installation&quot;&gt;truffle 安装参考&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;</summary>
+    
+    
+    
+    <category term="Truffle" scheme="http://stevenocean.github.io/categories/Truffle/"/>
+    
+    
+    <category term="Ethereum" scheme="http://stevenocean.github.io/tags/Ethereum/"/>
+    
+    <category term="以太坊" scheme="http://stevenocean.github.io/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="区块链" scheme="http://stevenocean.github.io/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
+    
+    <category term="blockchain" scheme="http://stevenocean.github.io/tags/blockchain/"/>
+    
+    <category term="truffle" scheme="http://stevenocean.github.io/tags/truffle/"/>
+    
+    <category term="合约账户" scheme="http://stevenocean.github.io/tags/%E5%90%88%E7%BA%A6%E8%B4%A6%E6%88%B7/"/>
+    
+    <category term="Contract" scheme="http://stevenocean.github.io/tags/Contract/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用 Web3J 发个以太坊 ERC20 Token</title>
+    <link href="http://stevenocean.github.io/2018/04/06/web3j-ethereum-token.html"/>
+    <id>http://stevenocean.github.io/2018/04/06/web3j-ethereum-token.html</id>
+    <published>2018-04-06T14:39:00.000Z</published>
+    <updated>2018-04-08T07:37:51.000Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;关于-ERC20-规范&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#关于-ERC20-规范&quot;&gt;&lt;/a&gt;关于 ERC20 规范&lt;/h2&gt;
+&lt;p&gt;ERC20 为 Ethereum 上的 Token 合约标准规范，遵守该规范的 Token 合约可以被各种以太坊钱包、以及相关的平台和项目支持，如在 etherscan 上可以查看遵守 ERC20 规范的 Token 信息和交易记录。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Ethereum(以太坊)" scheme="http://stevenocean.github.io/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="blockchain(区块链)" scheme="http://stevenocean.github.io/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/blockchain-%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
+    
+    <category term="Smart Contract(智能合约)" scheme="http://stevenocean.github.io/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/blockchain-%E5%8C%BA%E5%9D%97%E9%93%BE/Smart-Contract-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6/"/>
+    
+    
+    <category term="Ethereum" scheme="http://stevenocean.github.io/tags/Ethereum/"/>
+    
+    <category term="以太坊" scheme="http://stevenocean.github.io/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="区块链" scheme="http://stevenocean.github.io/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
+    
+    <category term="blockchain" scheme="http://stevenocean.github.io/tags/blockchain/"/>
+    
+    <category term="keystore" scheme="http://stevenocean.github.io/tags/keystore/"/>
+    
+    <category term="web3j" scheme="http://stevenocean.github.io/tags/web3j/"/>
+    
+    <category term="solidity" scheme="http://stevenocean.github.io/tags/solidity/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>以太坊账户管理之 keystore 文件(科普)</title>
+    <link href="http://stevenocean.github.io/2018/04/02/about-ethereum-keystore.html"/>
+    <id>http://stevenocean.github.io/2018/04/02/about-ethereum-keystore.html</id>
+    <published>2018-04-02T15:58:00.000Z</published>
+    <updated>2018-04-03T10:07:16.000Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;1-什么是-keystore-文件&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#1-什么是-keystore-文件&quot;&gt;&lt;/a&gt;1. 什么是 keystore 文件&lt;/h2&gt;
+&lt;p&gt;以太坊的每个外部账户都是由一对密钥（一个公钥和一个私钥）定义的。账户以地址为索引，地址由公钥衍生而来，取公钥的最后 20个字节。每对私钥 /地址都编码在一个钥匙文件里，也就是我们说的keystore文件。该文件是 JSON 文本文件，可以用任何文本编辑器打开和浏览。钥匙文件的关键部分，账户私钥，通常用你创建帐户时设置的密码进行加密。也就是说 keystore 文件，就是你独有的、用于签署交易的以太坊私钥的加密文件。如果你丢失了这个文件，你就丢失了私钥，意味着你失去了签署交易的能力，意味着你的资金被永久的锁定在了你的账户里。&lt;/p&gt;
+&lt;h2 id=&quot;2-keystore-文件的内容&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#2-keystore-文件的内容&quot;&gt;&lt;/a&gt;2. keystore 文件的内容&lt;/h2&gt;
+&lt;p&gt;我们先看一下keystore文件都包含哪些数据:&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Ethereum(以太坊)" scheme="http://stevenocean.github.io/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="blockchain(区块链)" scheme="http://stevenocean.github.io/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/blockchain-%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
+    
+    
+    <category term="Ethereum" scheme="http://stevenocean.github.io/tags/Ethereum/"/>
+    
+    <category term="以太坊" scheme="http://stevenocean.github.io/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="区块链" scheme="http://stevenocean.github.io/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
+    
+    <category term="blockchain" scheme="http://stevenocean.github.io/tags/blockchain/"/>
+    
+    <category term="keystore" scheme="http://stevenocean.github.io/tags/keystore/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>go-ethereum 源码分析 - ethdb(3)</title>
+    <link href="http://stevenocean.github.io/2018/03/31/go-ethereum-source-analysis-3.html"/>
+    <id>http://stevenocean.github.io/2018/03/31/go-ethereum-source-analysis-3.html</id>
+    <published>2018-03-31T14:58:00.000Z</published>
+    <updated>2018-04-01T10:48:48.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;go-ethereum 中的所有区块数据都存储在 &lt;strong&gt;leveldb&lt;/strong&gt; 中，并且 go-ethereum 又基于 leveldb 进行了一层简单的封装。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://zh.wikipedia.org/wiki/LevelDB&quot;&gt;&lt;strong&gt;leveldb&lt;/strong&gt;&lt;/a&gt; 是一个由 Google 开源（BSD）的 KV（Key/Value Pair）非关系型数据库，是基于 &lt;a href=&quot;http://www.benstopford.com/2015/02/14/log-structured-merge-trees/&quot;&gt;&lt;strong&gt;LSM(Log-Structured-Merge tree)&lt;/strong&gt;&lt;/a&gt; 的典型实现。&lt;/p&gt;
+&lt;p&gt;主要有如下几个&lt;a href=&quot;https://github.com/google/leveldb&quot;&gt;特性&lt;/a&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Keys 和 Values 均为任意长度的字节数组；&lt;/li&gt;
+&lt;li&gt;Data(KV) 默认以 Key 字典序排序存储，也可以提供自定义的排序算法来重载排序；&lt;/li&gt;
+&lt;li&gt;基本操作包括：Put(k,v)，Get(k)，Delete(k)；&lt;/li&gt;
+&lt;li&gt;支持原子级的批量(Batch)操作；&lt;/li&gt;
+&lt;li&gt;可以创建数据全景(transient)的 snapshot，并支持在 snapshot 中查找数据；&lt;/li&gt;
+&lt;li&gt;支持前向和后向迭代遍历数据；&lt;/li&gt;
+&lt;li&gt;数据自动采用 &lt;a href=&quot;http://google.github.io/snappy/&quot;&gt;&lt;strong&gt;Snappy&lt;/strong&gt;&lt;/a&gt; 压缩算法进行压缩；&lt;/li&gt;
+&lt;li&gt;可移植性；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;源码目录如下，主要就下面 4 个源码文件：&lt;/p&gt;
+&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;➜  ethdb :&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;├── database.go        // leveldb 的封装代码&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;├── database_test.go   // 测试用例&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;├── interface.go       // 定义了 Database 的一些操作接口&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;└── memory_database.go // 供测试环境使用的基于内存的数据库&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
+    
+    
+    
+    <category term="Ethereum(以太坊)" scheme="http://stevenocean.github.io/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="blockchain(区块链)" scheme="http://stevenocean.github.io/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/blockchain-%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
+    
+    
+    <category term="Ethereum" scheme="http://stevenocean.github.io/tags/Ethereum/"/>
+    
+    <category term="以太坊" scheme="http://stevenocean.github.io/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="区块链" scheme="http://stevenocean.github.io/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
+    
+    <category term="blockchain" scheme="http://stevenocean.github.io/tags/blockchain/"/>
+    
+    <category term="LevelDB" scheme="http://stevenocean.github.io/tags/LevelDB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>以太坊中的各种术语解释(持续更新)</title>
+    <link href="http://stevenocean.github.io/2018/03/19/ethereum-terms.html"/>
+    <id>http://stevenocean.github.io/2018/03/19/ethereum-terms.html</id>
+    <published>2018-03-19T06:58:00.000Z</published>
+    <updated>2018-04-17T02:31:30.000Z</updated>
+    
+    
+    <summary type="html">&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;EVM&lt;/strong&gt;：Ethereum Virtual Machine，以太坊虚拟机，这是一个隔离的轻量级的VM，运行在其中的智能合约代码无法访问本地网络、文件系统和其他进程；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;EOA&lt;/strong&gt;: External Owned Accounts，以太坊&lt;strong&gt;外部账号&lt;/strong&gt;，通过与其关联的私钥（private key）来发送 ether 和 消息；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Contracts Accounts&lt;/strong&gt;：&lt;strong&gt;合约账户&lt;/strong&gt;，存储可在 &lt;strong&gt;EVM&lt;/strong&gt; 中执行的&lt;strong&gt;智能合约&lt;/strong&gt;代码，只能被 &lt;strong&gt;EOA&lt;/strong&gt; 来调用激活，当&lt;strong&gt;合约账户&lt;/strong&gt;被调用时，存储其中的&lt;strong&gt;智能合约&lt;/strong&gt;会在矿工处的&lt;strong&gt;EVM&lt;/strong&gt;中自动执行，并消耗一定的 &lt;strong&gt;Gas&lt;/strong&gt;，&lt;strong&gt;Gas&lt;/strong&gt; 通过 &lt;strong&gt;EOA&lt;/strong&gt; 中的以太币进行购买；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Transaction&lt;/strong&gt;: 以太坊中的&lt;strong&gt;交易&lt;/strong&gt;是指从 &lt;strong&gt;EOA&lt;/strong&gt; 发送给另一个账户的消息的签过名的数据包，一笔交易主要包括：接收方、发送方、gasLimit、gasPrice、Value(交易金额)等等；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Message&lt;/strong&gt;：&lt;strong&gt;消息&lt;/strong&gt;是一个不能序列化的，并且只存在于以太坊运行环境中的虚拟对象，一条消息主要包括：消息的发送方、接收方、gasLimit等等；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Smart Contract&lt;/strong&gt;: &lt;strong&gt;智能合约&lt;/strong&gt;，是以太坊中最重要的一个概念，以太坊支持通过图灵完备的高级语言，如：Solidity、Serpent等来开发智能合约，其可以接受来自外部的交易请求和事件来触发合约代码逻辑，进一步生成新的交易和事件，甚至进一步调用其他的智能合约；&lt;a href=&quot;https://en.wikipedia.org/wiki/Smart_contract&quot;&gt;Smart Contract Wiki&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</summary>
+    
+    
+    
+    <category term="Ethereum(以太坊)" scheme="http://stevenocean.github.io/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="blockchain(区块链)" scheme="http://stevenocean.github.io/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/blockchain-%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
+    
+    
+    <category term="Ethereum" scheme="http://stevenocean.github.io/tags/Ethereum/"/>
+    
+    <category term="以太坊" scheme="http://stevenocean.github.io/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="区块链" scheme="http://stevenocean.github.io/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
+    
+    <category term="blockchain" scheme="http://stevenocean.github.io/tags/blockchain/"/>
+    
+    <category term="合约账户" scheme="http://stevenocean.github.io/tags/%E5%90%88%E7%BA%A6%E8%B4%A6%E6%88%B7/"/>
+    
+    <category term="账户" scheme="http://stevenocean.github.io/tags/%E8%B4%A6%E6%88%B7/"/>
+    
+    <category term="Account" scheme="http://stevenocean.github.io/tags/Account/"/>
+    
+    <category term="Constract Account" scheme="http://stevenocean.github.io/tags/Constract-Account/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>go-ethereum 源码分析 - 区块结构(1)</title>
+    <link href="http://stevenocean.github.io/2018/03/17/go-ethereum-source-analysize-1.html"/>
+    <id>http://stevenocean.github.io/2018/03/17/go-ethereum-source-analysize-1.html</id>
+    <published>2018-03-17T15:58:00.000Z</published>
+    <updated>2018-04-15T08:39:55.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;今天抽时间浏览了 Ethereum 的区块结构的相关源码，更加深入地了解区块的数据结构。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;分析的主要是 go-ethereum 项目的源码。版本取的是 Frost(v1.8.2)。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;1-以太坊的基本结构&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#1-以太坊的基本结构&quot;&gt;&lt;/a&gt;1. 以太坊的基本结构&lt;/h2&gt;
+&lt;p&gt;先大致了解了以太坊的基本结构，如下图（来自网络）:&lt;/p&gt;
+&lt;img src=&quot;/2018/03/17/go-ethereum-source-analysize-1/ethereum-overall-arch-1.jpg&quot; class=&quot;&quot;&gt;
+&lt;p&gt;其中除了区块链管理（Blockchain Management）和挖矿模块（Miner）之外还包含了：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;基础的分布式数据库结构（Swarm）；&lt;/li&gt;
+&lt;li&gt;智能合约（Solidity、Serpent、LLL等），及执行环境 EVM；&lt;/li&gt;
+&lt;li&gt;共识机制（PoW-Ethash，PoS）；&lt;/li&gt;
+&lt;li&gt;账户管理；&lt;/li&gt;
+&lt;li&gt;加密算法模块（SHA-3、RLP等）；&lt;/li&gt;
+&lt;li&gt;P2P 网络（Whisper）；&lt;/li&gt;
+&lt;li&gt;应用模块（DApp、浏览器钱包-Mist、桌面钱包-EtherWallet、JS框架-Web3js）；&lt;/li&gt;
+&lt;/ul&gt;</summary>
+    
+    
+    
+    <category term="Ethereum(以太坊)" scheme="http://stevenocean.github.io/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="blockchain(区块链)" scheme="http://stevenocean.github.io/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/blockchain-%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
+    
+    
+    <category term="Ethereum" scheme="http://stevenocean.github.io/tags/Ethereum/"/>
+    
+    <category term="以太坊" scheme="http://stevenocean.github.io/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/"/>
+    
+    <category term="区块链" scheme="http://stevenocean.github.io/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
+    
+    <category term="blockchain" scheme="http://stevenocean.github.io/tags/blockchain/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Swift中使用reduce函数的一个小示例</title>
+    <link href="http://stevenocean.github.io/2018/03/16/swift-reduce-example.html"/>
+    <id>http://stevenocean.github.io/2018/03/16/swift-reduce-example.html</id>
+    <published>2018-03-16T14:12:00.000Z</published>
+    <updated>2018-03-17T08:56:27.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;今天看到一篇通过一个比较有意思的示例来讲解 reduce 函数使用的文章 &lt;a href=&quot;http://appventure.me/2015/11/30/reduce-all-the-things/&quot;&gt;reduce all the things&lt;/a&gt;，自己也依葫芦画瓢的在 Swift 4.0 下实现了一遍 :)&lt;/p&gt;
+&lt;p&gt;示例大致是这样的:&lt;/p&gt;
+&lt;p&gt;如下为美国各个城市的 persons 列表，其中每个 person 的结构包括姓名、所属城市（其中城市名字符串的逗号之后为州名，如 CA 为加利福尼亚州）、平均年龄。请使用 map/flatmap/filter/reduce 等函数来封装一个查询指定州的总人数和平均年龄，其中函数输入参数为州名，persons 列表。&lt;/p&gt;
+&lt;figure class=&quot;highlight swift&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; persons: [[&lt;span class=&quot;type&quot;&gt;String&lt;/span&gt;: &lt;span class=&quot;keyword&quot;&gt;Any&lt;/span&gt;]] &lt;span class=&quot;operator&quot;&gt;=&lt;/span&gt; [&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Carl Saxon&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;New York, NY&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;44&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Travis Downing&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;El Segundo, CA&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;34&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Liz Parker&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;San Francisco, CA&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;32&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;John Newden&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;New Jersey, NY&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;21&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Hector Simons&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;San Diego, CA&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;37&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Hector Simons&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Douglas County, CO&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;39&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Brian Neo&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;27&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这个示例如果是用 map/flatmap/filter 等函数组合起来也是可以实现的，只是比较啰嗦不够优雅，而且在这个 &lt;strong&gt;persons&lt;/strong&gt; 量级上升后，性能也会不那么乐观（主要涉及到对整个 &lt;strong&gt;persons&lt;/strong&gt; 的遍历次数，使用 &lt;strong&gt;reduce&lt;/strong&gt; 只需要对 &lt;strong&gt;persons&lt;/strong&gt; 遍历一次，具体可以参考那篇文章）。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Swift" scheme="http://stevenocean.github.io/categories/Swift/"/>
+    
+    
+    <category term="Swift" scheme="http://stevenocean.github.io/tags/Swift/"/>
+    
+    <category term="reduce" scheme="http://stevenocean.github.io/tags/reduce/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>firewall-cmd 常用命令使用</title>
+    <link href="http://stevenocean.github.io/2018/03/15/firewall-cmd-common-use.html"/>
+    <id>http://stevenocean.github.io/2018/03/15/firewall-cmd-common-use.html</id>
+    <published>2018-03-15T10:33:00.000Z</published>
+    <updated>2018-03-16T03:45:48.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;简要记录一下 firewall-cmd 常用命令的使用。&lt;/p&gt;
+&lt;h3 id=&quot;启用端口&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#启用端口&quot;&gt;&lt;/a&gt;启用端口&lt;/h3&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd [--zone=&amp;lt;zone&amp;gt;] --add-port=&amp;lt;port&amp;gt;[-&amp;lt;port&amp;gt;]/&amp;lt;protocol&amp;gt; [--timeout=&amp;lt;seconds&amp;gt;]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;如下示例为添加 tcp 18080 端口:&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd --add-port=18080/tcp&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;禁用端口&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#禁用端口&quot;&gt;&lt;/a&gt;禁用端口&lt;/h3&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd [--zone=&amp;lt;zone&amp;gt;] --remove-port=&amp;lt;port&amp;gt;[-&amp;lt;port&amp;gt;]/&amp;lt;protocol&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;如下示例为禁用指定的 tcp 18080 端口:&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd --remove-port=18080/tcp&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;启用服务&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#启用服务&quot;&gt;&lt;/a&gt;启用服务&lt;/h3&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd [--zone=&amp;lt;zone&amp;gt;] --add-service=&amp;lt;service&amp;gt; [--timeout=&amp;lt;seconds&amp;gt;]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;如下为启用 http 服务:&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd --add-service=http&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
+    
+    
+    
+    <category term="Linux" scheme="http://stevenocean.github.io/categories/Linux/"/>
+    
+    
+    <category term="firewall" scheme="http://stevenocean.github.io/tags/firewall/"/>
+    
+    <category term="firewall-cmd" scheme="http://stevenocean.github.io/tags/firewall-cmd/"/>
+    
+  </entry>
+  
+</feed>

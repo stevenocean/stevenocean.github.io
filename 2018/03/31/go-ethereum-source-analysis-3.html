@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"stevenocean.github.io","root":"/","scheme":"Mist","version":"7.8.0","sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"appID":"PJYZ7OZEJB","apiKey":"78ff9194440a75eba3a1be76689c2b0c","indexName":"steven-blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="go-ethereum 中的所有区块数据都存储在 leveldb 中，并且 go-ethereum 又基于 leveldb 进行了一层简单的封装。  leveldb 是一个由 Google 开源（BSD）的 KV（Key&#x2F;Value Pair）非关系型数据库，是基于 LSM(Log-Structured-Merge tree) 的典型实现。 主要有如下几个特性：  Keys 和 Values 均为">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go-ethereum 源码分析 - ethdb(3)">
+<meta property="og:url" content="http://stevenocean.github.io/2018/03/31/go-ethereum-source-analysis-3.html">
+<meta property="og:site_name" content="未来边缘">
+<meta property="og:description" content="go-ethereum 中的所有区块数据都存储在 leveldb 中，并且 go-ethereum 又基于 leveldb 进行了一层简单的封装。  leveldb 是一个由 Google 开源（BSD）的 KV（Key&#x2F;Value Pair）非关系型数据库，是基于 LSM(Log-Structured-Merge tree) 的典型实现。 主要有如下几个特性：  Keys 和 Values 均为">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-03-31T14:58:00.000Z">
+<meta property="article:modified_time" content="2018-04-01T10:48:48.000Z">
+<meta property="article:author" content="Steven">
+<meta property="article:tag" content="Ethereum">
+<meta property="article:tag" content="以太坊">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="blockchain">
+<meta property="article:tag" content="LevelDB">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://stevenocean.github.io/2018/03/31/go-ethereum-source-analysis-3.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>go-ethereum 源码分析 - ethdb(3) | 未来边缘</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="未来边缘" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">未来边缘</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://stevenocean.github.io/2018/03/31/go-ethereum-source-analysis-3.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Steven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来边缘">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          go-ethereum 源码分析 - ethdb(3)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-03-31 22:58:00" itemprop="dateCreated datePublished" datetime="2018-03-31T22:58:00+08:00">2018-03-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-04-01 18:48:48" itemprop="dateModified" datetime="2018-04-01T18:48:48+08:00">2018-04-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/" itemprop="url" rel="index"><span itemprop="name">Ethereum(以太坊)</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/blockchain-%E5%8C%BA%E5%9D%97%E9%93%BE/" itemprop="url" rel="index"><span itemprop="name">blockchain(区块链)</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>go-ethereum 中的所有区块数据都存储在 <strong>leveldb</strong> 中，并且 go-ethereum 又基于 leveldb 进行了一层简单的封装。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/LevelDB"><strong>leveldb</strong></a> 是一个由 Google 开源（BSD）的 KV（Key/Value Pair）非关系型数据库，是基于 <a target="_blank" rel="noopener" href="http://www.benstopford.com/2015/02/14/log-structured-merge-trees/"><strong>LSM(Log-Structured-Merge tree)</strong></a> 的典型实现。</p>
+<p>主要有如下几个<a target="_blank" rel="noopener" href="https://github.com/google/leveldb">特性</a>：</p>
+<ul>
+<li>Keys 和 Values 均为任意长度的字节数组；</li>
+<li>Data(KV) 默认以 Key 字典序排序存储，也可以提供自定义的排序算法来重载排序；</li>
+<li>基本操作包括：Put(k,v)，Get(k)，Delete(k)；</li>
+<li>支持原子级的批量(Batch)操作；</li>
+<li>可以创建数据全景(transient)的 snapshot，并支持在 snapshot 中查找数据；</li>
+<li>支持前向和后向迭代遍历数据；</li>
+<li>数据自动采用 <a target="_blank" rel="noopener" href="http://google.github.io/snappy/"><strong>Snappy</strong></a> 压缩算法进行压缩；</li>
+<li>可移植性；</li>
+</ul>
+</blockquote>
+<p>源码目录如下，主要就下面 4 个源码文件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  ethdb :</span><br><span class="line">.</span><br><span class="line">├── database.go        // leveldb 的封装代码</span><br><span class="line">├── database_test.go   // 测试用例</span><br><span class="line">├── interface.go       // 定义了 Database 的一些操作接口</span><br><span class="line">└── memory_database.go // 供测试环境使用的基于内存的数据库</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>我们主要分析下 <strong>database.go</strong> 和 <strong>interface.go</strong> 两个源码文件。</p>
+<h2 id="database-go"><a class="header-anchor" href="#database-go"></a>database.go</h2>
+<p>这里主要封装了 leveldb 的接口，从如下 import 可以看出主要使用了 <a target="_blank" rel="noopener" href="https://github.com/syndtr/goleveldb/"><strong>goleveldb</strong></a> 的封装。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">  <span class="string">&quot;strconv&quot;</span></span><br><span class="line">  <span class="string">&quot;strings&quot;</span></span><br><span class="line">  <span class="string">&quot;sync&quot;</span></span><br><span class="line">  <span class="string">&quot;time&quot;</span></span><br><span class="line"></span><br><span class="line">  <span class="string">&quot;github.com/ethereum/go-ethereum/log&quot;</span></span><br><span class="line">  <span class="string">&quot;github.com/ethereum/go-ethereum/metrics&quot;</span></span><br><span class="line">  <span class="string">&quot;github.com/syndtr/goleveldb/leveldb&quot;</span></span><br><span class="line">  <span class="string">&quot;github.com/syndtr/goleveldb/leveldb/errors&quot;</span></span><br><span class="line">  <span class="string">&quot;github.com/syndtr/goleveldb/leveldb/filter&quot;</span></span><br><span class="line">  <span class="string">&quot;github.com/syndtr/goleveldb/leveldb/iterator&quot;</span></span><br><span class="line">  <span class="string">&quot;github.com/syndtr/goleveldb/leveldb/opt&quot;</span></span><br><span class="line">  <span class="string">&quot;github.com/syndtr/goleveldb/leveldb/util&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>下面看下在 goleveldb 基础上进一步封装的 <strong>LDBDatabase</strong> 结构，如下，主要增加了很多维度的 Metrics 用于统计使用情况（几个 metrics 的注释很清晰）：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> LDBDatabase <span class="keyword">struct</span> &#123;</span><br><span class="line">  fn <span class="keyword">string</span>      <span class="comment">// filename for reporting</span></span><br><span class="line">  db *leveldb.DB <span class="comment">// LevelDB instance</span></span><br><span class="line"></span><br><span class="line">  compTimeMeter  metrics.Meter <span class="comment">// Meter for measuring the total time spent in database compaction</span></span><br><span class="line">  compReadMeter  metrics.Meter <span class="comment">// Meter for measuring the data read during compaction</span></span><br><span class="line">  compWriteMeter metrics.Meter <span class="comment">// Meter for measuring the data written during compaction</span></span><br><span class="line">  diskReadMeter  metrics.Meter <span class="comment">// Meter for measuring the effective amount of data read</span></span><br><span class="line">  diskWriteMeter metrics.Meter <span class="comment">// Meter for measuring the effective amount of data written</span></span><br><span class="line"></span><br><span class="line">  quitLock sync.Mutex      <span class="comment">// Mutex protecting the quit channel access</span></span><br><span class="line">  quitChan <span class="keyword">chan</span> <span class="keyword">chan</span> error <span class="comment">// Quit channel to stop the metrics collection before closing the database</span></span><br><span class="line"></span><br><span class="line">  log log.Logger <span class="comment">// Contextual logger tracking the database path</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过 NewLDBDatabase 方法来打开（或创建）并返回封装后的 LDBDatabase 实例，如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// NewLDBDatabase returns a LevelDB wrapped object.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewLDBDatabase</span><span class="params">(file <span class="keyword">string</span>, cache <span class="keyword">int</span>, handles <span class="keyword">int</span>)</span> <span class="params">(*LDBDatabase, error)</span></span> &#123;</span><br><span class="line">  <span class="comment">// 跟踪对应 leveldb 文件的 logger</span></span><br><span class="line">  logger := log.New(<span class="string">&quot;database&quot;</span>, file)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Ensure we have some minimal caching and file guarantees</span></span><br><span class="line">  <span class="keyword">if</span> cache &lt; <span class="number">16</span> &#123;</span><br><span class="line">    cache = <span class="number">16</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> handles &lt; <span class="number">16</span> &#123;</span><br><span class="line">    handles = <span class="number">16</span></span><br><span class="line">  &#125;</span><br><span class="line">  logger.Info(<span class="string">&quot;Allocated cache and file handles&quot;</span>, <span class="string">&quot;cache&quot;</span>, cache, <span class="string">&quot;handles&quot;</span>, handles)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 打开 leveldb 文件，并恢复潜在的冲突</span></span><br><span class="line">  db, err := leveldb.OpenFile(file, &amp;opt.Options&#123;</span><br><span class="line">    OpenFilesCacheCapacity: handles,</span><br><span class="line">    BlockCacheCapacity:     cache / <span class="number">2</span> * opt.MiB,</span><br><span class="line">    WriteBuffer:            cache / <span class="number">4</span> * opt.MiB, <span class="comment">// Two of these are used internally</span></span><br><span class="line">    Filter:                 filter.NewBloomFilter(<span class="number">10</span>),</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="keyword">if</span> _, corrupted := err.(*errors.ErrCorrupted); corrupted &#123;</span><br><span class="line">    <span class="comment">// 如果有冲突，则需要修复文件</span></span><br><span class="line">    db, err = leveldb.RecoverFile(file, <span class="literal">nil</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// (Re)check for errors and abort if opening of the db failed</span></span><br><span class="line">  <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 返回 LDBDatabase 实例</span></span><br><span class="line">  <span class="keyword">return</span> &amp;LDBDatabase&#123;</span><br><span class="line">    fn:  file,</span><br><span class="line">    db:  db,</span><br><span class="line">    log: logger,</span><br><span class="line">  &#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此外，提供了一些基本操作方法，如 Put，Path，Get，Delete 等等用于操作 leveldb，这些基本操作都是直接调用 leveldb 的封装，如下为 Put 操作：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Put puts the given key / value to the queue</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(db *LDBDatabase)</span> <span class="title">Put</span><span class="params">(key []<span class="keyword">byte</span>, value []<span class="keyword">byte</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">  <span class="comment">// Generate the data to write to disk, update the meter and write</span></span><br><span class="line">  <span class="comment">//value = rle.Compress(value)</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> db.db.Put(key, value, <span class="literal">nil</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="创建本地-blockchain-数据库"><a class="header-anchor" href="#创建本地-blockchain-数据库"></a>创建本地 blockchain 数据库</h3>
+<p>下面看何时以及如何创建本地区块链DB：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// source: eth/backend.go</span></span><br><span class="line"><span class="comment">// </span></span><br><span class="line"><span class="comment">// New creates a new Ethereum object (including the</span></span><br><span class="line"><span class="comment">// initialisation of the common Ethereum object)</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">(ctx *node.ServiceContext, config *Config)</span> <span class="params">(*Ethereum, error)</span></span> &#123;</span><br><span class="line">  <span class="keyword">if</span> config.SyncMode == downloader.LightSync &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, errors.New(<span class="string">&quot;can&#x27;t run eth.Ethereum in light sync mode, use les.LightEthereum&quot;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> !config.SyncMode.IsValid() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">&quot;invalid sync mode %d&quot;</span>, config.SyncMode)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 创建本地 blockchain 数据库</span></span><br><span class="line">  <span class="comment">// 返回的 chainDb</span></span><br><span class="line">  chainDb, err := CreateDB(ctx, config, <span class="string">&quot;chaindata&quot;</span>)</span><br><span class="line">  <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">  &#125;</span><br><span class="line">  stopDbUpgrade := upgradeDeduplicateData(chainDb)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 设置创世区块，并写入 chainDb 中</span></span><br><span class="line">  chainConfig, genesisHash, genesisErr := core.SetupGenesisBlock(chainDb, config.Genesis)</span><br><span class="line">  <span class="keyword">if</span> _, ok := genesisErr.(*params.ConfigCompatError); genesisErr != <span class="literal">nil</span> &amp;&amp; !ok &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, genesisErr</span><br><span class="line">  &#125;</span><br><span class="line">  log.Info(<span class="string">&quot;Initialised chain configuration&quot;</span>, <span class="string">&quot;config&quot;</span>, chainConfig)</span><br><span class="line"></span><br><span class="line">  eth := &amp;Ethereum&#123;</span><br><span class="line">    config:         config,</span><br><span class="line">    chainDb:        chainDb,</span><br><span class="line">    chainConfig:    chainConfig,</span><br><span class="line">    eventMux:       ctx.EventMux,</span><br><span class="line">    accountManager: ctx.AccountManager,</span><br><span class="line">    engine:         CreateConsensusEngine(ctx, &amp;config.Ethash, chainConfig, chainDb),</span><br><span class="line">    shutdownChan:   <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">bool</span>),</span><br><span class="line">    stopDbUpgrade:  stopDbUpgrade,</span><br><span class="line">    networkId:      config.NetworkId,</span><br><span class="line">    gasPrice:       config.GasPrice,</span><br><span class="line">    etherbase:      config.Etherbase,</span><br><span class="line">    bloomRequests:  <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">chan</span> *bloombits.Retrieval),</span><br><span class="line">    bloomIndexer:   NewBloomIndexer(chainDb, params.BloomBitsBlocks),</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到在创建和初始化 Ethereum 对象的时候会同时通过调用 <strong>CreateDB</strong> 方法来创建本地区块链数据库，并将 ethdb.LDBDatabase 实例 <strong>chainDb</strong> 作为 eth 实例的成员，在后续区块数据写入本地库时，都是通过该 chainDb 实例来操作写入的，如下代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// source: eth/backend.go</span></span><br><span class="line"><span class="comment">// </span></span><br><span class="line"><span class="comment">// CreateDB creates the chain database.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">CreateDB</span><span class="params">(ctx *node.ServiceContext, config *Config, name <span class="keyword">string</span>)</span> <span class="params">(ethdb.Database, error)</span></span> &#123;</span><br><span class="line">  <span class="comment">// 打开 name 数据库</span></span><br><span class="line">  db, err := ctx.OpenDatabase(name, config.DatabaseCache, config.DatabaseHandles)</span><br><span class="line">  <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> db, ok := db.(*ethdb.LDBDatabase); ok &#123;</span><br><span class="line">    db.Meter(<span class="string">&quot;eth/db/chaindata/&quot;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> db, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里打开 “chaindata” 数据库，并且启动 Metric（见下面），在 ctx.OpenDatabase 中创建 LDBDatabase，如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// source: node/node.go</span></span><br><span class="line"><span class="comment">// </span></span><br><span class="line"><span class="comment">// OpenDatabase opens an existing database with the given name (or creates one if no</span></span><br><span class="line"><span class="comment">// previous can be found) from within the node&#x27;s instance directory. If the node is</span></span><br><span class="line"><span class="comment">// ephemeral, a memory database is returned.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *Node)</span> <span class="title">OpenDatabase</span><span class="params">(name <span class="keyword">string</span>, cache, handles <span class="keyword">int</span>)</span> <span class="params">(ethdb.Database, error)</span></span> &#123;</span><br><span class="line">  <span class="keyword">if</span> n.config.DataDir == <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">    <span class="comment">// 没有指定 DataDir，则启动为内存数据库</span></span><br><span class="line">    <span class="keyword">return</span> ethdb.NewMemDatabase()</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> ethdb.NewLDBDatabase(n.config.resolvePath(name), cache, handles)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="将-block-写入到-leveldb"><a class="header-anchor" href="#将-block-写入到-leveldb"></a>将 block 写入到 leveldb</h3>
+<p>在 core/database_util.go 中，封装了 WriteHeader, WriteBody, WriteBlock 等方法用于将区块 header, body, block 写入 leveldb 中。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// source: core/database_util.go</span></span><br><span class="line"><span class="comment">// </span></span><br><span class="line"><span class="comment">// WriteHeader serializes a block header into the database.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WriteHeader</span><span class="params">(db ethdb.Putter, header *types.Header)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">  data, err := rlp.EncodeToBytes(header)</span><br><span class="line">  <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">  &#125;</span><br><span class="line">  hash := header.Hash().Bytes()</span><br><span class="line">  num := header.Number.Uint64()</span><br><span class="line">  encNum := encodeBlockNumber(num)</span><br><span class="line">  key := <span class="built_in">append</span>(blockHashPrefix, hash...)</span><br><span class="line">  <span class="keyword">if</span> err := db.Put(key, encNum); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    log.Crit(<span class="string">&quot;Failed to store hash to number mapping&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">  &#125;</span><br><span class="line">  key = <span class="built_in">append</span>(<span class="built_in">append</span>(headerPrefix, encNum...), hash...)</span><br><span class="line">  <span class="keyword">if</span> err := db.Put(key, data); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    log.Crit(<span class="string">&quot;Failed to store header&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// WriteBody serializes the body of a block into the database.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WriteBody</span><span class="params">(db ethdb.Putter, hash common.Hash, number <span class="keyword">uint64</span>, body *types.Body)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">  data, err := rlp.EncodeToBytes(body)</span><br><span class="line">  <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> WriteBodyRLP(db, hash, number, data)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// WriteBodyRLP writes a serialized body of a block into the database.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WriteBodyRLP</span><span class="params">(db ethdb.Putter, hash common.Hash, number <span class="keyword">uint64</span>, rlp rlp.RawValue)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">  key := <span class="built_in">append</span>(<span class="built_in">append</span>(bodyPrefix, encodeBlockNumber(number)...), hash.Bytes()...)</span><br><span class="line">  <span class="keyword">if</span> err := db.Put(key, rlp); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    log.Crit(<span class="string">&quot;Failed to store block body&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// WriteTd serializes the total difficulty of a block into the database.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WriteTd</span><span class="params">(db ethdb.Putter, hash common.Hash, number <span class="keyword">uint64</span>, td *big.Int)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">  data, err := rlp.EncodeToBytes(td)</span><br><span class="line">  <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">  &#125;</span><br><span class="line">  key := <span class="built_in">append</span>(<span class="built_in">append</span>(<span class="built_in">append</span>(headerPrefix, encodeBlockNumber(number)...), hash.Bytes()...), tdSuffix...)</span><br><span class="line">  <span class="keyword">if</span> err := db.Put(key, data); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    log.Crit(<span class="string">&quot;Failed to store block total difficulty&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// WriteBlock serializes a block into the database, header and body separately.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WriteBlock</span><span class="params">(db ethdb.Putter, block *types.Block)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">  <span class="comment">// Store the body first to retain database consistency</span></span><br><span class="line">  <span class="keyword">if</span> err := WriteBody(db, block.Hash(), block.NumberU64(), block.Body()); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Store the header too, signaling full block ownership</span></span><br><span class="line">  <span class="keyword">if</span> err := WriteHeader(db, block.Header()); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中都通过 db.Put 方法将区块信息写入 leveldb 中。</p>
+<h3 id="Metrics"><a class="header-anchor" href="#Metrics"></a>Metrics</h3>
+<p>在 <strong>Meter</strong> 方法中创建了各种 <strong>Metrics</strong> 采集器，然后创建了 quitChan，最后启动一个协程调用了 db.meter 方法每隔 3 秒收集一次。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Meter configures the database metrics collectors and</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(db *LDBDatabase)</span> <span class="title">Meter</span><span class="params">(prefix <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">  <span class="comment">// Short circuit metering if the metrics system is disabled</span></span><br><span class="line">  <span class="keyword">if</span> !metrics.Enabled &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Initialize all the metrics collector at the requested prefix</span></span><br><span class="line">  db.compTimeMeter = metrics.NewRegisteredMeter(prefix+<span class="string">&quot;compact/time&quot;</span>, <span class="literal">nil</span>)</span><br><span class="line">  db.compReadMeter = metrics.NewRegisteredMeter(prefix+<span class="string">&quot;compact/input&quot;</span>, <span class="literal">nil</span>)</span><br><span class="line">  db.compWriteMeter = metrics.NewRegisteredMeter(prefix+<span class="string">&quot;compact/output&quot;</span>, <span class="literal">nil</span>)</span><br><span class="line">  db.diskReadMeter = metrics.NewRegisteredMeter(prefix+<span class="string">&quot;disk/read&quot;</span>, <span class="literal">nil</span>)</span><br><span class="line">  db.diskWriteMeter = metrics.NewRegisteredMeter(prefix+<span class="string">&quot;disk/write&quot;</span>, <span class="literal">nil</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Create a quit channel for the periodic collector and run it</span></span><br><span class="line">  db.quitLock.Lock()</span><br><span class="line">  db.quitChan = <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">chan</span> error)</span><br><span class="line">  db.quitLock.Unlock()</span><br><span class="line"></span><br><span class="line">  <span class="keyword">go</span> db.meter(<span class="number">3</span> * time.Second)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>metrics.Enabled</strong> 开关默认为关闭(false)，通过命令行选项参数 <strong>metrics</strong> 来设置。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// go-ethereum/metrics.go</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Enabled is checked by the constructor functions for all of the</span></span><br><span class="line"><span class="comment">// standard metrics.  If it is true, the metric returned is a stub.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// This global kill-switch helps quantify the observer effect and makes</span></span><br><span class="line"><span class="comment">// for less cluttered pprof profiles.</span></span><br><span class="line"><span class="keyword">var</span> Enabled <span class="keyword">bool</span> = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// MetricsEnabledFlag is the CLI flag name to use to enable metrics collections.</span></span><br><span class="line"><span class="keyword">const</span> MetricsEnabledFlag = <span class="string">&quot;metrics&quot;</span></span><br><span class="line"><span class="keyword">const</span> DashboardEnabledFlag = <span class="string">&quot;dashboard&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Init enables or disables the metrics system. Since we need this to run before</span></span><br><span class="line"><span class="comment">// any other code gets to create meters and timers, we&#x27;ll actually do an ugly hack</span></span><br><span class="line"><span class="comment">// and peek into the command line args for the metrics flag.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">  <span class="keyword">for</span> _, arg := <span class="keyword">range</span> os.Args &#123;</span><br><span class="line">    <span class="keyword">if</span> flag := strings.TrimLeft(arg, <span class="string">&quot;-&quot;</span>); flag == MetricsEnabledFlag || flag == DashboardEnabledFlag &#123;</span><br><span class="line">      log.Info(<span class="string">&quot;Enabling metrics collection&quot;</span>)</span><br><span class="line">      Enabled = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在启动 metrics 开关后，每隔 3 秒会从 leveldb 内部获取计数器，然后公布到 metrics 子系统，这里是一个无限循环，直到 quitChan 收到一个退出信号。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// meter periodically retrieves internal leveldb counters and reports them to</span></span><br><span class="line"><span class="comment">// the metrics subsystem.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// This is how a stats table look like (currently):</span></span><br><span class="line"><span class="comment">//   Compactions</span></span><br><span class="line"><span class="comment">//    Level |   Tables   |    Size(MB)   |    Time(sec)  |    Read(MB)   |   Write(MB)</span></span><br><span class="line"><span class="comment">//   -------+------------+---------------+---------------+---------------+---------------</span></span><br><span class="line"><span class="comment">//      0   |          0 |       0.00000 |       1.27969 |       0.00000 |      12.31098</span></span><br><span class="line"><span class="comment">//      1   |         85 |     109.27913 |      28.09293 |     213.92493 |     214.26294</span></span><br><span class="line"><span class="comment">//      2   |        523 |    1000.37159 |       7.26059 |      66.86342 |      66.77884</span></span><br><span class="line"><span class="comment">//      3   |        570 |    1113.18458 |       0.00000 |       0.00000 |       0.00000</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// This is how the iostats look like (currently):</span></span><br><span class="line"><span class="comment">// Read(MB):3895.04860 Write(MB):3654.64712</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(db *LDBDatabase)</span> <span class="title">meter</span><span class="params">(refresh time.Duration)</span></span> &#123;</span><br><span class="line">  <span class="comment">// Create the counters to store current and previous compaction values</span></span><br><span class="line">  <span class="comment">// 创建一个计数器，用于存储当前和上一次的压缩值</span></span><br><span class="line">  <span class="comment">// 一个二维数组，第 1 维表示 当前 和 上一次，第 2 维表示统计值</span></span><br><span class="line">  compactions := <span class="built_in">make</span>([][]<span class="keyword">float64</span>, <span class="number">2</span>)</span><br><span class="line">  <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">2</span>; i++ &#123;</span><br><span class="line">    compactions[i] = <span class="built_in">make</span>([]<span class="keyword">float64</span>, <span class="number">3</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Create storage for iostats.</span></span><br><span class="line">  <span class="keyword">var</span> iostats [<span class="number">2</span>]<span class="keyword">float64</span></span><br><span class="line">  <span class="comment">// Iterate ad infinitum and collect the stats</span></span><br><span class="line">  <span class="keyword">for</span> i := <span class="number">1</span>; ; i++ &#123;</span><br><span class="line">    <span class="comment">// Retrieve the database stats</span></span><br><span class="line">    stats, err := db.db.GetProperty(<span class="string">&quot;leveldb.stats&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      db.log.Error(<span class="string">&quot;Failed to read database stats&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Find the compaction table, skip the header</span></span><br><span class="line">    lines := strings.Split(stats, <span class="string">&quot;\n&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">len</span>(lines) &gt; <span class="number">0</span> &amp;&amp; strings.TrimSpace(lines[<span class="number">0</span>]) != <span class="string">&quot;Compactions&quot;</span> &#123;</span><br><span class="line">      lines = lines[<span class="number">1</span>:]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(lines) &lt;= <span class="number">3</span> &#123;</span><br><span class="line">      db.log.Error(<span class="string">&quot;Compaction table not found&quot;</span>)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    lines = lines[<span class="number">3</span>:]</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Iterate over all the table rows, and accumulate the entries</span></span><br><span class="line">    <span class="keyword">for</span> j := <span class="number">0</span>; j &lt; <span class="built_in">len</span>(compactions[i%<span class="number">2</span>]); j++ &#123;</span><br><span class="line">      compactions[i%<span class="number">2</span>][j] = <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> _, line := <span class="keyword">range</span> lines &#123;</span><br><span class="line">      parts := strings.Split(line, <span class="string">&quot;|&quot;</span>)</span><br><span class="line">      <span class="keyword">if</span> <span class="built_in">len</span>(parts) != <span class="number">6</span> &#123;</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">for</span> idx, counter := <span class="keyword">range</span> parts[<span class="number">3</span>:] &#123;</span><br><span class="line">        value, err := strconv.ParseFloat(strings.TrimSpace(counter), <span class="number">64</span>)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">          db.log.Error(<span class="string">&quot;Compaction entry parsing failed&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">          <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        compactions[i%<span class="number">2</span>][idx] += value</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Update all the requested meters</span></span><br><span class="line">    <span class="keyword">if</span> db.compTimeMeter != <span class="literal">nil</span> &#123;</span><br><span class="line">      db.compTimeMeter.Mark(<span class="keyword">int64</span>((compactions[i%<span class="number">2</span>][<span class="number">0</span>] - compactions[(i<span class="number">-1</span>)%<span class="number">2</span>][<span class="number">0</span>]) * <span class="number">1000</span> * <span class="number">1000</span> * <span class="number">1000</span>))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> db.compReadMeter != <span class="literal">nil</span> &#123;</span><br><span class="line">      db.compReadMeter.Mark(<span class="keyword">int64</span>((compactions[i%<span class="number">2</span>][<span class="number">1</span>] - compactions[(i<span class="number">-1</span>)%<span class="number">2</span>][<span class="number">1</span>]) * <span class="number">1024</span> * <span class="number">1024</span>))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> db.compWriteMeter != <span class="literal">nil</span> &#123;</span><br><span class="line">      db.compWriteMeter.Mark(<span class="keyword">int64</span>((compactions[i%<span class="number">2</span>][<span class="number">2</span>] - compactions[(i<span class="number">-1</span>)%<span class="number">2</span>][<span class="number">2</span>]) * <span class="number">1024</span> * <span class="number">1024</span>))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Retrieve the database iostats.</span></span><br><span class="line">    ioStats, err := db.db.GetProperty(<span class="string">&quot;leveldb.iostats&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      db.log.Error(<span class="string">&quot;Failed to read database iostats&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    parts := strings.Split(ioStats, <span class="string">&quot; &quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(parts) &lt; <span class="number">2</span> &#123;</span><br><span class="line">      db.log.Error(<span class="string">&quot;Bad syntax of ioStats&quot;</span>, <span class="string">&quot;ioStats&quot;</span>, ioStats)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    r := strings.Split(parts[<span class="number">0</span>], <span class="string">&quot;:&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(r) &lt; <span class="number">2</span> &#123;</span><br><span class="line">      db.log.Error(<span class="string">&quot;Bad syntax of read entry&quot;</span>, <span class="string">&quot;entry&quot;</span>, parts[<span class="number">0</span>])</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    read, err := strconv.ParseFloat(r[<span class="number">1</span>], <span class="number">64</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      db.log.Error(<span class="string">&quot;Read entry parsing failed&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    w := strings.Split(parts[<span class="number">1</span>], <span class="string">&quot;:&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(w) &lt; <span class="number">2</span> &#123;</span><br><span class="line">      db.log.Error(<span class="string">&quot;Bad syntax of write entry&quot;</span>, <span class="string">&quot;entry&quot;</span>, parts[<span class="number">1</span>])</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    write, err := strconv.ParseFloat(w[<span class="number">1</span>], <span class="number">64</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      db.log.Error(<span class="string">&quot;Write entry parsing failed&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> db.diskReadMeter != <span class="literal">nil</span> &#123;</span><br><span class="line">      db.diskReadMeter.Mark(<span class="keyword">int64</span>((read - iostats[<span class="number">0</span>]) * <span class="number">1024</span> * <span class="number">1024</span>))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> db.diskWriteMeter != <span class="literal">nil</span> &#123;</span><br><span class="line">      db.diskWriteMeter.Mark(<span class="keyword">int64</span>((write - iostats[<span class="number">1</span>]) * <span class="number">1024</span> * <span class="number">1024</span>))</span><br><span class="line">    &#125;</span><br><span class="line">    iostats[<span class="number">0</span>] = read</span><br><span class="line">    iostats[<span class="number">1</span>] = write</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Sleep a bit, then repeat the stats collection</span></span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> errc := &lt;-db.quitChan:</span><br><span class="line">      <span class="comment">// Quit requesting, stop hammering the database</span></span><br><span class="line">      errc &lt;- <span class="literal">nil</span></span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">case</span> &lt;-time.After(refresh):</span><br><span class="line">      <span class="comment">// Timeout, gather a new set of stats</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Ethereum/" rel="tag"># Ethereum</a>
+              <a href="/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/" rel="tag"># 以太坊</a>
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+              <a href="/tags/blockchain/" rel="tag"># blockchain</a>
+              <a href="/tags/LevelDB/" rel="tag"># LevelDB</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/03/19/ethereum-terms.html" rel="prev" title="以太坊中的各种术语解释(持续更新)">
+      <i class="fa fa-chevron-left"></i> 以太坊中的各种术语解释(持续更新)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/04/02/about-ethereum-keystore.html" rel="next" title="以太坊账户管理之 keystore 文件(科普)">
+      以太坊账户管理之 keystore 文件(科普) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#database-go"><span class="nav-number">1.</span> <span class="nav-text">database.go</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%9C%AC%E5%9C%B0-blockchain-%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">1.1.</span> <span class="nav-text">创建本地 blockchain 数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86-block-%E5%86%99%E5%85%A5%E5%88%B0-leveldb"><span class="nav-number">1.2.</span> <span class="nav-text">将 block 写入到 leveldb</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Metrics"><span class="nav-number">1.3.</span> <span class="nav-text">Metrics</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Steven"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Steven</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Steven</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

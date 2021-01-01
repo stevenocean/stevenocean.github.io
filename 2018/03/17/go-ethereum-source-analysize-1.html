@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"stevenocean.github.io","root":"/","scheme":"Mist","version":"7.8.0","sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"appID":"PJYZ7OZEJB","apiKey":"78ff9194440a75eba3a1be76689c2b0c","indexName":"steven-blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="今天抽时间浏览了 Ethereum 的区块结构的相关源码，更加深入地了解区块的数据结构。  分析的主要是 go-ethereum 项目的源码。版本取的是 Frost(v1.8.2)。  1. 以太坊的基本结构 先大致了解了以太坊的基本结构，如下图（来自网络）:  其中除了区块链管理（Blockchain Management）和挖矿模块（Miner）之外还包含了：  基础的分布式数据库结构（Swa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go-ethereum 源码分析 - 区块结构(1)">
+<meta property="og:url" content="http://stevenocean.github.io/2018/03/17/go-ethereum-source-analysize-1.html">
+<meta property="og:site_name" content="未来边缘">
+<meta property="og:description" content="今天抽时间浏览了 Ethereum 的区块结构的相关源码，更加深入地了解区块的数据结构。  分析的主要是 go-ethereum 项目的源码。版本取的是 Frost(v1.8.2)。  1. 以太坊的基本结构 先大致了解了以太坊的基本结构，如下图（来自网络）:  其中除了区块链管理（Blockchain Management）和挖矿模块（Miner）之外还包含了：  基础的分布式数据库结构（Swa">
+<meta property="og:locale">
+<meta property="og:image" content="http://stevenocean.github.io/2018/03/17/go-ethereum-source-analysize-1/ethereum-overall-arch-1.jpg">
+<meta property="og:image" content="http://stevenocean.github.io/2018/03/17/go-ethereum-source-analysize-1/blockchain-structure.png">
+<meta property="og:image" content="http://stevenocean.github.io/2018/03/17/go-ethereum-source-analysize-1/block-header.jpg">
+<meta property="og:image" content="http://stevenocean.github.io/2018/03/17/go-ethereum-source-analysize-1/ethereum-genesis-block-1.jpg">
+<meta property="article:published_time" content="2018-03-17T15:58:00.000Z">
+<meta property="article:modified_time" content="2018-04-15T08:39:55.000Z">
+<meta property="article:author" content="Steven">
+<meta property="article:tag" content="Ethereum">
+<meta property="article:tag" content="以太坊">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="blockchain">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://stevenocean.github.io/2018/03/17/go-ethereum-source-analysize-1/ethereum-overall-arch-1.jpg">
+
+<link rel="canonical" href="http://stevenocean.github.io/2018/03/17/go-ethereum-source-analysize-1.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>go-ethereum 源码分析 - 区块结构(1) | 未来边缘</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="未来边缘" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">未来边缘</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://stevenocean.github.io/2018/03/17/go-ethereum-source-analysize-1.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Steven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来边缘">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          go-ethereum 源码分析 - 区块结构(1)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-03-17 23:58:00" itemprop="dateCreated datePublished" datetime="2018-03-17T23:58:00+08:00">2018-03-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-04-15 16:39:55" itemprop="dateModified" datetime="2018-04-15T16:39:55+08:00">2018-04-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/" itemprop="url" rel="index"><span itemprop="name">Ethereum(以太坊)</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Ethereum-%E4%BB%A5%E5%A4%AA%E5%9D%8A/blockchain-%E5%8C%BA%E5%9D%97%E9%93%BE/" itemprop="url" rel="index"><span itemprop="name">blockchain(区块链)</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>今天抽时间浏览了 Ethereum 的区块结构的相关源码，更加深入地了解区块的数据结构。</p>
+<blockquote>
+<p>分析的主要是 go-ethereum 项目的源码。版本取的是 Frost(v1.8.2)。</p>
+</blockquote>
+<h2 id="1-以太坊的基本结构"><a class="header-anchor" href="#1-以太坊的基本结构"></a>1. 以太坊的基本结构</h2>
+<p>先大致了解了以太坊的基本结构，如下图（来自网络）:</p>
+<img src="/2018/03/17/go-ethereum-source-analysize-1/ethereum-overall-arch-1.jpg" class="">
+<p>其中除了区块链管理（Blockchain Management）和挖矿模块（Miner）之外还包含了：</p>
+<ul>
+<li>基础的分布式数据库结构（Swarm）；</li>
+<li>智能合约（Solidity、Serpent、LLL等），及执行环境 EVM；</li>
+<li>共识机制（PoW-Ethash，PoS）；</li>
+<li>账户管理；</li>
+<li>加密算法模块（SHA-3、RLP等）；</li>
+<li>P2P 网络（Whisper）；</li>
+<li>应用模块（DApp、浏览器钱包-Mist、桌面钱包-EtherWallet、JS框架-Web3js）；</li>
+</ul>
+<a id="more"></a>
+<h2 id="2-go-ethereum-源码目录结构"><a class="header-anchor" href="#2-go-ethereum-源码目录结构"></a>2. go-ethereum 源码目录结构</h2>
+<p>go-ethereum 的源码层次结构也还是很清晰的，如下为 go-ethereum 项目的源码目录结构：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">➜  go-ethereum :</span><br><span class="line">.</span><br><span class="line">├── accounts        // 以太坊的钱包和账户管理</span><br><span class="line">    ├── abi         // 以太坊合约的ABI代码</span><br><span class="line">    ├── keystore    // 支持 keystore 模式的钱包</span><br><span class="line">    └── usbwallet   // 支持 USB 模式的钱包</span><br><span class="line">├── bmt             // 二进制的 Merkle 树的实现</span><br><span class="line">├── build           // 编译与构建的一些脚本和配置</span><br><span class="line">├── cmd             // 命令行工具集</span><br><span class="line">    ├── abigen      // ABI 生成器</span><br><span class="line">    ├── bootnode    // 启动一个仅仅实现网络发现的节点</span><br><span class="line">    ├── ethkey</span><br><span class="line">    ├── evm         // 以太坊虚拟机的开发工具</span><br><span class="line">    ├── faucet</span><br><span class="line">    ├── geth        // geth 命令行工具</span><br><span class="line">    ├── p2psim      // 提供了一个工具来模拟 HTTP 的 API</span><br><span class="line">    ├── puppeth     // 创建一个新的以太坊网络的向导</span><br><span class="line">    ├── rlpdump     // RLP 数据的格式化输出</span><br><span class="line">    ├── swarm       // swarm 网络的接入点</span><br><span class="line">    ├── utils       // 公共工具</span><br><span class="line">    └── wnode       // 一个简单的 whisper 节点，可以用作独立的引导节点。此外，可以用于不同的测试和诊断目的</span><br><span class="line">├── common          // 提供了一些公共通用的工具类</span><br><span class="line">├── compression     // 压缩</span><br><span class="line">├── consensus       // 提供了以太坊的一些共识算法，比如：ethhash</span><br><span class="line">├── console         // 控制台</span><br><span class="line">├── containers      // 支持 docker 和 vagrant 等容器</span><br><span class="line">├── contracts       // 合约管理</span><br><span class="line">├── core            // 核心数据结构和算法（EVM，state，Blockchain，布隆过滤器等）</span><br><span class="line">├── crypto          // 加密相关</span><br><span class="line">├── dashboard       // </span><br><span class="line">├── eth             // 在其中实现了以太坊的协议</span><br><span class="line">├── ethclient       // geth 客户端入口</span><br><span class="line">├── ethdb           // eth 的数据库（包括生产环境的leveldb和供测试用的内存数据库）</span><br><span class="line">├── ethstats        // 提供以太坊网络状态的报告</span><br><span class="line">├── event           // 用于处理实时事件</span><br><span class="line">├── les             // 以太坊的轻量级协议子集(Light Ethereum Subprotocol)</span><br><span class="line">├── light           // 实现为以太坊轻量级客户端提供按需检索的功能</span><br><span class="line">├── log             // 日志模块</span><br><span class="line">├── metrics         // 度量和检测</span><br><span class="line">├── miner           // 提供以太坊的区块创建和挖矿</span><br><span class="line">├── mobile          // 移动端的一些 wrapper</span><br><span class="line">├── node            // 以太坊的多种类型的节点</span><br><span class="line">├── p2p             // P2P 网络协议</span><br><span class="line">├── params          // 参数管理</span><br><span class="line">├── rlp             // 以太坊的序列化处理（rlp 递归长度前缀编码）</span><br><span class="line">├── rpc             // rpc 远程方法调用</span><br><span class="line">├── swarm           // swarm 网络存储和处理</span><br><span class="line">├── trie            // 以太坊中的重要数据结构，Merkle Patricia Tries</span><br><span class="line">└── whisper         // whisper 节点协议</span><br></pre></td></tr></table></figure>
+<h2 id="3-Block-区块结构"><a class="header-anchor" href="#3-Block-区块结构"></a>3. Block 区块结构</h2>
+<blockquote>
+<p>可以在 etherchain 上查看一些真实<a target="_blank" rel="noopener" href="https://www.etherchain.org/block/041c3d9b9696b767938adc6fe3b0d31951ba4e167157cb5f6853c5b55f1526fa">区块示例</a></p>
+</blockquote>
+<p>Block 区块的数据结构图：</p>
+<img src="/2018/03/17/go-ethereum-source-analysize-1/blockchain-structure.png" class="">
+<p>.<br>
+从上图可以看到在区块链上的每个区块主要包括区块头（Header）和区块体（Body）两部分。</p>
+<p>如下为 Block 结构定义：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// source: core/types/block.go</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Block represents an entire block in the Ethereum blockchain.</span></span><br><span class="line"><span class="keyword">type</span> Block <span class="keyword">struct</span> &#123;</span><br><span class="line">    header       *Header</span><br><span class="line">    uncles       []*Header</span><br><span class="line">    transactions Transactions</span><br><span class="line"></span><br><span class="line">    <span class="comment">// caches</span></span><br><span class="line">    hash atomic.Value</span><br><span class="line">    size atomic.Value</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Td is used by package core to store the total difficulty</span></span><br><span class="line">    <span class="comment">// of the chain up to and including the block.</span></span><br><span class="line">    td *big.Int</span><br><span class="line"></span><br><span class="line">    <span class="comment">// These fields are used by package eth to track</span></span><br><span class="line">    <span class="comment">// inter-peer block relay.</span></span><br><span class="line">    ReceivedAt   time.Time</span><br><span class="line">    ReceivedFrom <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>header</strong>: 指向区块头的指针，类型为 <strong>Header</strong>，见下面；</li>
+<li><strong>uncles</strong>: uncles 链表头，每一个都为 Header 结构；</li>
+<li><strong>transactions</strong>: 交易列表，<strong>Transactions</strong> 定义为存储 <strong>Transaction</strong> 的指针切片（Slice）；</li>
+<li><strong>td</strong>: total difficulty，总体复杂度；</li>
+<li><strong>ReceivedAt</strong>: 接收块的时间；</li>
+<li><strong>ReceivedFrom</strong>:</li>
+</ul>
+<blockquote>
+<p><strong>Transaction</strong> 类型定义在 core/types/transaction.go 中。</p>
+</blockquote>
+<p>这里定义没有看到 <strong>Body</strong>，其实 <strong>Block</strong> 提供了一个获取（动态生成）<strong>Body</strong> 的方法:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// source: core/types/block.go</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Body returns the non-header content of the block.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Block)</span> <span class="title">Body</span><span class="params">()</span> *<span class="title">Body</span></span> &#123; <span class="keyword">return</span> &amp;Body&#123;b.transactions, b.uncles&#125; &#125;</span><br></pre></td></tr></table></figure>
+<p>下面分别看下区块头和区块体的结构定义。</p>
+<h3 id="3-1-区块头（Header）"><a class="header-anchor" href="#3-1-区块头（Header）"></a>3.1 区块头（Header）</h3>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// source: core/types/block.go</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Header represents a block header in the Ethereum blockchain.</span></span><br><span class="line"><span class="keyword">type</span> Header <span class="keyword">struct</span> &#123;</span><br><span class="line">    ParentHash  common.Hash    <span class="string">`json:&quot;parentHash&quot;       gencodec:&quot;required&quot;`</span></span><br><span class="line">    UncleHash   common.Hash    <span class="string">`json:&quot;sha3Uncles&quot;       gencodec:&quot;required&quot;`</span></span><br><span class="line">    Coinbase    common.Address <span class="string">`json:&quot;miner&quot;            gencodec:&quot;required&quot;`</span></span><br><span class="line">    Root        common.Hash    <span class="string">`json:&quot;stateRoot&quot;        gencodec:&quot;required&quot;`</span></span><br><span class="line">    TxHash      common.Hash    <span class="string">`json:&quot;transactionsRoot&quot; gencodec:&quot;required&quot;`</span></span><br><span class="line">    ReceiptHash common.Hash    <span class="string">`json:&quot;receiptsRoot&quot;     gencodec:&quot;required&quot;`</span></span><br><span class="line">    Bloom       Bloom          <span class="string">`json:&quot;logsBloom&quot;        gencodec:&quot;required&quot;`</span></span><br><span class="line">    Difficulty  *big.Int       <span class="string">`json:&quot;difficulty&quot;       gencodec:&quot;required&quot;`</span></span><br><span class="line">    Number      *big.Int       <span class="string">`json:&quot;number&quot;           gencodec:&quot;required&quot;`</span></span><br><span class="line">    GasLimit    <span class="keyword">uint64</span>         <span class="string">`json:&quot;gasLimit&quot;         gencodec:&quot;required&quot;`</span></span><br><span class="line">    GasUsed     <span class="keyword">uint64</span>         <span class="string">`json:&quot;gasUsed&quot;          gencodec:&quot;required&quot;`</span></span><br><span class="line">    Time        *big.Int       <span class="string">`json:&quot;timestamp&quot;        gencodec:&quot;required&quot;`</span></span><br><span class="line">    Extra       []<span class="keyword">byte</span>         <span class="string">`json:&quot;extraData&quot;        gencodec:&quot;required&quot;`</span></span><br><span class="line">    MixDigest   common.Hash    <span class="string">`json:&quot;mixHash&quot;          gencodec:&quot;required&quot;`</span></span><br><span class="line">    Nonce       BlockNonce     <span class="string">`json:&quot;nonce&quot;            gencodec:&quot;required&quot;`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>ParentHash</strong>: 对应前一个区块（父区块）的 Hash；</li>
+<li><strong>UncleHash</strong>: 当前区块的 uncle 链的 Hash；</li>
+<li><strong>Coinbase</strong>: 矿工地址；</li>
+<li><strong>Root</strong>: Transaction Root Hash，交易字典树根结点hash，交易记录构成的 Merkle 树的根，在交易字典树上含有区块中的所有交易列表；</li>
+<li><strong>TxHash</strong>: 交易 Hash</li>
+<li><strong>ReceiptHash</strong>: 接收方的字典树根节点 hash；</li>
+<li><strong>Difficulty</strong>: 当前区块工作量证明（PoW）算法的复杂度，表示当前区块的难度水平，这一个值根据前一个区块的难度水平和时间戳计算得到；</li>
+<li><strong>Number</strong>: 区块体中的交易数目；</li>
+<li><strong>GasLimit</strong>: Gas 限制，表示目前每个区块的 Gas 消耗上限；</li>
+<li><strong>GasUsed</strong>: Gas 使用量，当前区块的所有交易使用的 Gas 之和；</li>
+<li><strong>Time</strong>: 时间戳（区块初始化时的Unix时间戳）；</li>
+<li><strong>Extra</strong>: 额外的信息，字节数组；</li>
+<li><strong>MixDigest</strong>: 签名</li>
+<li><strong>Nonce</strong>: PoW 中使用的随机数；</li>
+</ul>
+<blockquote>
+<p>其中 common.Hash 类型定义在 common/types.go 中，定义为长度为 32 个字节的数组，存储的为 Keccak256 hash 值（SHA-3算法）。<br>
+SHA-3 算法参考: https://zh.wikipedia.org/wiki/SHA-3</p>
+</blockquote>
+<p>如下为一笔典型的区块头结构示例：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>取值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hash</strong></td>
+<td>0xb321e1b949169eb8a7465d3d9cbad991c2bb77f02aa76df85ebbee7a9b784013</td>
+</tr>
+<tr>
+<td><strong>Difficulty</strong></td>
+<td>2,944,102,190,231,396</td>
+</tr>
+<tr>
+<td><strong>Miner</strong></td>
+<td>✔ Nanopool (0x52bc…) (Mined in 33s)</td>
+</tr>
+<tr>
+<td><strong>Reward</strong></td>
+<td>3.26744 ETH = $2,869.17 (Block Reward: 3 ETH + Fee Reward: 0.17369 ETH + Uncle Inclusion Reward: 0.09375 ETH)</td>
+</tr>
+<tr>
+<td><strong>Tx Fees</strong></td>
+<td>0.17369 ETH = $152.52 (5.32% of the total block reward)</td>
+</tr>
+<tr>
+<td><strong>Gas Limit</strong></td>
+<td>8,000,029</td>
+</tr>
+<tr>
+<td><strong>Gas Usage</strong></td>
+<td>99.7 % (7,978,750 of 8,000,029)</td>
+</tr>
+<tr>
+<td><strong>Lowest Gas Price</strong></td>
+<td>1 GWei</td>
+</tr>
+<tr>
+<td><strong>Time</strong></td>
+<td>2018-02-27T07:47:48+00:00 (2 minutes ago)</td>
+</tr>
+<tr>
+<td><strong>Size</strong></td>
+<td>31,867 bytes</td>
+</tr>
+<tr>
+<td><strong>Extra</strong></td>
+<td>nanopool.org (Raw: 0x6e616e6f706f6f6c2e6f7267)</td>
+</tr>
+<tr>
+<td><strong>UncleHash</strong></td>
+<td>0x5b43ac12d745836430feca6e7c7179d6f34e5eca5d9d5eb8a35bb6ce2e400676</td>
+</tr>
+<tr>
+<td><strong>Receipts Root Hash</strong></td>
+<td>0xf8c094df87434623bb21ed5828e99a71afb351a8ea06f4df27dfb3c06c7464d3</td>
+</tr>
+<tr>
+<td><strong>State Root Hash</strong></td>
+<td>0x41261f7694610dc68c8704ad026b15c009b139a0206f90b4366346d60f6d2b1b</td>
+</tr>
+<tr>
+<td><strong>Transactions Root Hash</strong></td>
+<td>0xec1804b0217bfd6e6e696b1fbb8edad9ec00077f9c5cb013ff5b97791ff9d310</td>
+</tr>
+<tr>
+<td><strong>PoW Mix Hash</strong></td>
+<td>0x669bfda843d619df8befa18920fcc0964cd62e6f43d836dd056dd483f03f81a3</td>
+</tr>
+<tr>
+<td><strong>Bloom Data</strong></td>
+<td>0x0623e2…</td>
+</tr>
+</tbody>
+</table>
+<p>我们可以到 etherchain 上查询到该<a target="_blank" rel="noopener" href="https://www.etherchain.org/block/5164216">区块信息</a>，如下图:</p>
+<img src="/2018/03/17/go-ethereum-source-analysize-1/block-header.jpg" class="">
+<h3 id="3-2-区块体（Body）"><a class="header-anchor" href="#3-2-区块体（Body）"></a>3.2 区块体（Body）</h3>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// source: core/types/block.go</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Body is a simple (mutable, non-safe) data container for storing and moving</span></span><br><span class="line"><span class="comment">// a block&#x27;s data contents (transactions and uncles) together.</span></span><br><span class="line"><span class="keyword">type</span> Body <span class="keyword">struct</span> &#123;</span><br><span class="line">    Transactions []*Transaction</span><br><span class="line">    Uncles       []*Header</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>主要包括了 <strong>交易记录列表</strong> 和 <strong>Uncles列表</strong> 两部分数据。</p>
+<h3 id="3-3-创世区块"><a class="header-anchor" href="#3-3-创世区块"></a>3.3 创世区块</h3>
+<p>创世区块（genesis block）是以太坊网络中创建的第一个区块，是整个以太坊区块链的共同祖先，被静态写入地写入在所有以太坊客户端代码中，以确保创世区块不会被改变，可以在 etherscan.io 中查看创世区块的信息，如下图：</p>
+<img src="/2018/03/17/go-ethereum-source-analysize-1/ethereum-genesis-block-1.jpg" class="">
+<p>对应于 mainnet 中的默认 genesis block 如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// source: core/genesis.go</span></span><br><span class="line"><span class="comment">// </span></span><br><span class="line"><span class="comment">// DefaultGenesisBlock returns the Ethereum main net genesis block.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DefaultGenesisBlock</span><span class="params">()</span> *<span class="title">Genesis</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;Genesis&#123;</span><br><span class="line">        Config:     params.MainnetChainConfig,</span><br><span class="line">        Nonce:      <span class="number">66</span>,</span><br><span class="line">        ExtraData:  hexutil.MustDecode(<span class="string">&quot;0x11bbe8db4e347b4e8c937c1c8370e4b5ed33adb3db69cbdb7a38e1e50b1b82fa&quot;</span>),</span><br><span class="line">        GasLimit:   <span class="number">5000</span>,</span><br><span class="line">        Difficulty: big.NewInt(<span class="number">17179869184</span>),</span><br><span class="line">        Alloc:      decodePrealloc(mainnetAllocData),</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>基于以太坊创建私有链时可以通过配置指定创世区块的配置。</p>
+<h3 id="3-4-创建区块"><a class="header-anchor" href="#3-4-创建区块"></a>3.4 创建区块</h3>
+<p>其余的区块由矿工创建：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// source: core/types/block.go</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// NewBlock creates a new block. The input data is copied,</span></span><br><span class="line"><span class="comment">// changes to header and to the field values will not affect the</span></span><br><span class="line"><span class="comment">// block.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// The values of TxHash, UncleHash, ReceiptHash and Bloom in header</span></span><br><span class="line"><span class="comment">// are ignored and set to values derived from the given txs, uncles</span></span><br><span class="line"><span class="comment">// and receipts.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBlock</span><span class="params">(header *Header, txs []*Transaction, uncles []*Header, receipts []*Receipt)</span> *<span class="title">Block</span></span> &#123;</span><br><span class="line">    b := &amp;Block&#123;header: CopyHeader(header), td: <span class="built_in">new</span>(big.Int)&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> panic if len(txs) != len(receipts)</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(txs) == <span class="number">0</span> &#123;</span><br><span class="line">        <span class="comment">// 无交易记录，生成 EmptyRootHash</span></span><br><span class="line">        b.header.TxHash = EmptyRootHash</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 生成 Transaction Root Hash</span></span><br><span class="line">        <span class="comment">// Merkle Patricia Tree</span></span><br><span class="line">        b.header.TxHash = DeriveSha(Transactions(txs))</span><br><span class="line">        b.transactions = <span class="built_in">make</span>(Transactions, <span class="built_in">len</span>(txs))</span><br><span class="line">        <span class="built_in">copy</span>(b.transactions, txs)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(receipts) == <span class="number">0</span> &#123;</span><br><span class="line">        b.header.ReceiptHash = EmptyRootHash</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        b.header.ReceiptHash = DeriveSha(Receipts(receipts))</span><br><span class="line">        b.header.Bloom = CreateBloom(receipts)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(uncles) == <span class="number">0</span> &#123;</span><br><span class="line">        b.header.UncleHash = EmptyUncleHash</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        b.header.UncleHash = CalcUncleHash(uncles)</span><br><span class="line">        b.uncles = <span class="built_in">make</span>([]*Header, <span class="built_in">len</span>(uncles))</span><br><span class="line">        <span class="keyword">for</span> i := <span class="keyword">range</span> uncles &#123;</span><br><span class="line">            b.uncles[i] = CopyHeader(uncles[i])</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该方法主要由 <strong>miner</strong> 中的 <strong>worker</strong> 在 pending 状态时调用此方法，如下:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// source: miner/miner.go</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// PendingBlock returns the currently pending block.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Note, to access both the pending block and the pending state</span></span><br><span class="line"><span class="comment">// simultaneously, please use Pending(), as the pending state can</span></span><br><span class="line"><span class="comment">// change between multiple method calls</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *Miner)</span> <span class="title">PendingBlock</span><span class="params">()</span> *<span class="title">types</span>.<span class="title">Block</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> self.worker.pendingBlock()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// source: miner/worker.go</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *worker)</span> <span class="title">pendingBlock</span><span class="params">()</span> *<span class="title">types</span>.<span class="title">Block</span></span> &#123;</span><br><span class="line">    self.currentMu.Lock()</span><br><span class="line">    <span class="keyword">defer</span> self.currentMu.Unlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> atomic.LoadInt32(&amp;self.mining) == <span class="number">0</span> &#123;</span><br><span class="line">        <span class="comment">// 创建新区块</span></span><br><span class="line">        <span class="keyword">return</span> types.NewBlock(</span><br><span class="line">            self.current.header,</span><br><span class="line">            self.current.txs,</span><br><span class="line">            <span class="literal">nil</span>,</span><br><span class="line">            self.current.receipts,</span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> self.current.Block</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="4-Blockchain"><a class="header-anchor" href="#4-Blockchain"></a>4. Blockchain</h2>
+<p>Blockchain 的主要功能是维护整个区块链的状态，包括区块的验证、插入、状态查询等。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 两个阶段校验(Validator)：区块的处理、状态的校验。</span></span><br><span class="line"><span class="keyword">type</span> BlockChain <span class="keyword">struct</span> &#123;</span><br><span class="line">    chainConfig *params.ChainConfig <span class="comment">// Chain &amp; network configuration</span></span><br><span class="line">    cacheConfig *CacheConfig        <span class="comment">// Cache configuration for pruning</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 底层数据库，用于将区块链数据持久化存储</span></span><br><span class="line">    db     ethdb.Database <span class="comment">// Low level persistent database to store final content in</span></span><br><span class="line"></span><br><span class="line">    triegc *prque.Prque   <span class="comment">// Priority queue mapping block numbers to tries to gc</span></span><br><span class="line">    gcproc time.Duration  <span class="comment">// Accumulates canonical block processing for trie dumping</span></span><br><span class="line"></span><br><span class="line">    hc            *HeaderChain  <span class="comment">// 只包含区块头的区块链（如在 light syncmode）</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下面几个是涉及消息通知的组件</span></span><br><span class="line">    rmLogsFeed    event.Feed</span><br><span class="line">    chainFeed     event.Feed</span><br><span class="line">    chainSideFeed event.Feed</span><br><span class="line">    chainHeadFeed event.Feed</span><br><span class="line">    logsFeed      event.Feed</span><br><span class="line">    scope         event.SubscriptionScope</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指向创世区块</span></span><br><span class="line">    genesisBlock  *types.Block</span><br><span class="line"></span><br><span class="line">    mu      sync.RWMutex <span class="comment">// global mutex for locking chain operations</span></span><br><span class="line">    chainmu sync.RWMutex <span class="comment">// blockchain insertion lock</span></span><br><span class="line">    procmu  sync.RWMutex <span class="comment">// block processor lock</span></span><br><span class="line"></span><br><span class="line">    checkpoint       <span class="keyword">int</span>          <span class="comment">// checkpoint counts towards the new checkpoint</span></span><br><span class="line">    currentBlock     atomic.Value <span class="comment">// Current head of the block chain</span></span><br><span class="line">    currentFastBlock atomic.Value <span class="comment">// Current head of the fast-sync chain (may be above the block chain!)</span></span><br><span class="line"></span><br><span class="line">    stateCache   state.Database <span class="comment">// State database to reuse between imports (contains state cache)</span></span><br><span class="line">    bodyCache    *lru.Cache     <span class="comment">// Cache for the most recent block bodies</span></span><br><span class="line">    bodyRLPCache *lru.Cache     <span class="comment">// Cache for the most recent block bodies in RLP encoded format</span></span><br><span class="line">    blockCache   *lru.Cache     <span class="comment">// Cache for the most recent entire blocks</span></span><br><span class="line">    futureBlocks *lru.Cache     <span class="comment">// future blocks are blocks added for later processing</span></span><br><span class="line"></span><br><span class="line">    quit    <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125; <span class="comment">// blockchain quit channel</span></span><br><span class="line">    running <span class="keyword">int32</span>         <span class="comment">// running must be called atomically</span></span><br><span class="line">    <span class="comment">// procInterrupt must be atomically called</span></span><br><span class="line">    procInterrupt <span class="keyword">int32</span>          <span class="comment">// interrupt signaler for block processing</span></span><br><span class="line">    wg            sync.WaitGroup <span class="comment">// chain processing wait group for shutting down</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 共识算法的引擎</span></span><br><span class="line">    engine    consensus.Engine</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 当需要导入 blocks 时需要根据两个阶段的 Validator 的规则集进行校验</span></span><br><span class="line">    <span class="comment">// 分别为 block validator(区块验证器) 和 state validator(状态验证器)</span></span><br><span class="line">    processor Processor <span class="comment">// block processor interface</span></span><br><span class="line">    validator Validator <span class="comment">// block and state validator interface</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// VM 的配置参数</span></span><br><span class="line">    vmConfig  vm.Config</span><br><span class="line"></span><br><span class="line">    badBlocks *lru.Cache <span class="comment">// Bad block cache</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="5-HeaderChain"><a class="header-anchor" href="#5-HeaderChain"></a>5. HeaderChain</h2>
+<p>上面的 Blockchain 是管理所有的 block，而 Headerchain 则是管理所有的 Header 形成一个单向链表。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// source: core/headerchain.go</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// HeaderChain implements the basic block header chain logic that is shared by</span></span><br><span class="line"><span class="comment">// core.BlockChain and light.LightChain. It is not usable in itself, only as</span></span><br><span class="line"><span class="comment">// a part of either structure.</span></span><br><span class="line"><span class="comment">// It is not thread safe either, the encapsulating chain structures should do</span></span><br><span class="line"><span class="comment">// the necessary mutex locking/unlocking.</span></span><br><span class="line"><span class="keyword">type</span> HeaderChain <span class="keyword">struct</span> &#123;</span><br><span class="line">    config *params.ChainConfig</span><br><span class="line"></span><br><span class="line">    chainDb       ethdb.Database  <span class="comment">// 用于将区块信息写入本地的 leveldb 实例</span></span><br><span class="line">    genesisHeader *types.Header   <span class="comment">// 创世区块头</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Current head of the header chain (may be above the block chain!)</span></span><br><span class="line">    currentHeader     atomic.Value <span class="comment">// 当前区块头</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Hash of the current head of the header chain (prevent recomputing all the time)</span></span><br><span class="line">    currentHeaderHash common.Hash <span class="comment">// 当前区块头的 hash（避免重新计算）</span></span><br><span class="line"></span><br><span class="line">    headerCache *lru.Cache <span class="comment">// Cache for the most recent block headers</span></span><br><span class="line">    tdCache     *lru.Cache <span class="comment">// Cache for the most recent block total difficulties</span></span><br><span class="line">    numberCache *lru.Cache <span class="comment">// Cache for the most recent block numbers</span></span><br><span class="line"></span><br><span class="line">    procInterrupt <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">bool</span></span></span><br><span class="line"></span><br><span class="line">    rand   *mrand.Rand</span><br><span class="line">    engine consensus.Engine  <span class="comment">// 共识算法引擎</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="6-Miner"><a class="header-anchor" href="#6-Miner"></a>6. Miner</h2>
+<p>下面我们主要通过源码跟踪一个 block 是如何被“挖”出来的。</p>
+<p>如果需要自己的节点启动挖矿，可以在 geth 的 控制台下调用 miner.start() 方法来简单启动挖矿流程，创建一个新的 miner 实例，如下代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">(eth Backend, config *params.ChainConfig, mux *event.TypeMux, engine consensus.Engine)</span> *<span class="title">Miner</span></span> &#123;</span><br><span class="line">    miner := &amp;Miner&#123;</span><br><span class="line">        eth:      eth,</span><br><span class="line">        mux:      mux,</span><br><span class="line">        engine:   engine,</span><br><span class="line">        worker:   newWorker(config, engine, common.Address&#123;&#125;, eth, mux),</span><br><span class="line">        canStart: <span class="number">1</span>,</span><br><span class="line">    &#125;</span><br><span class="line">    miner.Register(NewCpuAgent(eth.BlockChain(), engine))</span><br><span class="line">    <span class="keyword">go</span> miner.update()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> miner</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里主要执行了如下三个步骤：</p>
+<ol>
+<li>
+<p>首先初始化一个 <strong>Miner</strong> 实例 <strong>miner</strong>，传入了 eth、engine、以及一个 worker 实例；</p>
+</li>
+<li>
+<p>将 CpuAgent 实例注册进 <strong>miner</strong> 中，表示后续的挖矿主要为消耗 CPU 类型的 agent；</p>
+</li>
+<li>
+<p>启动 miner.update() 协程；</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Ethereum/" rel="tag"># Ethereum</a>
+              <a href="/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/" rel="tag"># 以太坊</a>
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+              <a href="/tags/blockchain/" rel="tag"># blockchain</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/03/16/swift-reduce-example.html" rel="prev" title="Swift中使用reduce函数的一个小示例">
+      <i class="fa fa-chevron-left"></i> Swift中使用reduce函数的一个小示例
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/03/19/ethereum-terms.html" rel="next" title="以太坊中的各种术语解释(持续更新)">
+      以太坊中的各种术语解释(持续更新) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%BB%A5%E5%A4%AA%E5%9D%8A%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">1. 以太坊的基本结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-go-ethereum-%E6%BA%90%E7%A0%81%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">2. go-ethereum 源码目录结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Block-%E5%8C%BA%E5%9D%97%E7%BB%93%E6%9E%84"><span class="nav-number">3.</span> <span class="nav-text">3. Block 区块结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%8C%BA%E5%9D%97%E5%A4%B4%EF%BC%88Header%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 区块头（Header）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E5%8C%BA%E5%9D%97%E4%BD%93%EF%BC%88Body%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 区块体（Body）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E5%88%9B%E4%B8%96%E5%8C%BA%E5%9D%97"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 创世区块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E5%88%9B%E5%BB%BA%E5%8C%BA%E5%9D%97"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 创建区块</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Blockchain"><span class="nav-number">4.</span> <span class="nav-text">4. Blockchain</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-HeaderChain"><span class="nav-number">5.</span> <span class="nav-text">5. HeaderChain</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-Miner"><span class="nav-number">6.</span> <span class="nav-text">6. Miner</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Steven"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Steven</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Steven</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

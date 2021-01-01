@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"stevenocean.github.io","root":"/","scheme":"Mist","version":"7.8.0","sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"appID":"PJYZ7OZEJB","apiKey":"78ff9194440a75eba3a1be76689c2b0c","indexName":"steven-blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="这两天一个朋友给我提了个涉及语音识别的“需求”（当然是不能调用如科大讯飞等各种开放平台的语音SDK），主要识别的当然是中文，不过因为之前从未接触过机器学习领域的技术，所以这里也只是属于快速了解语音识别相关技术、以及提供一个能够运行语音识别的示例。  因为示例都是在自己的 PC 跑的，没有安装 CUDA，所以后面的训练和使用都没有采用 DNN-HMM 来训练，还是采用的传统的声学模型 GMM-HMM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识语音识别及 Kaldi 的安装使用">
+<meta property="og:url" content="http://stevenocean.github.io/2019/05/02/first-meet-asr-and-kaldi-install-use.html">
+<meta property="og:site_name" content="未来边缘">
+<meta property="og:description" content="这两天一个朋友给我提了个涉及语音识别的“需求”（当然是不能调用如科大讯飞等各种开放平台的语音SDK），主要识别的当然是中文，不过因为之前从未接触过机器学习领域的技术，所以这里也只是属于快速了解语音识别相关技术、以及提供一个能够运行语音识别的示例。  因为示例都是在自己的 PC 跑的，没有安装 CUDA，所以后面的训练和使用都没有采用 DNN-HMM 来训练，还是采用的传统的声学模型 GMM-HMM">
+<meta property="og:locale">
+<meta property="og:image" content="http://stevenocean.github.io/2019/05/02/first-meet-asr-and-kaldi-install-use/asr-001.png">
+<meta property="og:image" content="http://stevenocean.github.io/2019/05/02/first-meet-asr-and-kaldi-install-use/asr-002.png">
+<meta property="article:published_time" content="2019-05-02T12:20:20.000Z">
+<meta property="article:modified_time" content="2019-05-02T07:36:57.000Z">
+<meta property="article:author" content="Steven">
+<meta property="article:tag" content="语音识别">
+<meta property="article:tag" content="机器识别">
+<meta property="article:tag" content="HMM">
+<meta property="article:tag" content="MFCC">
+<meta property="article:tag" content="Kaldi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://stevenocean.github.io/2019/05/02/first-meet-asr-and-kaldi-install-use/asr-001.png">
+
+<link rel="canonical" href="http://stevenocean.github.io/2019/05/02/first-meet-asr-and-kaldi-install-use.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>初识语音识别及 Kaldi 的安装使用 | 未来边缘</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="未来边缘" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">未来边缘</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://stevenocean.github.io/2019/05/02/first-meet-asr-and-kaldi-install-use.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Steven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来边缘">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          初识语音识别及 Kaldi 的安装使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2019-05-02 20:20:20 / Modified: 15:36:57" itemprop="dateCreated datePublished" datetime="2019-05-02T20:20:20+08:00">2019-05-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" itemprop="url" rel="index"><span itemprop="name">人工智能</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB/" itemprop="url" rel="index"><span itemprop="name">语音识别</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>这两天一个朋友给我提了个涉及语音识别的“需求”（当然是不能调用如科大讯飞等各种开放平台的语音SDK），主要识别的当然是中文，不过因为之前从未接触过机器学习领域的技术，所以这里也只是属于快速了解语音识别相关技术、以及提供一个能够运行语音识别的示例。</p>
+<blockquote>
+<p>因为示例都是在自己的 PC 跑的，没有安装 CUDA，所以后面的训练和使用都没有采用 DNN-HMM 来训练，还是采用的传统的声学模型 GMM-HMM。</p>
+</blockquote>
+<h1>初识语音识别</h1>
+<h2 id="定义"><a class="header-anchor" href="#定义"></a>定义</h2>
+<p>从 wiki 上摘抄一下，语音识别（speech recognition）技术，也被称为自动语音识别（英语：Automatic Speech Recognition, ASR）、计算机语音识别（英语：Computer Speech Recognition）或是语音转文本识别（英语：Speech To Text, STT），其目标是以计算机自动将人类的语音内容转换为相应的文字。</p>
+<blockquote>
+<p>https://zh.wikipedia.org/wiki/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="语音识别系统的分类"><a class="header-anchor" href="#语音识别系统的分类"></a>语音识别系统的分类</h2>
+<p>按照不同纬度如下分类：</p>
+<ul>
+<li>按词汇量（vocabulary）大小分类：
+<ul>
+<li>小词汇量：几十个词；</li>
+<li>中等词汇量：几百个到上千个词</li>
+<li>大词汇量：几千到几万个</li>
+</ul>
+</li>
+<li>按说话的方式（style）分类：
+<ul>
+<li>孤立词（isolated words）</li>
+<li>连续（continously）</li>
+</ul>
+</li>
+<li>按声学（Acoustic）环境分类：
+<ul>
+<li>录音室</li>
+<li>不同程度的噪音环境</li>
+</ul>
+</li>
+<li>按说话人（Speaker）分类：
+<ul>
+<li>说话人相关（Speaker depender）</li>
+<li>说话人无关（Speaker indepenent）</li>
+</ul>
+</li>
+</ul>
+<h2 id="一些基础概念和符号"><a class="header-anchor" href="#一些基础概念和符号"></a>一些基础概念和符号</h2>
+<ul>
+<li>音素（Phoneme）：单词的发音都是由音素构成，对于英语，常用的音素集是 CMU 的 39 个音素构成的音素集。而对于汉语，一般直接用全部声母和韵母作为音素集，另外汉语识别还要考虑音调。</li>
+</ul>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://www.speech.cs.cmu.edu/cgi-bin/cmudict">The CMU Pronouncing Dictionary.</a></p>
+</blockquote>
+<ul>
+<li><strong>声学模型</strong>：是将声学和发音学（phonetics）的知识进行整合，以特征提取部分生成的特征作为输入，并为可变长特征序列生成声学模型分数。</li>
+<li><strong>语言模型</strong>：通过从训练语料（通常是文本形式）学习词之间的相互关系，来估计假设词序列的可能性，又叫语言模型分数。</li>
+<li><strong>GMM</strong>：Gaussian Mixture Model, 高斯混合模型，描述基于傅里叶频谱语音特征的统计模型，用于传统声学模型的建模中。</li>
+<li><strong>HMM</strong>：Hidden Markov Model, 隐马尔科夫模型，是一种用来描述含有隐含未知参数的马尔科夫过程，其难点是从可观察的参数中确定该过程的隐含参数。然后利用这些参数来作进一步的分析，例如模式识别。</li>
+<li><strong>MFCC</strong>：Mel-Frequency Cepstral Coefficients, 梅尔频率倒谱系数，是组成梅尔频率倒谱的系数。衍生自音讯片段的倒频谱（cepstrum）。倒谱与梅尔频率倒谱的区别在于，梅尔频率倒谱的频带划分是在梅尔刻度上等距划分的，它比用于正常的对数倒频谱中的线性间隔的频带更接近人类的听觉系统。广泛应用于语音识别中。</li>
+<li><strong>Fbank</strong>：Mel Frequency Filter Bank, 梅尔频率滤波器组。</li>
+<li><strong>WER</strong>：Word Error Rate, 词错误率，是最常见的衡量语音识别系统性能的指标。</li>
+</ul>
+<h2 id="基本原理"><a class="header-anchor" href="#基本原理"></a>基本原理</h2>
+<p>一个语音识别系统主要包括信号处理和特征提取、声学模型训练、语言模型训练以及识别引擎等几个核心部分，下图为语音识别的原理框图：</p>
+<img src="/2019/05/02/first-meet-asr-and-kaldi-install-use/asr-001.png" class="">
+<ul>
+<li><strong>特征提取</strong>：语音识别第一步就是特征提取，去除掉语音信号中对于语音识别无用的冗余信息（如背景噪音），保留能够反映语音本质特征的信息（为后面的声学模型提取合适的特征向量），并用一定的形式表示出来；较常用的特征提取算法有 MFCC。</li>
+<li><strong>声学模型训练</strong>：根据语音库的特征参数训练出声学模型参数，在识别的时候可以将待识别的语音的特征参数同声学模型进行匹配，从而得到识别结果。目前主流的语音识别系统多采用 HMM 进行声学模型建模。</li>
+<li><strong>语言模型训练</strong>：就是用来计算一个句子出现的概率模型，主要用于决定哪个词序列的可能性更大。语言模型分为三个层次：字典知识、语法知识、句法知识。对训练文本库进行语法、语义分析，经过基于统计模型训练得到语言模型。</li>
+<li><strong>语音解码与搜索算法</strong>：其中解码器就是针对输入的语音信号，根据已经训练好的声学模型、语言模型以及字典建立一个识别网络，再根据搜索算法在该网络中寻找一条最佳路径，使得能够以最大概率输出该语音信号的词串，这样就确定这个语音样本的文字。</li>
+</ul>
+<h1>Kaldi</h1>
+<h2 id="简介"><a class="header-anchor" href="#简介"></a>简介</h2>
+<p>关于语音识别的技术只能”点到为止“，下面只能是硬着头皮跑示例了 :)</p>
+<blockquote>
+<p>https://github.com/kaldi-asr/kaldi</p>
+</blockquote>
+<p>Kaldi 是目前非常流行的开源语音识别工具（Toolkit），主要使用的是 WFST 来实现解码算法。</p>
+<p>Kaldi 的架构如下图：</p>
+<img src="/2019/05/02/first-meet-asr-and-kaldi-install-use/asr-002.png" class="">
+<p>上图来自于 Kaldi 发起者 Daniel Povey 等人的论文 《The Kaldi Speech Recognition Toolkit》，在该论文中也详细描述了 Kaldi 的架构。</p>
+<p>从图中可以看到最上面的是各种外部工具，包括：用于线性代数的库 BLAS/LAPACK，用于有限状态转换器（FST, Finite-State Transducer）的开源库 OpenFST。中间层是 Kaldi C++ 库，其中包括 HMM, GMM 等相关的代码，最下面的两层是编译出来的可执行程序，以及一些用于辅助执行不同步骤的脚本。</p>
+<h2 id="下载安装"><a class="header-anchor" href="#下载安装"></a>下载安装</h2>
+<p>我的机器环境是：</p>
+<ul>
+<li>Intel® Core™ i5-8500 3.00GHz</li>
+<li>16 GB 内存</li>
+<li>无 Nvida 显卡</li>
+<li>Ubuntu 16.04</li>
+</ul>
+<p>Kaldi 的编译源码是 2019/04/30 直接从 Github 源码 master 分支直接下载的。如下几个目录分别介绍下：</p>
+<ul>
+<li>tools/: 主要存放了 Kaldi 依赖的包已经各种工具，如：OpenFST, ATLAS, IRSTLM, sph2pipe 等等。</li>
+<li>src/: Kaldi 的源代码；</li>
+<li>egs/: 为各种示例项目和代码；</li>
+</ul>
+<p>详细的安装过程和指令可以参考 ./INSTALL, src/INSTALL, 以及 tools/INSTALL。</p>
+<p>编译 tools 和 src 之前，可以先执行 tools/extras/check_dependencies.sh 来查看需要安装哪些依赖。</p>
+<p>在编译安装好 tools 和 src 之后，除了 tools 下的各种库和工具生成之外，src/bin/ 下也生成了很多的 toolkits，这些都是我们下面模型训练和识别示例中需要的。</p>
+<h2 id="模型训练"><a class="header-anchor" href="#模型训练"></a>模型训练</h2>
+<h3 id="语料库"><a class="header-anchor" href="#语料库"></a>语料库</h3>
+<p>我采用的语料库是 thchs30，是清华大学提供的30个小时的中文语料库，可以到 OpenSLR 下载，链接地址为 https://www.openslr.org/18/ 。其中包括如下几个文件：</p>
+<ul>
+<li>data_thchs30.tgz, 6.4G, sppech data and transcripts</li>
+<li>test_noise.tgz, 1.9G, standard 0db noisy test data</li>
+<li>resource.tgz, 24M, supplementary resources, incl. lexicon for training data, noise samples</li>
+</ul>
+<p>下载之后全部进行解压，我这里解压到了 ~/works/asr/dataset/thchs30/ 下，如下:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">steven@Jenkins-server:~/works/asr/dataset/thchs30$ ll</span><br><span class="line">total 20</span><br><span class="line">drwxrwxr-x 5 steven steven 4096 5月   1 12:49 ./</span><br><span class="line">drwxrwxr-x 4 steven steven 4096 5月   1 12:49 ../</span><br><span class="line">drwxr-xr-x 8 steven steven 4096 12月 30  2015 data_thchs30/</span><br><span class="line">drwxr-xr-x 4 steven steven 4096 1月  25  2016 resource/</span><br><span class="line">drwxr-xr-x 5 steven steven 4096 1月  25  2016 test-noise/</span><br></pre></td></tr></table></figure>
+<p>下面进入 egs/thchs30/s5/ 目录，如下:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">steven@Jenkins-server:~/kaldi/egs/thchs30/s5$ ls -l</span><br><span class="line">total 108</span><br><span class="line">-rw-rw-r--  1 steven steven  1062 5月   1 12:53 cmd.sh</span><br><span class="line">drwxrwxr-x  2 steven steven  4096 4月  30 23:28 conf</span><br><span class="line">drwxrwxr-x 15 steven steven  4096 5月   1 14:13 data</span><br><span class="line">drwxrwxr-x 18 steven steven  4096 5月   1 14:24 exp</span><br><span class="line">drwxrwxr-x  5 steven steven  4096 5月   1 14:22 fbank</span><br><span class="line">drwxrwxr-x  4 steven steven  4096 4月  30 23:28 local</span><br><span class="line">drwxrwxr-x  5 steven steven  4096 5月   1 13:14 mfcc</span><br><span class="line">-rw-------  1 steven steven 57117 5月   1 17:40 nohup.out</span><br><span class="line">-rwxrwxr-x  1 steven steven   374 4月  30 23:28 path.sh</span><br><span class="line">-rw-rw-r--  1 steven steven  4469 4月  30 23:28 RESULTS</span><br><span class="line">-rwxrwxr-x  1 steven steven  5287 5月   1 13:03 run.sh</span><br><span class="line">lrwxrwxrwx  1 steven steven    19 4月  30 23:28 steps -&gt; ../../wsj/s5/steps/</span><br><span class="line">lrwxrwxrwx  1 steven steven    19 4月  30 23:28 utils -&gt; ../../wsj/s5/utils/</span><br></pre></td></tr></table></figure>
+<p>打开 cmd.sh，编辑如下（注释掉 queue.pl 的执行方式）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">export train_cmd&#x3D;run.pl</span><br><span class="line">export decode_cmd&#x3D;&quot;run.pl --mem 4G&quot;</span><br><span class="line">export mkgraph_cmd&#x3D;&quot;run.pl --mem 8G&quot;</span><br><span class="line">export cuda_cmd&#x3D;&quot;run.pl --gpu 1&quot;</span><br><span class="line">#export train_cmd&#x3D;queue.pl</span><br><span class="line">#export decode_cmd&#x3D;&quot;queue.pl --mem 4G&quot;</span><br><span class="line">#export mkgraph_cmd&#x3D;&quot;queue.pl --mem 8G&quot;</span><br><span class="line">#export cuda_cmd&#x3D;&quot;queue.pl --gpu 1&quot;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>为什么不用 queue.pl? 因为我们运行的是本机独立机器执行，可以参考 cmd.sh 的注释。</p>
+</blockquote>
+<p>继续打开 run.sh，修改 thchs30 语料库的路径：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#corpus and trans directory</span><br><span class="line">#thchs&#x3D;&#x2F;nfs&#x2F;public&#x2F;materials&#x2F;data&#x2F;thchs30-openslr</span><br><span class="line">thchs&#x3D;&#x2F;home&#x2F;steven&#x2F;works&#x2F;asr&#x2F;dataset&#x2F;thchs30</span><br></pre></td></tr></table></figure>
+<p>下面就可以开始执行 egs/thchs30/s5/run.sh 脚本了，该脚本中包含了整个训练过程中需要执行的各种命令，整个过程执行时间较长（我的机器跑了十几个小时），如下为部分执行日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">creating data&#x2F;&#123;train,dev,test&#125;</span><br><span class="line">cleaning data&#x2F;train</span><br><span class="line">preparing scps and text in data&#x2F;train</span><br><span class="line">cleaning data&#x2F;dev</span><br><span class="line">preparing scps and text in data&#x2F;dev</span><br><span class="line">cleaning data&#x2F;test</span><br><span class="line">preparing scps and text in data&#x2F;test</span><br><span class="line">creating test_phone for phone decoding</span><br><span class="line">steps&#x2F;make_mfcc.sh --nj 4 --cmd run.pl data&#x2F;mfcc&#x2F;train exp&#x2F;make_mfcc&#x2F;train mfcc&#x2F;train</span><br><span class="line">utils&#x2F;validate_data_dir.sh: Successfully validated data-directory data&#x2F;mfcc&#x2F;train</span><br><span class="line">steps&#x2F;make_mfcc.sh: [info]: no segments file exists: assuming wav.scp indexed by utterance.</span><br><span class="line">Succeeded creating MFCC features for train</span><br><span class="line">steps&#x2F;compute_cmvn_stats.sh data&#x2F;mfcc&#x2F;train exp&#x2F;mfcc_cmvn&#x2F;train mfcc&#x2F;train</span><br><span class="line">Succeeded creating CMVN stats for train</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">steps&#x2F;nnet&#x2F;train.sh --copy_feats false --cmvn-opts --norm-means&#x3D;true --norm-vars&#x3D;false --hid-layers 4 --hid-dim</span><br><span class="line">1024 --learn-rate 0.008 data&#x2F;fbank&#x2F;train data&#x2F;fbank&#x2F;dev data&#x2F;lang exp&#x2F;tri4b_ali exp&#x2F;tri4b_ali_cv exp&#x2F;tri4b_dnn</span><br><span class="line"></span><br><span class="line"># INFO</span><br><span class="line">steps&#x2F;nnet&#x2F;train.sh : Training Neural Network</span><br><span class="line">     dir       : exp&#x2F;tri4b_dnn</span><br><span class="line">     Train-set : data&#x2F;fbank&#x2F;train 10000, exp&#x2F;tri4b_ali</span><br><span class="line">     CV-set    : data&#x2F;fbank&#x2F;dev 893 exp&#x2F;tri4b_ali_cv</span><br><span class="line"></span><br><span class="line">LOG ([5.5.314~1-1da8e]:main():cuda-gpu-available.cc:60)</span><br><span class="line"></span><br><span class="line">### IS CUDA GPU AVAILABLE? &#39;Jenkins-server&#39; ###</span><br><span class="line">### CUDA WAS NOT COMPILED IN! ###</span><br><span class="line">To support CUDA, you must run &#39;configure&#39; on a machine that has the CUDA compiler &#39;nvcc&#39; available.</span><br><span class="line"># Accounting: time&#x3D;1 threads&#x3D;1</span><br><span class="line"># Ended (code 1) at Wed May  1 14:24:20 CST 2019, elapsed time 1 seconds</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">steps&#x2F;diagnostic&#x2F;analyze_lats.sh: see stats in exp&#x2F;mono&#x2F;decode_test_phone&#x2F;log&#x2F;analyze_alignments.log</span><br><span class="line">Overall, lattice depth (10,50,90-percentile)&#x3D;(6,20,64) and mean&#x3D;29.6</span><br><span class="line">steps&#x2F;diagnostic&#x2F;analyze_lats.sh: see stats in exp&#x2F;mono&#x2F;decode_test_phone&#x2F;log&#x2F;analyze_lattice_depth_stats.log</span><br><span class="line">local&#x2F;score.sh --cmd run.pl --mem 4G data&#x2F;mfcc&#x2F;test_phone exp&#x2F;mono&#x2F;graph_phone exp&#x2F;mono&#x2F;decode_test_phone</span><br><span class="line">local&#x2F;score.sh: scoring with word insertion penalty&#x3D;0.0,0.5,1.0</span><br></pre></td></tr></table></figure>
+<p>在上面的日志输出中可以看到，因为默认 DNN 是用 GPU 来跑的，应该也可以改成 CPU 来跑，但是从网上看到有人用 CPU 跑了 7, 8 天才迭代了 17, 18 次，也就放弃试了。</p>
+<p>从日志的输出也可以看出整个训练过程大致包括数据准备、monophone 单因素训练（steps/train_mono.sh）、tri1 三因素训练（steps/train_deltas.sh）、tri2 进行 lda_mllt 特征变换（steps/train_lda_mllt.sh）、tri3b 进行 sat 自然语言适应（step/train_sat.sh）、tri4b 进行 quick 训练（step/train_quick.sh），之后就是 DNN 训练。</p>
+<p>上面的这些步骤，每一次都会生成一个可用的模型，具体可以查看 exp 目录，所有的步骤都在这里输出，如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">steven@Jenkins-server:~/kaldi/egs/thchs30/s5/exp$ ls -l</span><br><span class="line">total 64</span><br><span class="line">drwxrwxr-x 5 steven steven 4096 5月   1 14:24 fbank_cmvn</span><br><span class="line">drwxrwxr-x 5 steven steven 4096 5月   1 14:22 make_fbank</span><br><span class="line">drwxrwxr-x 5 steven steven 4096 5月   1 13:14 make_mfcc</span><br><span class="line">drwxrwxr-x 5 steven steven 4096 5月   1 13:15 mfcc_cmvn</span><br><span class="line">drwxrwxr-x 7 steven steven 4096 5月   1 16:37 mono</span><br><span class="line">drwxrwxr-x 3 steven steven 4096 5月   1 13:27 mono_ali</span><br><span class="line">drwxrwxr-x 7 steven steven 4096 5月   1 15:45 tri1</span><br><span class="line">drwxrwxr-x 3 steven steven 4096 5月   1 13:31 tri1_ali</span><br><span class="line">drwxrwxr-x 7 steven steven 4096 5月   1 15:38 tri2b</span><br><span class="line">drwxrwxr-x 3 steven steven 4096 5月   1 13:39 tri2b_ali</span><br><span class="line">drwxrwxr-x 9 steven steven 4096 5月   1 15:56 tri3b</span><br><span class="line">drwxrwxr-x 3 steven steven 4096 5月   1 13:57 tri3b_ali</span><br><span class="line">drwxrwxr-x 9 steven steven 4096 5月   1 16:16 tri4b</span><br><span class="line">drwxrwxr-x 3 steven steven 4096 5月   1 14:13 tri4b_ali</span><br><span class="line">drwxrwxr-x 3 steven steven 4096 5月   1 14:13 tri4b_ali_cv</span><br><span class="line">drwxrwxr-x 4 steven steven 4096 5月   1 14:24 tri4b_dnn</span><br></pre></td></tr></table></figure>
+<p>下面看下 tri1，因为下面的示例会以 tri1 模型来识别。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">steven@Jenkins-server:~/kaldi/egs/thchs30/s5/exp/tri1$ ls -l</span><br><span class="line">total 66176</span><br><span class="line">-rw-rw-r-- 1 steven steven  3435133 5月   1 13:31 35.mdl</span><br><span class="line">-rw-rw-r-- 1 steven steven     8326 5月   1 13:31 35.occs</span><br><span class="line">-rw-rw-r-- 1 steven steven  1524364 5月   1 13:30 ali.1.gz</span><br><span class="line">-rw-rw-r-- 1 steven steven  1495302 5月   1 13:30 ali.2.gz</span><br><span class="line">-rw-rw-r-- 1 steven steven  1655834 5月   1 13:30 ali.3.gz</span><br><span class="line">-rw-rw-r-- 1 steven steven  1533052 5月   1 13:30 ali.4.gz</span><br><span class="line">-rw-rw-r-- 1 steven steven        1 5月   1 13:27 cmvn_opts</span><br><span class="line">drwxrwxr-x 4 steven steven     4096 5月   1 17:21 decode_test_phone</span><br><span class="line">drwxrwxr-x 4 steven steven     4096 5月   1 15:44 decode_test_word</span><br><span class="line">lrwxrwxrwx 1 steven steven        6 5月   1 13:31 final.mdl -&gt; 35.mdl</span><br><span class="line">lrwxrwxrwx 1 steven steven        7 5月   1 13:31 final.occs -&gt; 35.occs</span><br><span class="line">-rw-rw-r-- 1 steven steven 14109331 5月   1 13:27 fsts.1.gz</span><br><span class="line">-rw-rw-r-- 1 steven steven 13876553 5月   1 13:27 fsts.2.gz</span><br><span class="line">-rw-rw-r-- 1 steven steven 15234357 5月   1 13:27 fsts.3.gz</span><br><span class="line">-rw-rw-r-- 1 steven steven 14475131 5月   1 13:27 fsts.4.gz</span><br><span class="line">drwxrwxr-x 3 steven steven     4096 5月   1 15:45 graph_phone</span><br><span class="line">drwxrwxr-x 3 steven steven     4096 5月   1 13:40 graph_word</span><br><span class="line">drwxrwxr-x 2 steven steven    12288 5月   1 13:31 log</span><br><span class="line">-rw-rw-r-- 1 steven steven        2 5月   1 13:27 num_jobs</span><br><span class="line">-rw-rw-r-- 1 steven steven     2098 5月   1 13:27 phones.txt</span><br><span class="line">-rw-rw-r-- 1 steven steven     8161 5月   1 13:27 questions.int</span><br><span class="line">-rw-rw-r-- 1 steven steven    35098 5月   1 13:27 questions.qst</span><br><span class="line">-rw-rw-r-- 1 steven steven   305009 5月   1 13:27 tree</span><br><span class="line"></span><br><span class="line">steven@Jenkins-server:~/kaldi/egs/thchs30/s5/exp/tri1$ ls -l graph_word/</span><br><span class="line">total 842184</span><br><span class="line">-rw-rw-r-- 1 steven steven       290 5月   1 13:31 disambig_tid.int</span><br><span class="line">-rw-rw-r-- 1 steven steven 861725005 5月   1 13:40 HCLG.fst</span><br><span class="line">-rw-rw-r-- 1 steven steven         5 5月   1 13:40 num_pdfs</span><br><span class="line">drwxrwxr-x 2 steven steven      4096 5月   1 13:40 phones</span><br><span class="line">-rw-rw-r-- 1 steven steven      2098 5月   1 13:40 phones.txt</span><br><span class="line">-rw-rw-r-- 1 steven steven    646753 5月   1 13:40 words.txt</span><br></pre></td></tr></table></figure>
+<p>其中，<strong>final.mdl</strong> 就是训练出来的可以使用的模型，另外，在 <strong>graph_word</strong> 下面的 <strong>words.txt</strong> 和 <strong>HCLG.fst</strong> 分别为字典以及有限状态机。单独介绍这三个文件，是因为我们下面的示例主要基于这三个文件来识别的。</p>
+<h2 id="识别示例"><a class="header-anchor" href="#识别示例"></a>识别示例</h2>
+<p>下面我们用上面训练的 tri1 模型来识别一个给定的音频文件。我们这里使用 <strong>online-wav-gmm-decode-faster</strong> 工具来回放指定的 wav 文件并进行识别。</p>
+<p>对于当前源码，在上面的编译安装过程中，默认情况下并不会生成 <strong>online-wav-gmm-decode-faster</strong> 程序（默认会生成的是 online2 相关程序），此时需要自己手动编译此工具，如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">steven@Jenkins-server:~/kaldi/src/online$ make</span><br><span class="line">steven@Jenkins-server:~/kaldi/src/online$ cd ../onlinebin</span><br><span class="line">steven@Jenkins-server:~/kaldi/src/onlinebin$ ls -l</span><br><span class="line">total 137340</span><br><span class="line">drwxrwxr-x 3 steven steven     4096 4月  30 23:28 java-online-audio-client</span><br><span class="line">-rw-rw-r-- 1 steven steven     1364 4月  30 23:28 Makefile</span><br><span class="line">-rwxrwxr-x 1 steven steven  8351432 5月   1 21:09 online-audio-client</span><br><span class="line">-rw-rw-r-- 1 steven steven    11986 4月  30 23:28 online-audio-client.cc</span><br><span class="line">-rwxrwxr-x 1 steven steven 43179504 5月   1 21:09 online-audio-server-decode-faster</span><br><span class="line">-rw-rw-r-- 1 steven steven    13653 4月  30 23:28 online-audio-server-decode-faster.cc</span><br><span class="line">-rwxrwxr-x 1 steven steven 27141312 5月   1 21:08 online-gmm-decode-faster</span><br><span class="line">-rw-rw-r-- 1 steven steven     8113 4月  30 23:28 online-gmm-decode-faster.cc</span><br><span class="line">-rwxrwxr-x 1 steven steven  7978200 5月   1 21:08 online-net-client</span><br><span class="line">-rw-rw-r-- 1 steven steven     4970 4月  30 23:28 online-net-client.cc</span><br><span class="line">-rwxrwxr-x 1 steven steven 26017240 5月   1 21:08 online-server-gmm-decode-faster</span><br><span class="line">-rw-rw-r-- 1 steven steven     8255 4月  30 23:28 online-server-gmm-decode-faster.cc</span><br><span class="line">-rwxrwxr-x 1 steven steven 27878392 5月   1 21:08 online-wav-gmm-decode-faster</span><br><span class="line">-rw-rw-r-- 1 steven steven    10116 4月  30 23:28 online-wav-gmm-decode-faster.cc</span><br></pre></td></tr></table></figure>
+<p>下面为示例的步骤：</p>
+<ol>
+<li>将 kaldi/egs/voxforge/online_demo 拷贝到 kaldi/egs/thchs30/ 下;</li>
+<li>在 kaldi/egs/thchs30/online_demo/ 下新建两个文件夹 online-data/ 和 work/，以及在 online-data 下新建两个文件夹 audio/ 和 models/，audio/ 下面可以存放需要回放和识别的语音文件，路径结构如下：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">steven@Jenkins-server:~/kaldi/egs/thchs30/online_demo$ tree -L 4</span><br><span class="line">.</span><br><span class="line">├── online-data</span><br><span class="line">│   ├── audio</span><br><span class="line">│   │   ├── C21_517.wav      // 需要回放和识别的语音文件，可以放多个</span><br><span class="line">│   │   └── trans.txt        // 为空即可</span><br><span class="line">│   └── models</span><br><span class="line">│       └── tri1</span><br><span class="line">│           ├── 35.mdl       // 模型训练步骤生成的模型文件</span><br><span class="line">│           ├── final.mdl    // 模型训练步骤生成的模型文件</span><br><span class="line">│           ├── HCLG.fst     // 拷贝 thchs30/s5/exp/graph_word/HCLG.fst</span><br><span class="line">│           └── words.txt    // 拷贝 thchs30/s5/exp/graph_word/words.txt</span><br><span class="line">├── README.txt</span><br><span class="line">├── run.sh</span><br><span class="line">└── work</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>
+<p>打开 kaldi/egs/thchs30/online_demo/run.sh，更改如下：</p>
+<ul>
+<li>更新模型名</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Change this to <span class="string">&quot;tri2a&quot;</span> <span class="keyword">if</span> you like to <span class="built_in">test</span> using a ML-trained model</span></span><br><span class="line"><span class="meta">#</span><span class="bash">ac_model_type=tri2b_mmi</span></span><br><span class="line">ac_model_type=tri1</span><br></pre></td></tr></table></figure>
+<pre><code>- 注释掉如下这段从 voxforge 下载现网的测试预料和模型的代码
+</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="keyword">if</span> [ ! -s <span class="variable">$&#123;data_file&#125;</span>.tar.bz2 ]; <span class="keyword">then</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;Downloading test models and data ...&quot;</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">    wget -T 10 -t 3 <span class="variable">$data_url</span>;</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="bash"><span class="comment">#    if [ ! -s $&#123;data_file&#125;.tar.bz2 ]; then</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">        <span class="built_in">echo</span> <span class="string">&quot;Download of <span class="variable">$data_file</span> has failed!&quot;</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">        <span class="built_in">exit</span> 1</span></span><br><span class="line"><span class="meta">#</span><span class="bash">    <span class="keyword">fi</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="keyword">fi</span></span></span><br></pre></td></tr></table></figure>
+<pre><code>- 修改如下执行识别的命令（将模型的部分更改为 $ac_model/final.mdl）
+</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">online-wav-gmm-decode-faster --verbose=1 --rt-min=0.8 --rt-max=0.85\</span><br><span class="line">    --max-active=4000 --beam=12.0 --acoustic-scale=0.0769 \</span><br><span class="line">    scp:$decode_dir/input.scp $ac_model/final.mdl $ac_model/HCLG.fst \</span><br><span class="line">    $ac_model/words.txt &#x27;1:2:3:4:5&#x27; ark,t:$decode_dir/trans.txt \</span><br><span class="line">    ark,t:$decode_dir/ali.txt $trans_matrix;;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>执行 kaldi/egs/thchs30/online_demo/run.sh，如下输出：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">steven@Jenkins-server:~/kaldi/egs/thchs30/online_demo$ ./run.sh</span><br><span class="line"></span><br><span class="line">  SIMULATED ONLINE DECODING - pre-recorded audio is used</span><br><span class="line"></span><br><span class="line">  The (bigram) language model used to build the decoding graph was</span><br><span class="line">  estimated on an audio book&#x27;s text. The text in question is</span><br><span class="line">  &quot;King Solomon&#x27;s Mines&quot; (http://www.gutenberg.org/ebooks/2166).</span><br><span class="line">  The audio chunks to be decoded were taken from the audio book read</span><br><span class="line">  by John Nicholson(http://librivox.org/king-solomons-mines-by-haggard/)</span><br><span class="line"></span><br><span class="line">  NOTE: Using utterances from the book, on which the LM was estimated</span><br><span class="line">        is considered to be &quot;cheating&quot; and we are doing this only for</span><br><span class="line">        the purposes of the demo.</span><br><span class="line"></span><br><span class="line">  You can type &quot;./run.sh --test-mode live&quot; to try it using your</span><br><span class="line">  own voice!</span><br><span class="line"></span><br><span class="line">online-wav-gmm-decode-faster --verbose=1 --rt-min=0.8 --rt-max=0.85 --max-active=4000 --beam=12.0 --acoustic-scale=0.0769 scp:./work/input.scp online-data/models/tri1/final.mdl online-data/models/tri1/HCLG.fst online-data/models/tri1/words.txt 1:2:3:4:5 ark,t:./work/trans.txt ark,t:./work/ali.txt</span><br><span class="line">File: C21_517</span><br><span class="line">他 曾 为 火药 仓库 研究 并未 装置 为 国家 造 币 厂 研究 减少 金币 磨损 消耗 的 办法</span><br><span class="line"></span><br><span class="line">compute-wer --mode=present ark,t:./work/ref.txt ark,t:./work/hyp.txt</span><br><span class="line"><span class="meta">%</span><span class="bash">WER -nan [ 0 / 0, 0 ins, 0 del, 0 sub ]</span></span><br><span class="line"><span class="meta">%</span><span class="bash">SER -nan [ 0 / 0 ]</span></span><br><span class="line">Scored 0 sentences, 0 not present in hyp.</span><br></pre></td></tr></table></figure>
+<p>这里采用的 tri1 模型的准确度不太理想，下面再试试 tri2b，以及 DNN 模型 :)</p>
+<h1>参考资料</h1>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB">wiki-语音识别</a></li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E9%9A%90%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E6%A8%A1%E5%9E%8B">wiki-隐马尔科夫模型</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/31103654">一文详解高斯混合模型原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh/%E6%A2%85%E5%B0%94%E9%A2%91%E7%8E%87%E5%80%92%E8%B0%B1%E7%B3%BB%E6%95%B0">wiki-梅尔频率倒谱系数</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Word_error_rate">wiki-Word error rate</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.speech.cs.cmu.edu/cgi-bin/cmudict">The CMU Pronouncing Dictionary</a></li>
+<li><a target="_blank" rel="noopener" href="https://publications.idiap.ch/downloads/papers/2012/Povey_ASRU2011_2011.pdf">The Kaldi Speech Recognition Toolkit</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.amazon.cn/dp/B01H2AXN1I/ref=sr_1_1">《解析深度学习:语音识别实践》</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB/" rel="tag"># 语音识别</a>
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E8%AF%86%E5%88%AB/" rel="tag"># 机器识别</a>
+              <a href="/tags/HMM/" rel="tag"># HMM</a>
+              <a href="/tags/MFCC/" rel="tag"># MFCC</a>
+              <a href="/tags/Kaldi/" rel="tag"># Kaldi</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/12/android-nfc-demo-card-emulator.html" rel="prev" title="Android NFC Demo (2) - Card Emulator">
+      <i class="fa fa-chevron-left"></i> Android NFC Demo (2) - Card Emulator
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/20/nginx-grpc-web-go.html" rel="next" title="使用 grpc-web, vue 和 Nginx 搭建一个简单 todo 示例">
+      使用 grpc-web, vue 和 Nginx 搭建一个简单 todo 示例 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">初识语音识别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">1.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-number">1.2.</span> <span class="nav-text">语音识别系统的分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E5%92%8C%E7%AC%A6%E5%8F%B7"><span class="nav-number">1.3.</span> <span class="nav-text">一些基础概念和符号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">1.4.</span> <span class="nav-text">基本原理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">Kaldi</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E5%AE%89%E8%A3%85"><span class="nav-number">2.2.</span> <span class="nav-text">下载安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">2.3.</span> <span class="nav-text">模型训练</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%AD%E6%96%99%E5%BA%93"><span class="nav-number">2.3.1.</span> <span class="nav-text">语料库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%86%E5%88%AB%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.4.</span> <span class="nav-text">识别示例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Steven"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Steven</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Steven</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
