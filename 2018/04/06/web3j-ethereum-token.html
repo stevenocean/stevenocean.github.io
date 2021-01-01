@@ -22,12 +22,12 @@
     var CONFIG = {"hostname":"stevenocean.github.io","root":"/","scheme":"Mist","version":"7.8.0","sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"appID":"PJYZ7OZEJB","apiKey":"78ff9194440a75eba3a1be76689c2b0c","indexName":"steven-blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="关于 ERC20 规范 ERC20 为 Ethereum 上的 Token 合约标准规范，遵守该规范的 Token 合约可以被各种以太坊钱包、以及相关的平台和项目支持，如在 etherscan 上可以查看遵守 ERC20 规范的 Token 信息和交易记录。">
+  <meta name="description" content="关于 ERC20 规范ERC20 为 Ethereum 上的 Token 合约标准规范，遵守该规范的 Token 合约可以被各种以太坊钱包、以及相关的平台和项目支持，如在 etherscan 上可以查看遵守 ERC20 规范的 Token 信息和交易记录。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 Web3J 发个以太坊 ERC20 Token">
 <meta property="og:url" content="http://stevenocean.github.io/2018/04/06/web3j-ethereum-token.html">
 <meta property="og:site_name" content="未来边缘">
-<meta property="og:description" content="关于 ERC20 规范 ERC20 为 Ethereum 上的 Token 合约标准规范，遵守该规范的 Token 合约可以被各种以太坊钱包、以及相关的平台和项目支持，如在 etherscan 上可以查看遵守 ERC20 规范的 Token 信息和交易记录。">
+<meta property="og:description" content="关于 ERC20 规范ERC20 为 Ethereum 上的 Token 合约标准规范，遵守该规范的 Token 合约可以被各种以太坊钱包、以及相关的平台和项目支持，如在 etherscan 上可以查看遵守 ERC20 规范的 Token 信息和交易记录。">
 <meta property="og:locale">
 <meta property="og:image" content="http://stevenocean.github.io/2018/04/06/web3j-ethereum-token/remix-contract-1.jpg">
 <meta property="og:image" content="http://stevenocean.github.io/2018/04/06/web3j-ethereum-token/remix-contract-2.jpg">
@@ -270,9 +270,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="关于-ERC20-规范"><a class="header-anchor" href="#关于-ERC20-规范"></a>关于 ERC20 规范</h2>
-<p>ERC20 为 Ethereum 上的 Token 合约标准规范，遵守该规范的 Token 合约可以被各种以太坊钱包、以及相关的平台和项目支持，如在 etherscan 上可以查看遵守 ERC20 规范的 Token 信息和交易记录。</p>
+        <h2 id="关于-ERC20-规范"><a href="#关于-ERC20-规范" class="headerlink" title="关于 ERC20 规范"></a>关于 ERC20 规范</h2><p>ERC20 为 Ethereum 上的 Token 合约标准规范，遵守该规范的 Token 合约可以被各种以太坊钱包、以及相关的平台和项目支持，如在 etherscan 上可以查看遵守 ERC20 规范的 Token 信息和交易记录。</p>
 <a id="more"></a>
+
 <p>如下为 ERC20 Token 标准接口：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"> &#x2F;&#x2F; ----------------------------------------------------------------------------</span><br><span class="line"> &#x2F;&#x2F; ERC20 Token Standard Interface</span><br><span class="line"> &#x2F;&#x2F; https:&#x2F;&#x2F;github.com&#x2F;ethereum&#x2F;EIPs&#x2F;blob&#x2F;master&#x2F;EIPS&#x2F;eip-20-token-standard.md</span><br><span class="line"> &#x2F;&#x2F; ----------------------------------------------------------------------------</span><br><span class="line">contract ERC20 &#123;</span><br><span class="line">      function name() constant returns (string name)</span><br><span class="line">      function symbol() constant returns (string symbol)</span><br><span class="line">      function decimals() constant returns (uint8 decimals)</span><br><span class="line">      function totalSupply() constant returns (uint totalSupply);</span><br><span class="line">      function balanceOf(address _owner) constant returns (uint balance);</span><br><span class="line">      function transfer(address _to, uint _value) returns (bool success);</span><br><span class="line">      function transferFrom(address _from, address _to, uint _value) returns (bool success);</span><br><span class="line">      function approve(address _spender, uint _value) returns (bool success);</span><br><span class="line">      function allowance(address _owner, address _spender) constant returns (uint remaining);</span><br><span class="line">      event Transfer(address indexed _from, address indexed _to, uint _value);</span><br><span class="line">      event Approval(address indexed _owner, address indexed _spender, uint _value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>其中各个接口方法：</p>
@@ -292,14 +292,14 @@
 <li><strong>Transfer</strong>：该事件是在 token 发生转移时触发的，包括 0 个 token 转移也会触发；</li>
 <li><strong>Approve</strong>：该事件是在成功调用 approve 方法后触发；</li>
 </ul>
-<h2 id="使用-Solidity-编写-ERC20-Token"><a class="header-anchor" href="#使用-Solidity-编写-ERC20-Token"></a>使用 Solidity 编写 ERC20 Token</h2>
-<p>支持在以太坊上编写智能合约的语言主要有 Solidity、Serpent、LLL 和 Mutan，其中 Solidity 语法类似 Javascript，也是目前最主要的语言，Solidity 是静态类型的面向对象的编程语言，用其编写的智能合约需要通过 solc 编译器或者 IDE 环境编译成 EVM 字节码格式才能在 EVM 中执行。当编译好的合约发送到以太坊网络之后，就可以通过 web3.js 或者 web3.js API 来调用了，从而构建一个与之交互的应用。</p>
+<h2 id="使用-Solidity-编写-ERC20-Token"><a href="#使用-Solidity-编写-ERC20-Token" class="headerlink" title="使用 Solidity 编写 ERC20 Token"></a>使用 Solidity 编写 ERC20 Token</h2><p>支持在以太坊上编写智能合约的语言主要有 Solidity、Serpent、LLL 和 Mutan，其中 Solidity 语法类似 Javascript，也是目前最主要的语言，Solidity 是静态类型的面向对象的编程语言，用其编写的智能合约需要通过 solc 编译器或者 IDE 环境编译成 EVM 字节码格式才能在 EVM 中执行。当编译好的合约发送到以太坊网络之后，就可以通过 web3.js 或者 web3.js API 来调用了，从而构建一个与之交互的应用。</p>
 <p>我们下面使用在线 IDE Remix 来编写我们的智能合约：简单的发行 31415926 个 SOT tokens，支持简单的合约转账功能。</p>
 <blockquote>
-<p>Remix 是以太坊官方推荐和维护的 IDE 环境，支持<a target="_blank" rel="noopener" href="https://remix.ethereum.org">浏览器在线</a>开发、调试、编译，也支持本地部署该 IDE 环境。</p>
+<p>Remix 是以太坊官方推荐和维护的 IDE 环境，支持<a target="_blank" rel="noopener" href="https://remix.ethereum.org/">浏览器在线</a>开发、调试、编译，也支持本地部署该 IDE 环境。</p>
 </blockquote>
 <p>下图为使用 Remix 开发 SOT 合约的环境：</p>
 <img src="/2018/04/06/web3j-ethereum-token/remix-contract-1.jpg" class="">
+
 <p>在 Remix 的 Editor 编辑器主要（通过 tab）显示了正在打开的一个或多个合约源码文件，Remix 也会自动编译合约代码，如果有编译错误，会在左边的 <strong>compile</strong> tab 页面显示。</p>
 <blockquote>
 <p><a target="_blank" rel="noopener" href="http://remix.readthedocs.io/en/latest/">remix 的官方文档</a> 详细介绍了 remix 的使用。</p>
@@ -311,13 +311,13 @@
 <li><strong>balance</strong>：主要使用 map 结构缓存账号的 token 余额；</li>
 <li><strong>allowed</strong>：采用二级 map 结构缓存 owner（一级 map key）授权给哪些 spender（二级 map key）可提取的 token 数 value；</li>
 </ul>
-<h2 id="编译和编码合约为-Java-代码"><a class="header-anchor" href="#编译和编码合约为-Java-代码"></a>编译和编码合约为 Java 代码</h2>
-<p>因为我们希望能够通过在 Java 代码中实现合约的部署和转账等功能，因为我们需要将合约转换成 Java 代码，这里采用 <a target="_blank" rel="noopener" href="https://github.com/web3j/web3j">web3j</a> 来转换。</p>
+<h2 id="编译和编码合约为-Java-代码"><a href="#编译和编码合约为-Java-代码" class="headerlink" title="编译和编码合约为 Java 代码"></a>编译和编码合约为 Java 代码</h2><p>因为我们希望能够通过在 Java 代码中实现合约的部署和转账等功能，因为我们需要将合约转换成 Java 代码，这里采用 <a target="_blank" rel="noopener" href="https://github.com/web3j/web3j">web3j</a> 来转换。</p>
 <p>web3j 转换需要提供合约的 .abi 和 .bin 文件，我们先用 solc 编译器来生成 sot.abi 和 sot.bin 文件，如下命令：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  sot solc sot.sol --abi --bin --optimize -o ./</span><br><span class="line">➜  sot ll</span><br><span class="line">total 48</span><br><span class="line">-rw-r--r--  1 steven  staff   2.4K  4  7 16:30 SOT.abi</span><br><span class="line">-rw-r--r--  1 steven  staff   2.9K  4  7 16:30 SOT.bin</span><br><span class="line">-rw-r--r--  1 steven  staff   1.7K  4  7 16:30 StandardToken.abi</span><br><span class="line">-rw-r--r--  1 steven  staff   2.1K  4  7 16:30 StandardToken.bin</span><br><span class="line">-rw-r--r--  1 steven  staff   1.7K  4  7 16:30 Token.abi</span><br><span class="line">-rw-r--r--  1 steven  staff     0B  4  7 16:30 Token.bin</span><br><span class="line">-rw-r--r--@ 1 steven  staff   2.6K  4  7 16:29 sot.sol</span><br><span class="line">➜  sot</span><br></pre></td></tr></table></figure>
 <p>可以看到针对每个 contract 类都生成了对应的 .abi 和 .bin 文件。</p>
 <p>Remix IDE 中也可以通过查看 <strong>details</strong> 来获取对应的 abi 和 bin 文件。如下图：</p>
 <img src="/2018/04/06/web3j-ethereum-token/remix-contract-2.jpg" class="">
+
 <p>接下来使用 web3j 将合约转换为 Java 文件：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">➜  sot web3j solidity generate --javaTypes SOT.bin SOT.abi -o ./src/main/java -p io.github.stevenocean.contracts</span><br><span class="line"></span><br><span class="line">              _      _____ _     _</span><br><span class="line">             | |    |____ (_)   (_)</span><br><span class="line">__      _____| |__      / /_     _   ___</span><br><span class="line">\ \ /\ / / _ \ &#x27;_ \     \ \ |   | | / _ \</span><br><span class="line"> \ V  V /  __/ |_) |.___/ / | _ | || (_) |</span><br><span class="line">  \_/\_/ \___|_.__/ \____/| |(_)|_| \___/</span><br><span class="line">                         _/ |</span><br><span class="line">                        |__/</span><br><span class="line"></span><br><span class="line">Generating io.github.stevenocean.contracts.SOT ... File written to ./src/main/java</span><br><span class="line"></span><br><span class="line">➜  sot tree src/main/java</span><br><span class="line">src/main/java</span><br><span class="line">└── io</span><br><span class="line">    └── github</span><br><span class="line">        └── stevenocean</span><br><span class="line">            └── contracts</span><br><span class="line">                └── SOT.java</span><br><span class="line"></span><br><span class="line">4 directories, 1 file</span><br><span class="line">➜  sot</span><br></pre></td></tr></table></figure>
 <p>生成的 SOT.java 文件中生成了一个派生于 <strong>Contract</strong> 类的 <strong>SOT</strong> 合约类，该类中实现了 ERC20 token 规范的那些方法，代码摘略如下：</p>
@@ -329,8 +329,7 @@
 <li><a target="_blank" rel="noopener" href="https://web3j.readthedocs.io/en/latest/command_line.html">web3j 安装参考</a></li>
 </ul>
 </blockquote>
-<h2 id="使用-Web3j-部署合约"><a class="header-anchor" href="#使用-Web3j-部署合约"></a>使用 Web3j 部署合约</h2>
-<p>部署合约之前先要有个自己的钱包账号的，这个账号可以用 web3j 的 WalletUtils.generateLightNewWalletFile 来创建，如下：</p>
+<h2 id="使用-Web3j-部署合约"><a href="#使用-Web3j-部署合约" class="headerlink" title="使用 Web3j 部署合约"></a>使用 Web3j 部署合约</h2><p>部署合约之前先要有个自己的钱包账号的，这个账号可以用 web3j 的 WalletUtils.generateLightNewWalletFile 来创建，如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// password: 提供一个生成 keystore 的密码</span></span><br><span class="line"><span class="comment">/// destinationDirectory: 存放 keystore 文件的路径</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">generateLightNewWalletFile</span><span class="params">(String password, File destinationDirectory)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> NoSuchAlgorithmException, NoSuchProviderException,</span></span><br><span class="line"><span class="function">            InvalidAlgorithmParameterException, CipherException, IOException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> generateNewWalletFile(password, destinationDirectory, <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>刚创建好的钱包账号中的余额为 0，而部署合约是需要消耗一定的 ether 的，因此我们得先申请一点 ether，当然我们只能在测试环境下申请，在 rinkeby testnet 中，因为采用的是 PoA(clique) 共识机制，可以通过 <a target="_blank" rel="noopener" href="https://faucet.rinkeby.io/"><strong>faucet</strong></a> 提交如下三个支持的社交媒体的帖子URL，而对应的帖子内容中包括你需要申请 ether 的账号地址：</p>
 <ul>
@@ -341,6 +340,7 @@
 <p>具体的申请内容和方式请参考 <a target="_blank" rel="noopener" href="https://gist.github.com/cryptogoth/10a98e8078cfd69f7ca892ddbdcf26bc">How to get on Rinkeby Testnet in less than 10 minutes</a> 的 Step 4。</p>
 <p>申请成功之后，我们的钱包账号中就可以查到余额了，如下为在 <a target="_blank" rel="noopener" href="https://rinkeby.etherscan.io/address/0x7bdf7b545532026aa0aed61391eef6d3b9f429a2">etherscan rinkeby testnet</a> 中查看到的账号信息：</p>
 <img src="/2018/04/06/web3j-ethereum-token/address-1.jpg" class="">
+
 <p>其中 <strong>Transactions</strong> Tab 中第一条交易记录就是在 <strong>faucet</strong> 申请的 ether 的账号。</p>
 <p>好了，ether 来了，开始使用 web3j 部署 SOT 合约，如下代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SOT contract = SOT.deploy(</span><br><span class="line">        web3, finalCredentials,</span><br><span class="line">        ManagedTransaction.GAS_PRICE,</span><br><span class="line">        Contract.GAS_LIMIT).send();</span><br><span class="line">String contractAddress = contract.getContractAddress();</span><br></pre></td></tr></table></figure>
@@ -351,11 +351,14 @@
 <p><strong>contract.getContractAddress()</strong> 在部署成功 SOT 合约之后返回对应的合约地址。</p>
 <p>部署成功之后，我们可以查看到对应的合约信息，如下图：</p>
 <img src="/2018/04/06/web3j-ethereum-token/contract-1.jpg" class="">
-<p>该合约信息页面中显示了 合约创建者(Contract Creator)，ERC20 Token Contract 名称为 <strong>Steven Ocean Token(SOT)</strong>，以及交易列表中显示了关联的首笔交易（<strong>To</strong> 显示的为 <strong>Contract Creation</strong>），<a target="_blank" rel="noopener" href="https://rinkeby.etherscan.io/tx/0x01a0bc34a021cf18299796550b7633afb49d2bc0c6a9c3fa62d74921e772aaaf">交易信息</a> 如下图：</p>
+
+<p>该合约信息页面中显示了 合约创建者(Contract Creator)，ERC20 Token Contract 名称为 <strong>Steven Ocean Token(SOT)**，以及交易列表中显示了关联的首笔交易（</strong>To** 显示的为 <strong>Contract Creation</strong>），<a target="_blank" rel="noopener" href="https://rinkeby.etherscan.io/tx/0x01a0bc34a021cf18299796550b7633afb49d2bc0c6a9c3fa62d74921e772aaaf">交易信息</a> 如下图：</p>
 <img src="/2018/04/06/web3j-ethereum-token/contract-2.jpg" class="">
+
 <p>在交易信息的 Input Data 中其实承载的是 SOT 合约的 BIN 代码。</p>
 <p>另外，可以查看 <a target="_blank" rel="noopener" href="https://rinkeby.etherscan.io/token/0xb43149e6bfef554b282671cf249e2d43e57eb4a3#balances">SOT token 页面</a>，如下图：</p>
 <img src="/2018/04/06/web3j-ethereum-token/contract-3.jpg" class="">
+
 <p>其中显示了 SOT token 的很多信息，包括如下几个关键信息：</p>
 <ul>
 <li><strong>Total Supply</strong>：token 总的供应量，这里为我们发行了 31415926 个 SOT；</li>
@@ -365,11 +368,11 @@
 <blockquote>
 <p>注：上图中的 Token Transfers 中的记录是在下一步（合约转账）中完成之后出现的。</p>
 </blockquote>
-<h2 id="合约转账-给好基友转点币"><a class="header-anchor" href="#合约转账-给好基友转点币"></a>合约转账 - 给好基友转点币</h2>
-<p>我是 SOT token 的创建者，我给自己发行了 31415926 个 token，下面给好基友转点过去。继续使用 web3j 如下代码：</p>
+<h2 id="合约转账-给好基友转点币"><a href="#合约转账-给好基友转点币" class="headerlink" title="合约转账 - 给好基友转点币"></a>合约转账 - 给好基友转点币</h2><p>我是 SOT token 的创建者，我给自己发行了 31415926 个 token，下面给好基友转点过去。继续使用 web3j 如下代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 调用 SOT.transfer 方法</span></span><br><span class="line">Function function = <span class="keyword">new</span> Function(</span><br><span class="line">        <span class="string">&quot;transfer&quot;</span>,</span><br><span class="line">        Arrays.&lt;Type&gt;asList(<span class="keyword">new</span> Address(friendAddress),</span><br><span class="line">                <span class="keyword">new</span> Uint256(<span class="keyword">new</span> BigInteger(<span class="string">&quot;128000000000000000000&quot;</span>))),</span><br><span class="line">        Collections.&lt;TypeReference&lt;?&gt;&gt;emptyList());</span><br><span class="line">String encodedFunction = FunctionEncoder.encode(function);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建 tx 管理器，并通过 txManager 来发起合约转账</span></span><br><span class="line">RawTransactionManager txManager = <span class="keyword">new</span> RawTransactionManager(web3, finalCredentials);</span><br><span class="line">EthSendTransaction transactionResponse = txManager.sendTransaction(</span><br><span class="line">        ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT, </span><br><span class="line">        contractAddress, encodedFunction, BigInteger.ZERO);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取 TxHash</span></span><br><span class="line">String transactionHash = transactionResponse.getTransactionHash();</span><br></pre></td></tr></table></figure>
 <p>调用成功后，会提交到以太坊网络中，在交易被确认之前，为 pending 状态，如下图：</p>
 <img src="/2018/04/06/web3j-ethereum-token/contract-transfer-1.jpg" class="">
+
 <p>在交易最终被确认，并被区块打包之后，如下图：</p>
 <img src="/2018/04/06/web3j-ethereum-token/contract-transfer-2.jpg" class="">
 

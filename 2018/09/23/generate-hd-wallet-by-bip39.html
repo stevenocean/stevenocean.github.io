@@ -22,12 +22,12 @@
     var CONFIG = {"hostname":"stevenocean.github.io","root":"/","scheme":"Mist","version":"7.8.0","sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"appID":"PJYZ7OZEJB","apiKey":"78ff9194440a75eba3a1be76689c2b0c","indexName":"steven-blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="关于 Bitcoin 的钱包 在 Bitcoin 中有两种主要类型的钱包，分别为：  非确定性钱包（Nodeterministic Wallet）：该钱包中的每个密钥都是从不同的随机数独立生成的，密钥彼此之间没有任何关系，这种钱包也被称为 JBOK 钱包（Just a Bunch Of Keys）； 确定性钱包（Deterministic Wallet）：其中所有的密钥都是从一个主密钥派生出来的，">
+  <meta name="description" content="关于 Bitcoin 的钱包在 Bitcoin 中有两种主要类型的钱包，分别为：  非确定性钱包（Nodeterministic Wallet）：该钱包中的每个密钥都是从不同的随机数独立生成的，密钥彼此之间没有任何关系，这种钱包也被称为 JBOK 钱包（Just a Bunch Of Keys）； 确定性钱包（Deterministic Wallet）：其中所有的密钥都是从一个主密钥派生出来的，这">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基于 BIP-32 和 BIP-39 规范生成 HD 钱包（分层确定性钱包）">
 <meta property="og:url" content="http://stevenocean.github.io/2018/09/23/generate-hd-wallet-by-bip39.html">
 <meta property="og:site_name" content="未来边缘">
-<meta property="og:description" content="关于 Bitcoin 的钱包 在 Bitcoin 中有两种主要类型的钱包，分别为：  非确定性钱包（Nodeterministic Wallet）：该钱包中的每个密钥都是从不同的随机数独立生成的，密钥彼此之间没有任何关系，这种钱包也被称为 JBOK 钱包（Just a Bunch Of Keys）； 确定性钱包（Deterministic Wallet）：其中所有的密钥都是从一个主密钥派生出来的，">
+<meta property="og:description" content="关于 Bitcoin 的钱包在 Bitcoin 中有两种主要类型的钱包，分别为：  非确定性钱包（Nodeterministic Wallet）：该钱包中的每个密钥都是从不同的随机数独立生成的，密钥彼此之间没有任何关系，这种钱包也被称为 JBOK 钱包（Just a Bunch Of Keys）； 确定性钱包（Deterministic Wallet）：其中所有的密钥都是从一个主密钥派生出来的，这">
 <meta property="og:locale">
 <meta property="og:image" content="http://stevenocean.github.io/2018/09/23/generate-hd-wallet-by-bip39/generate-mnemonic-words.jpg">
 <meta property="og:image" content="http://stevenocean.github.io/2018/09/23/generate-hd-wallet-by-bip39/generate-seed.jpg">
@@ -265,24 +265,23 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1>关于 Bitcoin 的钱包</h1>
-<p>在 Bitcoin 中有两种主要类型的钱包，分别为：</p>
+        <h1 id="关于-Bitcoin-的钱包"><a href="#关于-Bitcoin-的钱包" class="headerlink" title="关于 Bitcoin 的钱包"></a>关于 Bitcoin 的钱包</h1><p>在 Bitcoin 中有两种主要类型的钱包，分别为：</p>
 <ol>
 <li><strong>非确定性钱包（Nodeterministic Wallet）</strong>：该钱包中的每个密钥都是从不同的随机数独立生成的，密钥彼此之间没有任何关系，这种钱包也被称为 JBOK 钱包（Just a Bunch Of Keys）；</li>
 <li><strong>确定性钱包（Deterministic Wallet）</strong>：其中所有的密钥都是从一个主密钥派生出来的，这个主密钥就是种子（seed），在该类型的钱包中，所有的密钥之间都是相互关联的，如果有原始种子，就可以再次生成全部的密钥；在确定性钱包中，可以使用不同的密钥推导方式。目前最常用的推导方法是 树状结构，也称为 <strong>分层确定性钱包</strong> 或 <strong>HD 钱包</strong>；</li>
 </ol>
 <p>我们文章的目的就是生成 <strong>HD 钱包</strong>，<strong>HD 钱包</strong> 可以允许用户在不安全的服务器上使用，或者在每笔交易中使用不同的公钥。</p>
 <a id="more"></a>
+
 <p>涉及到钱包的一些常用标准规范有：</p>
 <ul>
 <li><strong><a target="_blank" rel="noopener" href="https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki">BIP-39</a></strong>: 助记词</li>
-<li><strong><a target="_blank" rel="noopener" href="https://github.com/bitcoin/bips/blob/master/bip-0033.mediawiki">BIP-32</a></strong>：HD 钱包</li>
-<li><strong><a target="_blank" rel="noopener" href="https://github.com/bitcoin/bips/blob/master/bip-0043.mediawiki">BIP-43</a></strong>：多用途 HD 钱包结构</li>
-<li><strong><a target="_blank" rel="noopener" href="https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki">BIP-44</a></strong>：多币种和多账户钱包</li>
+<li>**<a target="_blank" rel="noopener" href="https://github.com/bitcoin/bips/blob/master/bip-0033.mediawiki">BIP-32</a>**：HD 钱包</li>
+<li>**<a target="_blank" rel="noopener" href="https://github.com/bitcoin/bips/blob/master/bip-0043.mediawiki">BIP-43</a>**：多用途 HD 钱包结构</li>
+<li>**<a target="_blank" rel="noopener" href="https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki">BIP-44</a>**：多币种和多账户钱包</li>
 </ul>
 <p>要生成钱包私钥，我们需要有个种子(seed)，而我们这里是通过助记词来生成的，下面我们就先了解一下如何基于 <strong>BIP-39</strong> 规范来生成助记词和种子(seed)。</p>
-<h1>关于 BIP-39</h1>
-<p>BIP-39 规范主要描述了基于助记词（一组便于记忆的单词）来生成确定性钱包的算法和过程。</p>
+<h1 id="关于-BIP-39"><a href="#关于-BIP-39" class="headerlink" title="关于 BIP-39"></a>关于 BIP-39</h1><p>BIP-39 规范主要描述了基于助记词（一组便于记忆的单词）来生成确定性钱包的算法和过程。</p>
 <p>该规范中主要由两部分构成：</p>
 <ol>
 <li>如何生成助记词；</li>
@@ -292,17 +291,15 @@
 <blockquote>
 <p>后面涉及到一些示例代码都是采用的 python-mnemonic 库。</p>
 </blockquote>
-<h1>生成助记词</h1>
-<p>生成助记词的算法过程如下图：</p>
+<h1 id="生成助记词"><a href="#生成助记词" class="headerlink" title="生成助记词"></a>生成助记词</h1><p>生成助记词的算法过程如下图：</p>
 <img src="/2018/09/23/generate-hd-wallet-by-bip39/generate-mnemonic-words.jpg" class="">
+
 <p>具体过程如下：</p>
 <ol>
-<li>创建一个 128 到 256 位（步长 32 位）的随机序列（熵）；</li>
-</ol>
-<blockquote>
+<li>创建一个 128 到 256 位（步长 32 位）的随机序列（熵）；<blockquote>
 <p>随机序列的长度称为 熵长，熵长按照步长 32 位，主要有几种分别为 [128, 160, 192, 224, 256]，我们示例图中是 128 位；</p>
 </blockquote>
-<ol start="2">
+</li>
 <li>对上一步生成的随机序列进行 SHA256 生成 Hash 值，并取出该 Hash 值的前 N 位（熵长/32，如：128 位，则 N = 4）作为随机序列的校验和（Checksum）；</li>
 <li>将 Checksum 添加至第一步生成的随机序列的尾部，此时对于图中示例加上 Checksum 之后为 128 + 4 = 132 位的随机序列；</li>
 <li>将上一步的随机序列按照 11 位一段进行分隔(split)，这样对于 128 位熵长的序列就会生成 12 段（132/11=12）；</li>
@@ -313,58 +310,56 @@
 <table>
 <thead>
 <tr>
-<th style="text-align:center">Entropy(bits)</th>
-<th style="text-align:center">Checksum(bits)</th>
-<th style="text-align:center">Entropy+Checksum(bits)</th>
-<th style="text-align:center">Mnemonic length(words)</th>
+<th align="center">Entropy(bits)</th>
+<th align="center">Checksum(bits)</th>
+<th align="center">Entropy+Checksum(bits)</th>
+<th align="center">Mnemonic length(words)</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:center">128</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">132</td>
-<td style="text-align:center">12</td>
+<tbody><tr>
+<td align="center">128</td>
+<td align="center">4</td>
+<td align="center">132</td>
+<td align="center">12</td>
 </tr>
 <tr>
-<td style="text-align:center">160</td>
-<td style="text-align:center">5</td>
-<td style="text-align:center">165</td>
-<td style="text-align:center">15</td>
+<td align="center">160</td>
+<td align="center">5</td>
+<td align="center">165</td>
+<td align="center">15</td>
 </tr>
 <tr>
-<td style="text-align:center">192</td>
-<td style="text-align:center">6</td>
-<td style="text-align:center">198</td>
-<td style="text-align:center">18</td>
+<td align="center">192</td>
+<td align="center">6</td>
+<td align="center">198</td>
+<td align="center">18</td>
 </tr>
 <tr>
-<td style="text-align:center">224</td>
-<td style="text-align:center">7</td>
-<td style="text-align:center">231</td>
-<td style="text-align:center">21</td>
+<td align="center">224</td>
+<td align="center">7</td>
+<td align="center">231</td>
+<td align="center">21</td>
 </tr>
 <tr>
-<td style="text-align:center">256</td>
-<td style="text-align:center">8</td>
-<td style="text-align:center">264</td>
-<td style="text-align:center">24</td>
+<td align="center">256</td>
+<td align="center">8</td>
+<td align="center">264</td>
+<td align="center">24</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <blockquote>
 <p>上面第 5 步涉及到单词表，理想的单词表应该满足智能选词、避免相似单词、排序单词表等特点，目前支持了多种<a target="_blank" rel="noopener" href="https://github.com/bitcoin/bips/tree/master/bip-0039">不同国家的单词表</a>。</p>
 </blockquote>
 <p>如下示例代码基于 128 位强度的熵长生成了 12 个助记词：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> mnemonic <span class="keyword">import</span> Mnemonic</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m = Mnemonic(<span class="string">&#x27;english&#x27;</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>words = m.generate(strength=<span class="number">128</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>words</span><br><span class="line"><span class="string">u&#x27;olympic hard body window sibling used only mimic put sad ability bone&#x27;</span></span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
-<h1>从助记词生成种子</h1>
-<p>助记词生成之后我们可以通过密钥生成函数 <strong>PBKDF2</strong> 算法来生成种子。</p>
+<h1 id="从助记词生成种子"><a href="#从助记词生成种子" class="headerlink" title="从助记词生成种子"></a>从助记词生成种子</h1><p>助记词生成之后我们可以通过密钥生成函数 <strong>PBKDF2</strong> 算法来生成种子。</p>
 <p><strong>PBKDF2</strong> 需要提供两个参数：助记词和盐（salt）。其中 salt 的目的就是增加破解难度，而在 BIP-39 中，我们可以引入密码（passphrase）来作为保护种子的附加安全因素。</p>
 <blockquote>
 <p>PBKDF2 is part of RSA Laboratories’ Public-Key Cryptography Standards (PKCS) series, specifically PKCS #5 v2.0, also published as Internet Engineering Task Force’s RFC 2898.</p>
 </blockquote>
 <p>接着上面的助记词生成之后，如下图为生成 seed 的算法过程：</p>
 <img src="/2018/09/23/generate-hd-wallet-by-bip39/generate-seed.jpg" class="">
+
 <ol start="7">
 <li>PBKDF2 的第一个参数是上面生成的助记词；</li>
 <li>PBKDF2 的第二个参数就是 salt，一般有字符串和可选的用户提供的密码字符串连接组成；</li>
@@ -372,43 +367,42 @@
 </ol>
 <p>如下示例代码为基于上面示例中生成的助记词来生成种子：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>seed = Mnemonic.to_seed(words, <span class="string">&quot;hellobtc&quot;</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>seed</span><br><span class="line"><span class="string">&quot;\xb8\x94\xc79\xc6v\x07VY:\xfd\xb9J\x1d)\xffu3\x0c\x1d&#x27;\xd1F\xed\xe5c&#123;R\xb9M\xdbu+\xdc\xc3\xb7\xc34\xe0\x81\xca\x97\x98W\xcf\xab\xa6\xa4c\xf3\xc9\x1d\xc0\xee\xd2\xa2&#123;\xdaX+\x82\x14R\xfa&quot;</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>base58.b58encode(seed)</span><br><span class="line"><span class="string">&#x27;4h3QDYvyXEZRFeoCztcMybKH4aXkysTEmNqyDG2ZUyLTGvGwWUxXcEefCEB5JYjE8zuh2MSmLKsz9e8SQDpmzhuB&#x27;</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>base58.b58encode_check(seed)</span><br><span class="line"><span class="string">&#x27;R9cTcYjTpLGZEKquHyv5MzyfQAEYyRzAFTd9dxqNhKqKCCKsxmwcy27qetTbK8zEZDzLSLf7AjF9L9cuWY6bZ4UGzZ3GQ&#x27;</span></span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
-<h1>从种子开始生成 HD 钱包</h1>
-<p>下面就将上面生成的种子作为 HD 钱包的根种子（root seed），任何 HD 钱包的根种子都可以重新创造整个 HD 钱包。</p>
+<h1 id="从种子开始生成-HD-钱包"><a href="#从种子开始生成-HD-钱包" class="headerlink" title="从种子开始生成 HD 钱包"></a>从种子开始生成 HD 钱包</h1><p>下面就将上面生成的种子作为 HD 钱包的根种子（root seed），任何 HD 钱包的根种子都可以重新创造整个 HD 钱包。</p>
 <img src="/2018/09/23/generate-hd-wallet-by-bip39/generate-hd-master-key.jpg" class="">
+
 <p>将 root seed 输入到 HMAC-SHA512 算法中可以得到一个 512 位的 Hash，该 Hash 的左边 256 位作为 主私钥 m（Master Private Key），右边 256 位作为 主链码（Master Chain Code）。之后的 主公钥 M（Master Public Key，264 bits）可以通过 主私钥 m 生成。</p>
-<h2 id="子密钥衍生函数-Child-Key-Derivation-CKD"><a class="header-anchor" href="#子密钥衍生函数-Child-Key-Derivation-CKD"></a>子密钥衍生函数(Child Key Derivation, CKD)</h2>
-<p>如上所述，给定 Parent extended key 以及一个索引号(index)，就可以生成相应的 child extended key。</p>
+<h2 id="子密钥衍生函数-Child-Key-Derivation-CKD"><a href="#子密钥衍生函数-Child-Key-Derivation-CKD" class="headerlink" title="子密钥衍生函数(Child Key Derivation, CKD)"></a>子密钥衍生函数(Child Key Derivation, CKD)</h2><p>如上所述，给定 Parent extended key 以及一个索引号(index)，就可以生成相应的 child extended key。</p>
 <p>各个子层级的密钥生成规则如下图：</p>
 <img src="/2018/09/23/generate-hd-wallet-by-bip39/hd-key-derivation-bip32.jpg" class="">
+
 <p>从上图可以看到，HD 的密钥生成如下几个参数：</p>
 <ul>
-<li><em><strong>Parent Private Key</strong></em> 或 <em><strong>Parent Public Key</strong></em>；（均为未压缩的 256 bits 的 ECDSA 密钥）；</li>
-<li>256 bits 的 <em><strong>Parent Chain Code</strong></em>；</li>
-<li>32-bit 整型的 <em><strong>index number</strong></em>（索引号）；</li>
+<li><strong><em>Parent Private Key</em></strong> 或 <strong><em>Parent Public Key</em></strong>；（均为未压缩的 256 bits 的 ECDSA 密钥）；</li>
+<li>256 bits 的 <strong><em>Parent Chain Code</em></strong>；</li>
+<li>32-bit 整型的 <strong><em>index number</em></strong>（索引号）；</li>
 </ul>
 <blockquote>
-<p>另外，上面的过程是可以递归下去的，图中的 <em><strong>Child Private Key</strong></em> 可以作为其下一层级的 <em><strong>Parent Private Key</strong></em>。</p>
+<p>另外，上面的过程是可以递归下去的，图中的 <strong><em>Child Private Key</em></strong> 可以作为其下一层级的 <strong><em>Parent Private Key</em></strong>。</p>
 </blockquote>
 <p>通过将 (Parent Publick Key, Parent Chain Code, Index Number) 输入至 HMAC-SHA512 算法中，我们就可以生成其子密钥，并且我们可以通过调整 Index Number 来生成同一层级的多个子密钥。</p>
-<h2 id="关于扩展密钥-extended-key"><a class="header-anchor" href="#关于扩展密钥-extended-key"></a>关于扩展密钥(extended key)</h2>
-<p>因为这个密钥衍生函数是单向的，所有 子密钥 都是不能够被用来推导出它们的 父密钥 的，也不能推导出同层级的 姊妹密钥 的，只有 父密钥 和 父链码（又是由 Parent 的 Parent 层级的 密钥 和 链码 生成） 可以推导出所有的 子密钥 和 子链码，后续也就可以生成相应的 子公钥 以及地址，并且用于对交易进行签名。</p>
+<h2 id="关于扩展密钥-extended-key"><a href="#关于扩展密钥-extended-key" class="headerlink" title="关于扩展密钥(extended key)"></a>关于扩展密钥(extended key)</h2><p>因为这个密钥衍生函数是单向的，所有 子密钥 都是不能够被用来推导出它们的 父密钥 的，也不能推导出同层级的 姊妹密钥 的，只有 父密钥 和 父链码（又是由 Parent 的 Parent 层级的 密钥 和 链码 生成） 可以推导出所有的 子密钥 和 子链码，后续也就可以生成相应的 子公钥 以及地址，并且用于对交易进行签名。</p>
 <p>将 密钥 Key 和 Chain Code 结合起来称为 <strong>扩展密钥（extended key）</strong>，可以通过 <strong>扩展密钥</strong> 来生成自其而下的所有分支。</p>
 <p><strong>扩展密钥</strong> 中提供的密钥可以为 私钥 或者 公钥，和 链码 结合起来分别称为 <strong>扩展私钥（extended private key）</strong> 和 <strong>扩展公钥（extended public key）</strong>，并且分别记为 (k, c) 和 (K, c)，其中公钥 K = point(k)。</p>
 <p>我们可以从 <strong>扩展私钥</strong> 推导出 <strong>扩展公钥</strong>，而反之则不可以，因此对于某些交易场景（如电商），可以为每笔交易生成一个新的公钥和地址来收款，而扩展私钥可以被存储在纸质钱包或者硬件钱包中，用于安全的离线签署交易。可以看到 <strong>扩展公钥</strong> 的安全性相对高一些，下图为通过 扩展 父公钥 来衍生 子私钥进而生成子公钥 的传递机制：</p>
 <img src="/2018/09/23/generate-hd-wallet-by-bip39/extend-pubkey.jpg" class="">
+
 <blockquote>
 <p><strong>扩展密钥</strong> 也通过 Base58Check 进行编码，<strong>扩展私钥</strong> 和 <strong>扩展公钥</strong> 的编码分别以 <strong>xprv</strong> 和 <strong>xpub</strong> 作为前缀。</p>
 </blockquote>
-<h2 id="硬化衍生子密钥-又是什么鬼？"><a class="header-anchor" href="#硬化衍生子密钥-又是什么鬼？"></a><strong>硬化衍生子密钥</strong> 又是什么鬼？</h2>
-<p>上面的 <strong>扩展密钥</strong>（尤其是 <strong>扩展公钥</strong>） 生成的钱包应该够安全的了，但是设计这一套钱包密钥生成算法的工程师觉得还不够：即使暴露了 <strong>扩展公钥</strong>，也就是暴露了 <strong>子公钥</strong> 和 <strong>Chain Code</strong>，但是如果哪天不小心，你那个 <strong>子私钥</strong> 也不小心泄露了，那么以这个 子密钥和 Chain Code 作为根的那棵树上挂着的所有的密钥也都能够被推导出来了，这TM太危险了（是的，你要是把你的 root seed 泄露了，估计够你哭三天三夜的~没币除外）。</p>
+<h2 id="硬化衍生子密钥-又是什么鬼？"><a href="#硬化衍生子密钥-又是什么鬼？" class="headerlink" title="硬化衍生子密钥 又是什么鬼？"></a><strong>硬化衍生子密钥</strong> 又是什么鬼？</h2><p>上面的 <strong>扩展密钥</strong>（尤其是 <strong>扩展公钥</strong>） 生成的钱包应该够安全的了，但是设计这一套钱包密钥生成算法的工程师觉得还不够：即使暴露了 <strong>扩展公钥</strong>，也就是暴露了 <strong>子公钥</strong> 和 <strong>Chain Code</strong>，但是如果哪天不小心，你那个 <strong>子私钥</strong> 也不小心泄露了，那么以这个 子密钥和 Chain Code 作为根的那棵树上挂着的所有的密钥也都能够被推导出来了，这TM太危险了（是的，你要是把你的 root seed 泄露了，估计够你哭三天三夜的~没币除外）。</p>
 <p>然后 HD 钱包又提出来一种叫做 <strong>硬化衍生(hardened derivation)</strong> 的衍生函数，从上面 <strong>扩展公钥</strong> 生成的图中可以看到 子密钥 和 子链码 都是由 父公钥 和 父链码 通过 HMAC-SHA512 生成的（也都是相对比较容易“曝光”的），而 <strong>硬化衍生</strong> 函数将 父公钥 换成 父私钥 来推导出 子密钥 和 子链码，如下图：</p>
 <img src="/2018/09/23/generate-hd-wallet-by-bip39/hardened_derivation.jpg" class="">
+
 <ul>
 <li>图上标识了 索引号码 根据 正常衍生 和 硬化衍生 不同，索引的范围不同，对于正常衍生的索引号范围为 [0x0, 0x7FFFFFFF]，而硬化衍生的索引号范围为 [0x80000000, 0xFFFFFFFF]；</li>
 <li>硬化衍生的索引号太长，一般为了便于阅读，都是会将索引号右上角加上撇号，譬如：0x80000000 记为 0’，0x80000001 记为 1’，以此类推；</li>
 </ul>
-<h2 id="总结"><a class="header-anchor" href="#总结"></a>总结</h2>
-<p>针对 <strong>扩展密钥</strong> 的学习，可以看到有三种生成规则，分别如下：</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>针对 <strong>扩展密钥</strong> 的学习，可以看到有三种生成规则，分别如下：</p>
 <ol>
 <li>Private parent key -&gt; private child key</li>
 </ol>
@@ -426,8 +420,8 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">N((k, c)) → (K, c)</span><br></pre></td></tr></table></figure>
 <p>下面是根据自己理解整理的 HD Wallet 的分层密钥生成结构图如下：</p>
 <img src="/2018/09/23/generate-hd-wallet-by-bip39/generate-hd-wallet.jpg" class="">
-<h1>参考来源</h1>
-<ul>
+
+<h1 id="参考来源"><a href="#参考来源" class="headerlink" title="参考来源"></a>参考来源</h1><ul>
 <li><strong><a target="_blank" rel="noopener" href="https://github.com/bitcoinbook/bitcoinbook">Master Bitcoin 2nd</a></strong></li>
 <li><strong><a target="_blank" rel="noopener" href="https://bitcoin.org/en/developer-guide">Bitcoin developer guide</a></strong></li>
 <li><strong><a target="_blank" rel="noopener" href="https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki">BIP-39 Mnemonic code for generating deterministic keys</a></strong></li>
@@ -546,7 +540,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">关于 Bitcoin 的钱包</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">关于 BIP-39</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">生成助记词</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">从助记词生成种子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">从种子开始生成 HD 钱包</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E5%AF%86%E9%92%A5%E8%A1%8D%E7%94%9F%E5%87%BD%E6%95%B0-Child-Key-Derivation-CKD"><span class="nav-number">5.1.</span> <span class="nav-text">子密钥衍生函数(Child Key Derivation, CKD)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E6%89%A9%E5%B1%95%E5%AF%86%E9%92%A5-extended-key"><span class="nav-number">5.2.</span> <span class="nav-text">关于扩展密钥(extended key)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A1%AC%E5%8C%96%E8%A1%8D%E7%94%9F%E5%AD%90%E5%AF%86%E9%92%A5-%E5%8F%88%E6%98%AF%E4%BB%80%E4%B9%88%E9%AC%BC%EF%BC%9F"><span class="nav-number">5.3.</span> <span class="nav-text">硬化衍生子密钥 又是什么鬼？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">6.</span> <span class="nav-text">参考来源</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-Bitcoin-%E7%9A%84%E9%92%B1%E5%8C%85"><span class="nav-number">1.</span> <span class="nav-text">关于 Bitcoin 的钱包</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-BIP-39"><span class="nav-number">2.</span> <span class="nav-text">关于 BIP-39</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E5%8A%A9%E8%AE%B0%E8%AF%8D"><span class="nav-number">3.</span> <span class="nav-text">生成助记词</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8E%E5%8A%A9%E8%AE%B0%E8%AF%8D%E7%94%9F%E6%88%90%E7%A7%8D%E5%AD%90"><span class="nav-number">4.</span> <span class="nav-text">从助记词生成种子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8E%E7%A7%8D%E5%AD%90%E5%BC%80%E5%A7%8B%E7%94%9F%E6%88%90-HD-%E9%92%B1%E5%8C%85"><span class="nav-number">5.</span> <span class="nav-text">从种子开始生成 HD 钱包</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E5%AF%86%E9%92%A5%E8%A1%8D%E7%94%9F%E5%87%BD%E6%95%B0-Child-Key-Derivation-CKD"><span class="nav-number">5.1.</span> <span class="nav-text">子密钥衍生函数(Child Key Derivation, CKD)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E6%89%A9%E5%B1%95%E5%AF%86%E9%92%A5-extended-key"><span class="nav-number">5.2.</span> <span class="nav-text">关于扩展密钥(extended key)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A1%AC%E5%8C%96%E8%A1%8D%E7%94%9F%E5%AD%90%E5%AF%86%E9%92%A5-%E5%8F%88%E6%98%AF%E4%BB%80%E4%B9%88%E9%AC%BC%EF%BC%9F"><span class="nav-number">5.3.</span> <span class="nav-text">硬化衍生子密钥 又是什么鬼？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%9D%A5%E6%BA%90"><span class="nav-number">6.</span> <span class="nav-text">参考来源</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

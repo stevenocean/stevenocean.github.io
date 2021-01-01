@@ -22,12 +22,12 @@
     var CONFIG = {"hostname":"stevenocean.github.io","root":"/","scheme":"Mist","version":"7.8.0","sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"appID":"PJYZ7OZEJB","apiKey":"78ff9194440a75eba3a1be76689c2b0c","indexName":"steven-blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="概述 本篇主要尝试了采用 Ethereum 生成的私钥和公钥来对数据进行加解密。在进入示例之前先简单了解一下 Ethereum 私钥和公钥的生成过程。 密钥对的生成 其实无论是 Ethereum 还是 Bitcoin，他们的私钥本质上就是一个 256 个二进制位的随机数字（2^256 ~ 10^77，目前可见宇宙中估计只含有 10^80 个原子），譬如：你可以自己选择 256 个 0 作为自己的私">
+  <meta name="description" content="概述本篇主要尝试了采用 Ethereum 生成的私钥和公钥来对数据进行加解密。在进入示例之前先简单了解一下 Ethereum 私钥和公钥的生成过程。 密钥对的生成其实无论是 Ethereum 还是 Bitcoin，他们的私钥本质上就是一个 256 个二进制位的随机数字（2^256 ~ 10^77，目前可见宇宙中估计只含有 10^80 个原子），譬如：你可以自己选择 256 个 0 作为自己的私钥，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用以太坊的公钥和私钥对数据加解密">
 <meta property="og:url" content="http://stevenocean.github.io/2018/08/09/encrypt-and-decrypt-file-with-eth-key.html">
 <meta property="og:site_name" content="未来边缘">
-<meta property="og:description" content="概述 本篇主要尝试了采用 Ethereum 生成的私钥和公钥来对数据进行加解密。在进入示例之前先简单了解一下 Ethereum 私钥和公钥的生成过程。 密钥对的生成 其实无论是 Ethereum 还是 Bitcoin，他们的私钥本质上就是一个 256 个二进制位的随机数字（2^256 ~ 10^77，目前可见宇宙中估计只含有 10^80 个原子），譬如：你可以自己选择 256 个 0 作为自己的私">
+<meta property="og:description" content="概述本篇主要尝试了采用 Ethereum 生成的私钥和公钥来对数据进行加解密。在进入示例之前先简单了解一下 Ethereum 私钥和公钥的生成过程。 密钥对的生成其实无论是 Ethereum 还是 Bitcoin，他们的私钥本质上就是一个 256 个二进制位的随机数字（2^256 ~ 10^77，目前可见宇宙中估计只含有 10^80 个原子），譬如：你可以自己选择 256 个 0 作为自己的私钥，">
 <meta property="og:locale">
 <meta property="og:image" content="http://stevenocean.github.io/2018/08/09/encrypt-and-decrypt-file-with-eth-key/clear-source.jpg">
 <meta property="og:image" content="http://stevenocean.github.io/2018/08/09/encrypt-and-decrypt-file-with-eth-key/encrypt-source.jpg">
@@ -260,11 +260,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1>概述</h1>
-<p>本篇主要尝试了采用 Ethereum 生成的私钥和公钥来对数据进行加解密。在进入示例之前先简单了解一下 Ethereum 私钥和公钥的生成过程。</p>
-<h1>密钥对的生成</h1>
-<p>其实无论是 Ethereum 还是 Bitcoin，他们的私钥本质上就是一个 256 个二进制位的随机数字（2^256 ~ 10^77，目前可见宇宙中估计只含有 10^80 个原子），譬如：你可以自己选择 256 个 0 作为自己的私钥，但是这明显是不安全的，而要选择足够安全的随机数，也就是要找到足够安全的熵源，即：随机性来源，最好选择密码学安全的伪随机数生成器（CSPRNG）。下面我们看下 Ethereum(go-ethereum) 的源码中如何生成公私钥对的：</p>
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本篇主要尝试了采用 Ethereum 生成的私钥和公钥来对数据进行加解密。在进入示例之前先简单了解一下 Ethereum 私钥和公钥的生成过程。</p>
+<h1 id="密钥对的生成"><a href="#密钥对的生成" class="headerlink" title="密钥对的生成"></a>密钥对的生成</h1><p>其实无论是 Ethereum 还是 Bitcoin，他们的私钥本质上就是一个 256 个二进制位的随机数字（2^256 ~ 10^77，目前可见宇宙中估计只含有 10^80 个原子），譬如：你可以自己选择 256 个 0 作为自己的私钥，但是这明显是不安全的，而要选择足够安全的随机数，也就是要找到足够安全的熵源，即：随机性来源，最好选择密码学安全的伪随机数生成器（CSPRNG）。下面我们看下 Ethereum(go-ethereum) 的源码中如何生成公私钥对的：</p>
 <a id="more"></a>
+
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// cmd/ethkey/generate.go</span></span><br><span class="line"><span class="keyword">var</span> commandGenerate = cli.Command&#123;</span><br><span class="line">    Name:      <span class="string">&quot;generate&quot;</span>,</span><br><span class="line">    Usage:     <span class="string">&quot;generate new keyfile&quot;</span>,</span><br><span class="line">    ArgsUsage: <span class="string">&quot;[ &lt;keyfile&gt; ]&quot;</span>,</span><br><span class="line">    ...</span><br><span class="line">    Action: <span class="function"><span class="keyword">func</span><span class="params">(ctx *cli.Context)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">var</span> privateKey *ecdsa.PrivateKey</span><br><span class="line">        <span class="keyword">var</span> err error</span><br><span class="line">        <span class="keyword">if</span> file := ctx.String(<span class="string">&quot;privatekey&quot;</span>); file != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">            <span class="comment">// Load private key from file.</span></span><br><span class="line">            privateKey, err = crypto.LoadECDSA(file)</span><br><span class="line">            <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                utils.Fatalf(<span class="string">&quot;Can&#x27;t load private key: %v&quot;</span>, err)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// If not loaded, generate random.</span></span><br><span class="line">            <span class="comment">// 这里生成 私钥</span></span><br><span class="line">            privateKey, err = crypto.GenerateKey()</span><br><span class="line">            <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                utils.Fatalf(<span class="string">&quot;Failed to generate random private key: %v&quot;</span>, err)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 下面是生成 account address 和 keystore</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create the keyfile object with a random UUID.</span></span><br><span class="line">        id := uuid.NewRandom()</span><br><span class="line">        key := &amp;keystore.Key&#123;</span><br><span class="line">            Id:         id,</span><br><span class="line">            Address:    crypto.PubkeyToAddress(privateKey.PublicKey),</span><br><span class="line">            PrivateKey: privateKey,</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Encrypt key with passphrase.</span></span><br><span class="line">        passphrase := getPassPhrase(ctx, <span class="literal">true</span>)</span><br><span class="line">        keyjson, err := keystore.EncryptKey(key, passphrase, keystore.StandardScryptN, keystore.StandardScryptP)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            utils.Fatalf(<span class="string">&quot;Error encrypting key: %v&quot;</span>, err)</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>继续看下 crypto.GenerateKey 的实现：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// crypto/crypto.go</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GenerateKey</span><span class="params">()</span> <span class="params">(*ecdsa.PrivateKey, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> ecdsa.GenerateKey(S256(), rand.Reader)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -275,8 +274,7 @@
 <p>上面的几个常亮的定义都是 secp256k1 曲线函数 Fn 中的参数。</p>
 <p>secp256k1 标准也是由美国国家标准和技术研究院 NIST 设立，secp256k1 的一些<a target="_blank" rel="noopener" href="https://en.bitcoin.it/wiki/Secp256k1">细节参考</a></p>
 <p>关于 <strong>ECDSA</strong> 的底层原理也可以参考这篇 <a target="_blank" rel="noopener" href="https://www.instructables.com/id/Understanding-how-ECDSA-protects-your-data/">UNDERSTANDING HOW ECDSA PROTECTS YOUR DATA</a></p>
-<h1>示例</h1>
-<p>下面示例是采用公钥对一个原始的文本文件 source.txt 进行加密生成 cipher.txt，然后再使用 私钥 对加密后的文本文件 cipher.txt 进行解密生成 decrypt.txt。</p>
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>下面示例是采用公钥对一个原始的文本文件 source.txt 进行加密生成 cipher.txt，然后再使用 私钥 对加密后的文本文件 cipher.txt 进行解密生成 decrypt.txt。</p>
 <p>加解密库基于 BouncyCastle 库（下面简称 BC 库），BC 库是一个开源的，支持 Java 和 C# 的安全库，Java 版本的实现中提供了 JCE 和 JCA 的 provider，读写 ASN.1 编码对象的库，OCSP 的生成/处理器，OpenPGP(RFC 2440)的生成/处理器等等，提供了大量的加密算法，包括 椭圆曲线，AES 等等算法。</p>
 <blockquote>
 <p>注：里面很多常量都是 secp256k1 中定义的。</p>
@@ -295,12 +293,14 @@
 </blockquote>
 <p>下图为加密之前的 source.txt 文本文件：</p>
 <img src="/2018/08/09/encrypt-and-decrypt-file-with-eth-key/clear-source.jpg" class="">
+
 <p>下图为通过 public key 加密之后的 encrypt.txt 文本文件，非文本格式，无法识别：</p>
 <img src="/2018/08/09/encrypt-and-decrypt-file-with-eth-key/encrypt-source.jpg" class="">
+
 <p>下图为通过 private key 对 encrypt.txt 解密之后的 decrypt.txt 文本文件，与原始的 source.txt 一致：</p>
 <img src="/2018/08/09/encrypt-and-decrypt-file-with-eth-key/decrypt-source.jpg" class="">
-<h1>常见术语</h1>
-<ul>
+
+<h1 id="常见术语"><a href="#常见术语" class="headerlink" title="常见术语"></a>常见术语</h1><ul>
 <li><strong>EC</strong>, Elliptic Curve, 椭圆曲线</li>
 <li><strong>ECC</strong>, Elliptic Curve Cryptography, 椭圆曲线密码学</li>
 <li><strong>ECDSA</strong>, Elliptic Curve Digital Signature Algorithm, 椭圆曲线数字签名算法</li>
@@ -417,7 +417,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">密钥对的生成</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">常见术语</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%86%E9%92%A5%E5%AF%B9%E7%9A%84%E7%94%9F%E6%88%90"><span class="nav-number">2.</span> <span class="nav-text">密钥对的生成</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E6%9C%AF%E8%AF%AD"><span class="nav-number">4.</span> <span class="nav-text">常见术语</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

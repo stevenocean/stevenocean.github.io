@@ -61,8 +61,7 @@
     <updated>2020-06-20T09:38:03.000Z</updated>
     
     
-    <summary type="html">&lt;h1&gt;关于 gRPC&lt;/h1&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.grpc.io/&quot;&gt;gRPC&lt;/a&gt; 是一个高性能、通用的开源 RPC 框架，其由 Google 主要面向移动应用开发并基于 HTTP/2 协议标准而设计，基于 &lt;a href=&quot;https://developers.google.com/protocol-buffers/&quot;&gt;ProtoBuf (Protocol Buffers)&lt;/a&gt; 序列化协议开发，且支持众多开发语言（）。&lt;/p&gt;
+    <summary type="html">&lt;h1 id=&quot;关于-gRPC&quot;&gt;&lt;a href=&quot;#关于-gRPC&quot; class=&quot;headerlink&quot; title=&quot;关于 gRPC&quot;&gt;&lt;/a&gt;关于 gRPC&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;https://www.grpc.io/&quot;&gt;gRPC&lt;/a&gt; 是一个高性能、通用的开源 RPC 框架，其由 Google 主要面向移动应用开发并基于 HTTP/2 协议标准而设计，基于 &lt;a href=&quot;https://developers.google.com/protocol-buffers/&quot;&gt;ProtoBuf (Protocol Buffers)&lt;/a&gt; 序列化协议开发，且支持众多开发语言（）。&lt;/p&gt;
 &lt;p&gt;gRPC 提供了一种简单的方法来精确地定义服务和为iOS、Android 和 后台支持服务自动生成可靠性很强的客户端功能库。客户端充分利用高级流和链接功能，从而有助于节省带宽、降低的 TCP 链接次数、节省 CPU 使用、和电池寿命。下图为 gRPC 结构图：&lt;/p&gt;</summary>
     
     
@@ -94,11 +93,9 @@
 &lt;blockquote&gt;
 &lt;p&gt;因为示例都是在自己的 PC 跑的，没有安装 CUDA，所以后面的训练和使用都没有采用 DNN-HMM 来训练，还是采用的传统的声学模型 GMM-HMM。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h1&gt;初识语音识别&lt;/h1&gt;
-&lt;h2 id=&quot;定义&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#定义&quot;&gt;&lt;/a&gt;定义&lt;/h2&gt;
-&lt;p&gt;从 wiki 上摘抄一下，语音识别（speech recognition）技术，也被称为自动语音识别（英语：Automatic Speech Recognition, ASR）、计算机语音识别（英语：Computer Speech Recognition）或是语音转文本识别（英语：Speech To Text, STT），其目标是以计算机自动将人类的语音内容转换为相应的文字。&lt;/p&gt;
+&lt;h1 id=&quot;初识语音识别&quot;&gt;&lt;a href=&quot;#初识语音识别&quot; class=&quot;headerlink&quot; title=&quot;初识语音识别&quot;&gt;&lt;/a&gt;初识语音识别&lt;/h1&gt;&lt;h2 id=&quot;定义&quot;&gt;&lt;a href=&quot;#定义&quot; class=&quot;headerlink&quot; title=&quot;定义&quot;&gt;&lt;/a&gt;定义&lt;/h2&gt;&lt;p&gt;从 wiki 上摘抄一下，语音识别（speech recognition）技术，也被称为自动语音识别（英语：Automatic Speech Recognition, ASR）、计算机语音识别（英语：Computer Speech Recognition）或是语音转文本识别（英语：Speech To Text, STT），其目标是以计算机自动将人类的语音内容转换为相应的文字。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;https://zh.wikipedia.org/wiki/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB&quot;&gt;https://zh.wikipedia.org/wiki/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;</summary>
     
     
@@ -128,8 +125,7 @@
     <updated>2019-03-12T08:36:04.000Z</updated>
     
     
-    <summary type="html">&lt;h1&gt;Overview&lt;/h1&gt;
-&lt;p&gt;我们想通过手机来模拟成智能卡(Smart Card)，很多情况下，都是通过设备上的称为 Secure Element (以下简称 SE)的安全芯片来模拟的，譬如很多运营商提供的 SIM 卡中也会内嵌有这样的 SE 芯片（例如：中国移动和银联推的 NFC-SIM 卡-云闪付）。SE 芯片一般在设备出厂前就已经内嵌在板子上了，无法替换，并且 SE 上的系统主要负责处理安全支付方面的工作。&lt;/p&gt;
+    <summary type="html">&lt;h1 id=&quot;Overview&quot;&gt;&lt;a href=&quot;#Overview&quot; class=&quot;headerlink&quot; title=&quot;Overview&quot;&gt;&lt;/a&gt;Overview&lt;/h1&gt;&lt;p&gt;我们想通过手机来模拟成智能卡(Smart Card)，很多情况下，都是通过设备上的称为 Secure Element (以下简称 SE)的安全芯片来模拟的，譬如很多运营商提供的 SIM 卡中也会内嵌有这样的 SE 芯片（例如：中国移动和银联推的 NFC-SIM 卡-云闪付）。SE 芯片一般在设备出厂前就已经内嵌在板子上了，无法替换，并且 SE 上的系统主要负责处理安全支付方面的工作。&lt;/p&gt;
 &lt;p&gt;通过下面的使用 SE 来模拟 Card 的结构图，可以看到，这里的 transactions 都是由 SE 芯片直接和 NFC 读卡器进行通信和交互的，而不需要其他 Android 应用的参与，在 transaction 完成之后，Android 应用可以查询状态并通知用户：&lt;/p&gt;</summary>
     
     
@@ -157,8 +153,7 @@
     <updated>2019-03-12T01:20:52.000Z</updated>
     
     
-    <summary type="html">&lt;h1&gt;关于 NFC&lt;/h1&gt;
-&lt;p&gt;NFC，全称是Near Field Communication，中译为近场通信，也叫做近距离无线通信技术。2004 年，飞利浦、索尼和诺基亚创建了 NFC 论坛来推动推动 NFC 的发展普及和规范化。NFC 的工作频率为 13.56MHz，有效距离为 4cm 左右，目前所支持的数据传输速率有 106Kbps、212Kbps 和 424Kbps 三种。&lt;/p&gt;
+    <summary type="html">&lt;h1 id=&quot;关于-NFC&quot;&gt;&lt;a href=&quot;#关于-NFC&quot; class=&quot;headerlink&quot; title=&quot;关于 NFC&quot;&gt;&lt;/a&gt;关于 NFC&lt;/h1&gt;&lt;p&gt;NFC，全称是Near Field Communication，中译为近场通信，也叫做近距离无线通信技术。2004 年，飞利浦、索尼和诺基亚创建了 NFC 论坛来推动推动 NFC 的发展普及和规范化。NFC 的工作频率为 13.56MHz，有效距离为 4cm 左右，目前所支持的数据传输速率有 106Kbps、212Kbps 和 424Kbps 三种。&lt;/p&gt;
 &lt;p&gt;NFC Forum 至今共推出了一系列的技术规范（下图为技术规范架构图）：&lt;/p&gt;</summary>
     
     
@@ -183,8 +178,7 @@
     
     
     <summary type="html">&lt;p&gt;本文目标是通过结合 Android Keystore 和 Fingerprint 来安全的对数据进行加密，并且能够通过指纹身份验证之后对数据进行解密。&lt;/p&gt;
-&lt;h1&gt;了解 Keystore&lt;/h1&gt;
-&lt;p&gt;Android Keystore 系统可以在一个安全的容器中（如：借助于系统芯片中提供的可信执行环境 TEE）存储加密密钥，在我们的加密密钥进入 Keystore 之后，可以在不用导出密钥的前提下完成加密操作，Keystore 支持的操作有：&lt;/p&gt;
+&lt;h1 id=&quot;了解-Keystore&quot;&gt;&lt;a href=&quot;#了解-Keystore&quot; class=&quot;headerlink&quot; title=&quot;了解 Keystore&quot;&gt;&lt;/a&gt;了解 Keystore&lt;/h1&gt;&lt;p&gt;Android Keystore 系统可以在一个安全的容器中（如：借助于系统芯片中提供的可信执行环境 TEE）存储加密密钥，在我们的加密密钥进入 Keystore 之后，可以在不用导出密钥的前提下完成加密操作，Keystore 支持的操作有：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;生成密钥&lt;/li&gt;
 &lt;li&gt;导入和导出非对称密钥&lt;/li&gt;
@@ -229,8 +223,8 @@
     <summary type="html">&lt;p&gt;一个 Bitcoin 钱包包含了一系列的密钥对，每个密钥对都是由一对公钥(public key)和私钥(private key)组成。私钥(k)通常是随机选出的一串数字串，之后我们就可以通过椭圆曲线密码学(ECC)算法来产生一个公钥(K)，然后再通过单向的 Hash 算法来生成 Bitcoin 地址。&lt;/p&gt;
 &lt;p&gt;如下图所示，描述了生成过程及主要的算法，以及整个过程的每一步都是不可逆的。&lt;/p&gt;
 &lt;img src=&quot;/2018/09/26/generate-btc-wallet-key/generate-process.jpg&quot; class=&quot;&quot;&gt;
-&lt;h1&gt;如何生成私钥(private key)&lt;/h1&gt;
-&lt;p&gt;本质上私钥就是一串随机选出的 256 个 bit 的 01 数字（32 字节 * 8 = 256 bits），但是这串数字却控制着你的比特币账号的所有权，因此这串数字相当重要，要具有足够的随机性，一般采用密码学安全的&lt;strong&gt;伪随机数生成器(CSPNG)&lt;/strong&gt;，并且需要有一个来自具有足够熵值的源的种子(seed)。&lt;/p&gt;</summary>
+
+&lt;h1 id=&quot;如何生成私钥-private-key&quot;&gt;&lt;a href=&quot;#如何生成私钥-private-key&quot; class=&quot;headerlink&quot; title=&quot;如何生成私钥(private key)&quot;&gt;&lt;/a&gt;如何生成私钥(private key)&lt;/h1&gt;&lt;p&gt;本质上私钥就是一串随机选出的 256 个 bit 的 01 数字（32 字节 * 8 = 256 bits），但是这串数字却控制着你的比特币账号的所有权，因此这串数字相当重要，要具有足够的随机性，一般采用密码学安全的**伪随机数生成器(CSPNG)**，并且需要有一个来自具有足够熵值的源的种子(seed)。&lt;/p&gt;</summary>
     
     
     
@@ -263,8 +257,7 @@
     <updated>2018-09-30T09:24:54.000Z</updated>
     
     
-    <summary type="html">&lt;h1&gt;关于 Bitcoin 的钱包&lt;/h1&gt;
-&lt;p&gt;在 Bitcoin 中有两种主要类型的钱包，分别为：&lt;/p&gt;
+    <summary type="html">&lt;h1 id=&quot;关于-Bitcoin-的钱包&quot;&gt;&lt;a href=&quot;#关于-Bitcoin-的钱包&quot; class=&quot;headerlink&quot; title=&quot;关于 Bitcoin 的钱包&quot;&gt;&lt;/a&gt;关于 Bitcoin 的钱包&lt;/h1&gt;&lt;p&gt;在 Bitcoin 中有两种主要类型的钱包，分别为：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;非确定性钱包（Nodeterministic Wallet）&lt;/strong&gt;：该钱包中的每个密钥都是从不同的随机数独立生成的，密钥彼此之间没有任何关系，这种钱包也被称为 JBOK 钱包（Just a Bunch Of Keys）；&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;确定性钱包（Deterministic Wallet）&lt;/strong&gt;：其中所有的密钥都是从一个主密钥派生出来的，这个主密钥就是种子（seed），在该类型的钱包中，所有的密钥之间都是相互关联的，如果有原始种子，就可以再次生成全部的密钥；在确定性钱包中，可以使用不同的密钥推导方式。目前最常用的推导方法是 树状结构，也称为 &lt;strong&gt;分层确定性钱包&lt;/strong&gt; 或 &lt;strong&gt;HD 钱包&lt;/strong&gt;；&lt;/li&gt;
@@ -302,10 +295,8 @@
     <updated>2018-08-29T08:42:09.000Z</updated>
     
     
-    <summary type="html">&lt;h1&gt;概述&lt;/h1&gt;
-&lt;p&gt;本篇主要尝试了采用 Ethereum 生成的私钥和公钥来对数据进行加解密。在进入示例之前先简单了解一下 Ethereum 私钥和公钥的生成过程。&lt;/p&gt;
-&lt;h1&gt;密钥对的生成&lt;/h1&gt;
-&lt;p&gt;其实无论是 Ethereum 还是 Bitcoin，他们的私钥本质上就是一个 256 个二进制位的随机数字（2^256 ~ 10^77，目前可见宇宙中估计只含有 10^80 个原子），譬如：你可以自己选择 256 个 0 作为自己的私钥，但是这明显是不安全的，而要选择足够安全的随机数，也就是要找到足够安全的熵源，即：随机性来源，最好选择密码学安全的伪随机数生成器（CSPRNG）。下面我们看下 Ethereum(go-ethereum) 的源码中如何生成公私钥对的：&lt;/p&gt;</summary>
+    <summary type="html">&lt;h1 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h1&gt;&lt;p&gt;本篇主要尝试了采用 Ethereum 生成的私钥和公钥来对数据进行加解密。在进入示例之前先简单了解一下 Ethereum 私钥和公钥的生成过程。&lt;/p&gt;
+&lt;h1 id=&quot;密钥对的生成&quot;&gt;&lt;a href=&quot;#密钥对的生成&quot; class=&quot;headerlink&quot; title=&quot;密钥对的生成&quot;&gt;&lt;/a&gt;密钥对的生成&lt;/h1&gt;&lt;p&gt;其实无论是 Ethereum 还是 Bitcoin，他们的私钥本质上就是一个 256 个二进制位的随机数字（2^256 ~ 10^77，目前可见宇宙中估计只含有 10^80 个原子），譬如：你可以自己选择 256 个 0 作为自己的私钥，但是这明显是不安全的，而要选择足够安全的随机数，也就是要找到足够安全的熵源，即：随机性来源，最好选择密码学安全的伪随机数生成器（CSPRNG）。下面我们看下 Ethereum(go-ethereum) 的源码中如何生成公私钥对的：&lt;/p&gt;</summary>
     
     
     
@@ -336,12 +327,11 @@
     <updated>2018-07-08T15:10:36.000Z</updated>
     
     
-    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;
-&lt;p&gt;随着一些交易所搞的上币排名的活动开展，也带来了空投的火爆，当然也给以太坊整个网络带来了很大的考验（极其拥堵、交易费水涨船高），本篇文章还是从技术上来看看实现空投的一种通用方案。&lt;/p&gt;
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;随着一些交易所搞的上币排名的活动开展，也带来了空投的火爆，当然也给以太坊整个网络带来了很大的考验（极其拥堵、交易费水涨船高），本篇文章还是从技术上来看看实现空投的一种通用方案。&lt;/p&gt;
 &lt;p&gt;关于空投的实现需要提前了解一下 ERC20 标准中的下面几个函数：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;approve(_spender, value)&lt;/strong&gt;：该函数表示允许 _spender 多次取回调用此函数的的账户中的 token，最高为 value 个 token，后面再次调用此函数会覆盖之前设置的余额；&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;allowance(_owner, _spender)&lt;/strong&gt;：返回 _spender 仍然可以从 _owner 中提取的 token 余额；&lt;/li&gt;
+&lt;li&gt;**approve(_spender, value)**：该函数表示允许 _spender 多次取回调用此函数的的账户中的 token，最高为 value 个 token，后面再次调用此函数会覆盖之前设置的余额；&lt;/li&gt;
+&lt;li&gt;**allowance(_owner, _spender)**：返回 _spender 仍然可以从 _owner 中提取的 token 余额；&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;transferFrom(_from, _to, _value)&lt;/strong&gt;: 该方法主要用于允许 contract 来自动执行转账流程，并代表所有者发送 _value 个 token；&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
@@ -350,8 +340,7 @@
 &lt;li&gt;实现和部署自己的符合 ERC20 Token 标准的文章，可以参考 &lt;strong&gt;&lt;a href=&quot;https://stevenocean.github.io/2018/04/06/web3j-ethereum-token.html&quot;&gt;使用 Web3J 发个以太坊 ERC20 Token&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
-&lt;h2 id=&quot;实现流程&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#实现流程&quot;&gt;&lt;/a&gt;实现流程&lt;/h2&gt;
-&lt;img src=&quot;/2018/07/08/token-airdrop-with-web3py/token-airdrop-with-web3py-1.png&quot; class=&quot;&quot;&gt;</summary>
+&lt;h2 id=&quot;实现流程&quot;&gt;&lt;a href=&quot;#实现流程&quot; class=&quot;headerlink&quot; title=&quot;实现流程&quot;&gt;&lt;/a&gt;实现流程&lt;/h2&gt;&lt;img src=&quot;/2018/07/08/token-airdrop-with-web3py/token-airdrop-with-web3py-1.png&quot; class=&quot;&quot;&gt;</summary>
     
     
     
@@ -388,8 +377,7 @@
       
         
         
-    <summary type="html">&lt;p&gt;https://swarm-guide.readthedocs.io/en/latest/introduction.html&lt;/p&gt;
-&lt;h2 id=&quot;关于-Swarm&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#关于-Swarm&quot;&gt;&lt;/a&gt;关于</summary>
+    <summary type="html">&lt;p&gt;&lt;a</summary>
         
       
     
@@ -418,8 +406,7 @@
     <updated>2018-04-18T09:57:17.000Z</updated>
     
     
-    <summary type="html">&lt;h2 id=&quot;关于-Truffle&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#关于-Truffle&quot;&gt;&lt;/a&gt;关于 Truffle&lt;/h2&gt;
-&lt;p&gt;简单来说，Truffle 就是一个用于开发以太坊合约的集成框架，其支持的很多命令可以方便灵活的支持编译、测试、部署合约或者DApp。关于 Truffle 更详细的介绍，可以参考&lt;a href=&quot;http://truffleframework.com/docs/&quot;&gt;&lt;strong&gt;Truffle 官方文档&lt;/strong&gt;&lt;/a&gt;。&lt;/p&gt;
+    <summary type="html">&lt;h2 id=&quot;关于-Truffle&quot;&gt;&lt;a href=&quot;#关于-Truffle&quot; class=&quot;headerlink&quot; title=&quot;关于 Truffle&quot;&gt;&lt;/a&gt;关于 Truffle&lt;/h2&gt;&lt;p&gt;简单来说，Truffle 就是一个用于开发以太坊合约的集成框架，其支持的很多命令可以方便灵活的支持编译、测试、部署合约或者DApp。关于 Truffle 更详细的介绍，可以参考&lt;a href=&quot;http://truffleframework.com/docs/&quot;&gt;&lt;strong&gt;Truffle 官方文档&lt;/strong&gt;&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;下面从编写、编译和部署一个简单的合约来看一下 Truffle 框架的使用。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;下面以项目 &lt;strong&gt;HelloToken&lt;/strong&gt; 为例，各个步骤的操作都假设已安装了 truffle 和 geth 环境。&lt;/p&gt;
@@ -457,8 +444,7 @@
     <updated>2018-04-08T07:37:51.000Z</updated>
     
     
-    <summary type="html">&lt;h2 id=&quot;关于-ERC20-规范&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#关于-ERC20-规范&quot;&gt;&lt;/a&gt;关于 ERC20 规范&lt;/h2&gt;
-&lt;p&gt;ERC20 为 Ethereum 上的 Token 合约标准规范，遵守该规范的 Token 合约可以被各种以太坊钱包、以及相关的平台和项目支持，如在 etherscan 上可以查看遵守 ERC20 规范的 Token 信息和交易记录。&lt;/p&gt;</summary>
+    <summary type="html">&lt;h2 id=&quot;关于-ERC20-规范&quot;&gt;&lt;a href=&quot;#关于-ERC20-规范&quot; class=&quot;headerlink&quot; title=&quot;关于 ERC20 规范&quot;&gt;&lt;/a&gt;关于 ERC20 规范&lt;/h2&gt;&lt;p&gt;ERC20 为 Ethereum 上的 Token 合约标准规范，遵守该规范的 Token 合约可以被各种以太坊钱包、以及相关的平台和项目支持，如在 etherscan 上可以查看遵守 ERC20 规范的 Token 信息和交易记录。&lt;/p&gt;</summary>
     
     
     
@@ -493,10 +479,8 @@
     <updated>2018-04-03T10:07:16.000Z</updated>
     
     
-    <summary type="html">&lt;h2 id=&quot;1-什么是-keystore-文件&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#1-什么是-keystore-文件&quot;&gt;&lt;/a&gt;1. 什么是 keystore 文件&lt;/h2&gt;
-&lt;p&gt;以太坊的每个外部账户都是由一对密钥（一个公钥和一个私钥）定义的。账户以地址为索引，地址由公钥衍生而来，取公钥的最后 20个字节。每对私钥 /地址都编码在一个钥匙文件里，也就是我们说的keystore文件。该文件是 JSON 文本文件，可以用任何文本编辑器打开和浏览。钥匙文件的关键部分，账户私钥，通常用你创建帐户时设置的密码进行加密。也就是说 keystore 文件，就是你独有的、用于签署交易的以太坊私钥的加密文件。如果你丢失了这个文件，你就丢失了私钥，意味着你失去了签署交易的能力，意味着你的资金被永久的锁定在了你的账户里。&lt;/p&gt;
-&lt;h2 id=&quot;2-keystore-文件的内容&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#2-keystore-文件的内容&quot;&gt;&lt;/a&gt;2. keystore 文件的内容&lt;/h2&gt;
-&lt;p&gt;我们先看一下keystore文件都包含哪些数据:&lt;/p&gt;</summary>
+    <summary type="html">&lt;h2 id=&quot;1-什么是-keystore-文件&quot;&gt;&lt;a href=&quot;#1-什么是-keystore-文件&quot; class=&quot;headerlink&quot; title=&quot;1. 什么是 keystore 文件&quot;&gt;&lt;/a&gt;1. 什么是 keystore 文件&lt;/h2&gt;&lt;p&gt;以太坊的每个外部账户都是由一对密钥（一个公钥和一个私钥）定义的。账户以地址为索引，地址由公钥衍生而来，取公钥的最后 20个字节。每对私钥 /地址都编码在一个钥匙文件里，也就是我们说的keystore文件。该文件是 JSON 文本文件，可以用任何文本编辑器打开和浏览。钥匙文件的关键部分，账户私钥，通常用你创建帐户时设置的密码进行加密。也就是说 keystore 文件，就是你独有的、用于签署交易的以太坊私钥的加密文件。如果你丢失了这个文件，你就丢失了私钥，意味着你失去了签署交易的能力，意味着你的资金被永久的锁定在了你的账户里。&lt;/p&gt;
+&lt;h2 id=&quot;2-keystore-文件的内容&quot;&gt;&lt;a href=&quot;#2-keystore-文件的内容&quot; class=&quot;headerlink&quot; title=&quot;2. keystore 文件的内容&quot;&gt;&lt;/a&gt;2. keystore 文件的内容&lt;/h2&gt;&lt;p&gt;我们先看一下keystore文件都包含哪些数据:&lt;/p&gt;</summary>
     
     
     
@@ -571,23 +555,17 @@
     
     
     <summary type="html">&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;EVM&lt;/strong&gt;：Ethereum Virtual Machine，以太坊虚拟机，这是一个隔离的轻量级的VM，运行在其中的智能合约代码无法访问本地网络、文件系统和其他进程；&lt;/p&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;EVM&lt;/strong&gt;：Ethereum Virtual Machine，以太坊虚拟机，这是一个隔离的轻量级的VM，运行在其中的智能合约代码无法访问本地网络、文件系统和其他进程；&lt;/p&gt;
 &lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;EOA&lt;/strong&gt;: External Owned Accounts，以太坊&lt;strong&gt;外部账号&lt;/strong&gt;，通过与其关联的私钥（private key）来发送 ether 和 消息；&lt;/p&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;EOA&lt;/strong&gt;: External Owned Accounts，以太坊&lt;strong&gt;外部账号&lt;/strong&gt;，通过与其关联的私钥（private key）来发送 ether 和 消息；&lt;/p&gt;
 &lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;Contracts Accounts&lt;/strong&gt;：&lt;strong&gt;合约账户&lt;/strong&gt;，存储可在 &lt;strong&gt;EVM&lt;/strong&gt; 中执行的&lt;strong&gt;智能合约&lt;/strong&gt;代码，只能被 &lt;strong&gt;EOA&lt;/strong&gt; 来调用激活，当&lt;strong&gt;合约账户&lt;/strong&gt;被调用时，存储其中的&lt;strong&gt;智能合约&lt;/strong&gt;会在矿工处的&lt;strong&gt;EVM&lt;/strong&gt;中自动执行，并消耗一定的 &lt;strong&gt;Gas&lt;/strong&gt;，&lt;strong&gt;Gas&lt;/strong&gt; 通过 &lt;strong&gt;EOA&lt;/strong&gt; 中的以太币进行购买；&lt;/p&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Contracts Accounts&lt;/strong&gt;：&lt;strong&gt;合约账户&lt;/strong&gt;，存储可在 &lt;strong&gt;EVM&lt;/strong&gt; 中执行的&lt;strong&gt;智能合约&lt;/strong&gt;代码，只能被 &lt;strong&gt;EOA&lt;/strong&gt; 来调用激活，当&lt;strong&gt;合约账户&lt;/strong&gt;被调用时，存储其中的&lt;strong&gt;智能合约&lt;/strong&gt;会在矿工处的&lt;strong&gt;EVM&lt;/strong&gt;中自动执行，并消耗一定的 &lt;strong&gt;Gas&lt;/strong&gt;，&lt;strong&gt;Gas&lt;/strong&gt; 通过 &lt;strong&gt;EOA&lt;/strong&gt; 中的以太币进行购买；&lt;/p&gt;
 &lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;Transaction&lt;/strong&gt;: 以太坊中的&lt;strong&gt;交易&lt;/strong&gt;是指从 &lt;strong&gt;EOA&lt;/strong&gt; 发送给另一个账户的消息的签过名的数据包，一笔交易主要包括：接收方、发送方、gasLimit、gasPrice、Value(交易金额)等等；&lt;/p&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Transaction&lt;/strong&gt;: 以太坊中的&lt;strong&gt;交易&lt;/strong&gt;是指从 &lt;strong&gt;EOA&lt;/strong&gt; 发送给另一个账户的消息的签过名的数据包，一笔交易主要包括：接收方、发送方、gasLimit、gasPrice、Value(交易金额)等等；&lt;/p&gt;
 &lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;Message&lt;/strong&gt;：&lt;strong&gt;消息&lt;/strong&gt;是一个不能序列化的，并且只存在于以太坊运行环境中的虚拟对象，一条消息主要包括：消息的发送方、接收方、gasLimit等等；&lt;/p&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Message&lt;/strong&gt;：&lt;strong&gt;消息&lt;/strong&gt;是一个不能序列化的，并且只存在于以太坊运行环境中的虚拟对象，一条消息主要包括：消息的发送方、接收方、gasLimit等等；&lt;/p&gt;
 &lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;Smart Contract&lt;/strong&gt;: &lt;strong&gt;智能合约&lt;/strong&gt;，是以太坊中最重要的一个概念，以太坊支持通过图灵完备的高级语言，如：Solidity、Serpent等来开发智能合约，其可以接受来自外部的交易请求和事件来触发合约代码逻辑，进一步生成新的交易和事件，甚至进一步调用其他的智能合约；&lt;a href=&quot;https://en.wikipedia.org/wiki/Smart_contract&quot;&gt;Smart Contract Wiki&lt;/a&gt;&lt;/p&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Smart Contract&lt;/strong&gt;: &lt;strong&gt;智能合约&lt;/strong&gt;，是以太坊中最重要的一个概念，以太坊支持通过图灵完备的高级语言，如：Solidity、Serpent等来开发智能合约，其可以接受来自外部的交易请求和事件来触发合约代码逻辑，进一步生成新的交易和事件，甚至进一步调用其他的智能合约；&lt;a href=&quot;https://en.wikipedia.org/wiki/Smart_contract&quot;&gt;Smart Contract Wiki&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;</summary>
     
@@ -628,9 +606,9 @@
 &lt;blockquote&gt;
 &lt;p&gt;分析的主要是 go-ethereum 项目的源码。版本取的是 Frost(v1.8.2)。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2 id=&quot;1-以太坊的基本结构&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#1-以太坊的基本结构&quot;&gt;&lt;/a&gt;1. 以太坊的基本结构&lt;/h2&gt;
-&lt;p&gt;先大致了解了以太坊的基本结构，如下图（来自网络）:&lt;/p&gt;
+&lt;h2 id=&quot;1-以太坊的基本结构&quot;&gt;&lt;a href=&quot;#1-以太坊的基本结构&quot; class=&quot;headerlink&quot; title=&quot;1. 以太坊的基本结构&quot;&gt;&lt;/a&gt;1. 以太坊的基本结构&lt;/h2&gt;&lt;p&gt;先大致了解了以太坊的基本结构，如下图（来自网络）:&lt;/p&gt;
 &lt;img src=&quot;/2018/03/17/go-ethereum-source-analysize-1/ethereum-overall-arch-1.jpg&quot; class=&quot;&quot;&gt;
+
 &lt;p&gt;其中除了区块链管理（Blockchain Management）和挖矿模块（Miner）之外还包含了：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;基础的分布式数据库结构（Swarm）；&lt;/li&gt;
@@ -668,7 +646,7 @@
     
     
     <summary type="html">&lt;p&gt;今天看到一篇通过一个比较有意思的示例来讲解 reduce 函数使用的文章 &lt;a href=&quot;http://appventure.me/2015/11/30/reduce-all-the-things/&quot;&gt;reduce all the things&lt;/a&gt;，自己也依葫芦画瓢的在 Swift 4.0 下实现了一遍 :)&lt;/p&gt;
-&lt;p&gt;示例大致是这样的:&lt;/p&gt;
+&lt;p&gt;示例大致是这样的: &lt;/p&gt;
 &lt;p&gt;如下为美国各个城市的 persons 列表，其中每个 person 的结构包括姓名、所属城市（其中城市名字符串的逗号之后为州名，如 CA 为加利福尼亚州）、平均年龄。请使用 map/flatmap/filter/reduce 等函数来封装一个查询指定州的总人数和平均年龄，其中函数输入参数为州名，persons 列表。&lt;/p&gt;
 &lt;figure class=&quot;highlight swift&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; persons: [[&lt;span class=&quot;type&quot;&gt;String&lt;/span&gt;: &lt;span class=&quot;keyword&quot;&gt;Any&lt;/span&gt;]] &lt;span class=&quot;operator&quot;&gt;=&lt;/span&gt; [&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Carl Saxon&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;New York, NY&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;44&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Travis Downing&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;El Segundo, CA&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;34&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Liz Parker&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;San Francisco, CA&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;32&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;John Newden&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;New Jersey, NY&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;21&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Hector Simons&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;San Diego, CA&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;37&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Hector Simons&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Douglas County, CO&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;39&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Brian Neo&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;27&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;这个示例如果是用 map/flatmap/filter 等函数组合起来也是可以实现的，只是比较啰嗦不够优雅，而且在这个 &lt;strong&gt;persons&lt;/strong&gt; 量级上升后，性能也会不那么乐观（主要涉及到对整个 &lt;strong&gt;persons&lt;/strong&gt; 的遍历次数，使用 &lt;strong&gt;reduce&lt;/strong&gt; 只需要对 &lt;strong&gt;persons&lt;/strong&gt; 遍历一次，具体可以参考那篇文章）。&lt;/p&gt;</summary>
@@ -693,16 +671,13 @@
     
     
     <summary type="html">&lt;p&gt;简要记录一下 firewall-cmd 常用命令的使用。&lt;/p&gt;
-&lt;h3 id=&quot;启用端口&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#启用端口&quot;&gt;&lt;/a&gt;启用端口&lt;/h3&gt;
-&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd [--zone=&amp;lt;zone&amp;gt;] --add-port=&amp;lt;port&amp;gt;[-&amp;lt;port&amp;gt;]/&amp;lt;protocol&amp;gt; [--timeout=&amp;lt;seconds&amp;gt;]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;启用端口&quot;&gt;&lt;a href=&quot;#启用端口&quot; class=&quot;headerlink&quot; title=&quot;启用端口&quot;&gt;&lt;/a&gt;启用端口&lt;/h3&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd [--zone=&amp;lt;zone&amp;gt;] --add-port=&amp;lt;port&amp;gt;[-&amp;lt;port&amp;gt;]/&amp;lt;protocol&amp;gt; [--timeout=&amp;lt;seconds&amp;gt;]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;如下示例为添加 tcp 18080 端口:&lt;/p&gt;
 &lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd --add-port=18080/tcp&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;h3 id=&quot;禁用端口&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#禁用端口&quot;&gt;&lt;/a&gt;禁用端口&lt;/h3&gt;
-&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd [--zone=&amp;lt;zone&amp;gt;] --remove-port=&amp;lt;port&amp;gt;[-&amp;lt;port&amp;gt;]/&amp;lt;protocol&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;禁用端口&quot;&gt;&lt;a href=&quot;#禁用端口&quot; class=&quot;headerlink&quot; title=&quot;禁用端口&quot;&gt;&lt;/a&gt;禁用端口&lt;/h3&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd [--zone=&amp;lt;zone&amp;gt;] --remove-port=&amp;lt;port&amp;gt;[-&amp;lt;port&amp;gt;]/&amp;lt;protocol&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;如下示例为禁用指定的 tcp 18080 端口:&lt;/p&gt;
 &lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd --remove-port=18080/tcp&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;h3 id=&quot;启用服务&quot;&gt;&lt;a class=&quot;header-anchor&quot; href=&quot;#启用服务&quot;&gt;&lt;/a&gt;启用服务&lt;/h3&gt;
-&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd [--zone=&amp;lt;zone&amp;gt;] --add-service=&amp;lt;service&amp;gt; [--timeout=&amp;lt;seconds&amp;gt;]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;启用服务&quot;&gt;&lt;a href=&quot;#启用服务&quot; class=&quot;headerlink&quot; title=&quot;启用服务&quot;&gt;&lt;/a&gt;启用服务&lt;/h3&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd [--zone=&amp;lt;zone&amp;gt;] --add-service=&amp;lt;service&amp;gt; [--timeout=&amp;lt;seconds&amp;gt;]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;如下为启用 http 服务:&lt;/p&gt;
 &lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ firewall-cmd --add-service=http&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
     
