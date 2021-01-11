@@ -64,6 +64,15 @@
 
   <title>基于 BIP-32 和 BIP-39 规范生成 HD 钱包（分层确定性钱包） | 未来边缘</title>
   
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-115901531-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-115901531-1');
+      }
+    </script>
 
 
 
@@ -494,6 +503,7 @@
 
           </div>
           
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -662,6 +672,26 @@
   
 
   
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'ac341f2c8219a55604f0',
+      clientSecret: '246d6cf5b59703cf5ebd4b2541775161201e91aa',
+      repo        : 'stevenocean.github.io',
+      owner       : 'stevenocean',
+      admin       : ['stevenocean'],
+      id          : '6a3145e47e378dad7a3c3f26c6c41136',
+        language: 'en',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 </body>
 </html>

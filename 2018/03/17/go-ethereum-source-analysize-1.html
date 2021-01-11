@@ -58,6 +58,15 @@
 
   <title>go-ethereum 源码分析 - 区块结构(1) | 未来边缘</title>
   
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-115901531-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-115901531-1');
+      }
+    </script>
 
 
 
@@ -488,6 +497,7 @@
 
           </div>
           
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -656,6 +666,26 @@
   
 
   
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'ac341f2c8219a55604f0',
+      clientSecret: '246d6cf5b59703cf5ebd4b2541775161201e91aa',
+      repo        : 'stevenocean.github.io',
+      owner       : 'stevenocean',
+      admin       : ['stevenocean'],
+      id          : 'ed4fabb164237bf689adb4ab9fe70a5a',
+        language: 'en',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 </body>
 </html>
