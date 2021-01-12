@@ -6,7 +6,7 @@
   <link href="http://stevenocean.github.io/atom.xml" rel="self"/>
   
   <link href="http://stevenocean.github.io/"/>
-  <updated>2021-01-12T02:06:46.438Z</updated>
+  <updated>2021-01-12T02:14:59.279Z</updated>
   <id>http://stevenocean.github.io/</id>
   
   <author>
@@ -17,14 +17,14 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>在 MinIO 中使用基于 AssumeRole STS 获取临时访问授权的示例</title>
+    <title>在 MinIO 中使用基于 STS AssumeRole 获取临时访问授权的示例</title>
     <link href="http://stevenocean.github.io/2021/01/12/minio-sts-assumerole-sample.html"/>
     <id>http://stevenocean.github.io/2021/01/12/minio-sts-assumerole-sample.html</id>
     <published>2021-01-12T07:03:00.000Z</published>
-    <updated>2021-01-12T02:06:46.438Z</updated>
+    <updated>2021-01-12T02:14:59.279Z</updated>
     
     
-    <summary type="html">&lt;h2 id=&quot;MinIO-是啥&quot;&gt;&lt;a href=&quot;#MinIO-是啥&quot; class=&quot;headerlink&quot; title=&quot;MinIO 是啥&quot;&gt;&lt;/a&gt;MinIO 是啥&lt;/h2&gt;&lt;p&gt;摘一个官网的段落：&lt;/p&gt;
+    <summary type="html">&lt;h2 id=&quot;MinIO-是啥&quot;&gt;&lt;a href=&quot;#MinIO-是啥&quot; class=&quot;headerlink&quot; title=&quot;MinIO 是啥&quot;&gt;&lt;/a&gt;MinIO 是啥&lt;/h2&gt;&lt;p&gt;摘一个官网的简介：&lt;/p&gt;
 &lt;p&gt;MinIO 是一个基于Apache License v2.0开源协议的对象存储服务。它兼容亚马逊S3云存储服务接口，非常适合于存储大容量非结构化的数据，例如图片、视频、日志文件、备份数据和容器/虚拟机镜像等，而一个对象文件可以是任意大小，从几kb到最大5T不等。&lt;/p&gt;
 &lt;p&gt;MinIO是一个非常轻量的服务,可以很简单的和其他应用的结合，类似 NodeJS, Redis 或者 MySQL。&lt;/p&gt;
 &lt;p&gt;更多的介绍、配置等内容移步&lt;a href=&quot;https://docs.min.io/cn/minio-quickstart-guide.html&quot;&gt;MinIO Quickstart Guide&lt;/a&gt;。&lt;/p&gt;
