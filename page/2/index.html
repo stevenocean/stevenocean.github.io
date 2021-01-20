@@ -197,6 +197,92 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://stevenocean.github.io/2018/08/09/encrypt-and-decrypt-file-with-eth-key.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Steven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来边缘">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/08/09/encrypt-and-decrypt-file-with-eth-key.html" class="post-title-link" itemprop="url">使用以太坊的公钥和私钥对数据加解密</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-08-09 16:20:00" itemprop="dateCreated datePublished" datetime="2018-08-09T16:20:00+08:00">2018-08-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-08-29 16:42:09" itemprop="dateModified" datetime="2018-08-29T16:42:09+08:00">2018-08-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithm/Crypto/" itemprop="url" rel="index"><span itemprop="name">Crypto</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本篇主要尝试了采用 Ethereum 生成的私钥和公钥来对数据进行加解密。在进入示例之前先简单了解一下 Ethereum 私钥和公钥的生成过程。</p>
+<h1 id="密钥对的生成"><a href="#密钥对的生成" class="headerlink" title="密钥对的生成"></a>密钥对的生成</h1><p>其实无论是 Ethereum 还是 Bitcoin，他们的私钥本质上就是一个 256 个二进制位的随机数字（2^256 ~ 10^77，目前可见宇宙中估计只含有 10^80 个原子），譬如：你可以自己选择 256 个 0 作为自己的私钥，但是这明显是不安全的，而要选择足够安全的随机数，也就是要找到足够安全的熵源，即：随机性来源，最好选择密码学安全的伪随机数生成器（CSPRNG）。下面我们看下 Ethereum(go-ethereum) 的源码中如何生成公私钥对的：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/08/09/encrypt-and-decrypt-file-with-eth-key.html#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://stevenocean.github.io/2018/07/08/token-airdrop-with-web3py.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1004,100 +1090,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://stevenocean.github.io/2018/03/15/firewall-cmd-common-use.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Steven">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="未来边缘">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/03/15/firewall-cmd-common-use.html" class="post-title-link" itemprop="url">firewall-cmd 常用命令使用</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-03-15 18:33:00" itemprop="dateCreated datePublished" datetime="2018-03-15T18:33:00+08:00">2018-03-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-03-16 11:45:48" itemprop="dateModified" datetime="2018-03-16T11:45:48+08:00">2018-03-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>简要记录一下 firewall-cmd 常用命令的使用。</p>
-<h3 id="启用端口"><a href="#启用端口" class="headerlink" title="启用端口"></a>启用端口</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ firewall-cmd [--zone=&lt;zone&gt;] --add-port=&lt;port&gt;[-&lt;port&gt;]/&lt;protocol&gt; [--timeout=&lt;seconds&gt;]</span><br></pre></td></tr></table></figure>
-<p>如下示例为添加 tcp 18080 端口:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ firewall-cmd --add-port=18080/tcp</span><br></pre></td></tr></table></figure>
-<h3 id="禁用端口"><a href="#禁用端口" class="headerlink" title="禁用端口"></a>禁用端口</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ firewall-cmd [--zone=&lt;zone&gt;] --remove-port=&lt;port&gt;[-&lt;port&gt;]/&lt;protocol&gt;</span><br></pre></td></tr></table></figure>
-<p>如下示例为禁用指定的 tcp 18080 端口:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ firewall-cmd --remove-port=18080/tcp</span><br></pre></td></tr></table></figure>
-<h3 id="启用服务"><a href="#启用服务" class="headerlink" title="启用服务"></a>启用服务</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ firewall-cmd [--zone=&lt;zone&gt;] --add-service=&lt;service&gt; [--timeout=&lt;seconds&gt;]</span><br></pre></td></tr></table></figure>
-<p>如下为启用 http 服务:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ firewall-cmd --add-service=http</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/03/15/firewall-cmd-common-use.html#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1165,20 +1161,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">26</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">54</span>
+        <span class="site-state-item-count">55</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

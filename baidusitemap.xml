@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://stevenocean.github.io/2021/01/20/minio-load-balance-nginx-and-set-policy.html</loc>
+    <lastmod>2021-01-20</lastmod>
+  </url>
+  <url>
     <loc>http://stevenocean.github.io/2021/01/12/minio-sts-assumerole-sample.html</loc>
     <lastmod>2021-01-12</lastmod>
   </url>
