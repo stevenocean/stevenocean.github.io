@@ -6,7 +6,7 @@
   <link href="http://stevenocean.github.io/atom.xml" rel="self"/>
   
   <link href="http://stevenocean.github.io/"/>
-  <updated>2021-01-20T08:09:59.368Z</updated>
+  <updated>2021-01-29T08:43:54.528Z</updated>
   <id>http://stevenocean.github.io/</id>
   
   <author>
@@ -15,6 +15,38 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>基于 images.weserv.nl 和 minio 搭建图片处理服务</title>
+    <link href="http://stevenocean.github.io/2021/01/29/minio-image-serve.html"/>
+    <id>http://stevenocean.github.io/2021/01/29/minio-image-serve.html</id>
+    <published>2021-01-29T08:43:00.000Z</published>
+    <updated>2021-01-29T08:43:54.528Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;在使用阿里云 OSS 对象存储服务时，OSS 提供了图片处理的服务，可以通过在请求图片对象的 url 上携带各种图片处理的参数，如：x-oss-process=image/resize,w_100 等来实现图片的缩放、裁剪、水印、内切圆等等图片处理方式。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://help.aliyun.com/document_detail/44686.html?spm=a2c4g.11174283.2.38.5e537da281WKVs&quot;&gt;阿里云 OSS 图片处理服务指南&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;类似阿里云的这个图片处理服务，我们也可以通过 MinIO 和一个&lt;a href=&quot;https://images.weserv.nl/&quot;&gt;开源的图片处理服务项目 images.weserv.nl&lt;/a&gt; 来自建一套同时支持图片处理（和部分兼容阿里云图片处理样式）的对象存储系统。&lt;/p&gt;
+&lt;p&gt;images.weserv.nl 这个开源项目的最新版本 5.x 在 4.x 版本上完全使用 C++ 重写了，大幅度提升了性能，而 4.x 主要是基于 openresty + lua 来实现的，具体的重写原因，主要也是因为 images.serv.nl 的流量请求越来越多，对图片处理的性能要求也越来越高，所以团队从 5.x 之后完全重写了。不过，我们这里的演示仍然是基于 &lt;a href=&quot;https://github.com/weserv/images/tree/4.x&quot;&gt;images.weserv.nl 4.x&lt;/a&gt; 分支的 :)&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="分布式文件系统" scheme="http://stevenocean.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/"/>
+    
+    <category term="MinIO" scheme="http://stevenocean.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/MinIO/"/>
+    
+    <category term="Nginx" scheme="http://stevenocean.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/MinIO/Nginx/"/>
+    
+    
+    <category term="MinIO" scheme="http://stevenocean.github.io/tags/MinIO/"/>
+    
+    <category term="分布式文件系统" scheme="http://stevenocean.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/"/>
+    
+    <category term="Nginx" scheme="http://stevenocean.github.io/tags/Nginx/"/>
+    
+  </entry>
   
   <entry>
     <title>为 MinIO 设置 Nginx 代理以及访问策略的设置</title>
@@ -697,31 +729,6 @@
     <category term="区块链" scheme="http://stevenocean.github.io/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
     
     <category term="blockchain" scheme="http://stevenocean.github.io/tags/blockchain/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Swift中使用reduce函数的一个小示例</title>
-    <link href="http://stevenocean.github.io/2018/03/16/swift-reduce-example.html"/>
-    <id>http://stevenocean.github.io/2018/03/16/swift-reduce-example.html</id>
-    <published>2018-03-16T14:12:00.000Z</published>
-    <updated>2018-03-17T08:56:27.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;今天看到一篇通过一个比较有意思的示例来讲解 reduce 函数使用的文章 &lt;a href=&quot;http://appventure.me/2015/11/30/reduce-all-the-things/&quot;&gt;reduce all the things&lt;/a&gt;，自己也依葫芦画瓢的在 Swift 4.0 下实现了一遍 :)&lt;/p&gt;
-&lt;p&gt;示例大致是这样的: &lt;/p&gt;
-&lt;p&gt;如下为美国各个城市的 persons 列表，其中每个 person 的结构包括姓名、所属城市（其中城市名字符串的逗号之后为州名，如 CA 为加利福尼亚州）、平均年龄。请使用 map/flatmap/filter/reduce 等函数来封装一个查询指定州的总人数和平均年龄，其中函数输入参数为州名，persons 列表。&lt;/p&gt;
-&lt;figure class=&quot;highlight swift&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; persons: [[&lt;span class=&quot;type&quot;&gt;String&lt;/span&gt;: &lt;span class=&quot;keyword&quot;&gt;Any&lt;/span&gt;]] &lt;span class=&quot;operator&quot;&gt;=&lt;/span&gt; [&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Carl Saxon&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;New York, NY&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;44&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Travis Downing&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;El Segundo, CA&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;34&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Liz Parker&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;San Francisco, CA&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;32&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;John Newden&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;New Jersey, NY&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;21&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Hector Simons&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;San Diego, CA&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;37&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Hector Simons&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;city&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Douglas County, CO&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;39&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    [&lt;span class=&quot;string&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&amp;quot;Brian Neo&amp;quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;quot;age&amp;quot;&lt;/span&gt;: &lt;span class=&quot;number&quot;&gt;27&lt;/span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;这个示例如果是用 map/flatmap/filter 等函数组合起来也是可以实现的，只是比较啰嗦不够优雅，而且在这个 &lt;strong&gt;persons&lt;/strong&gt; 量级上升后，性能也会不那么乐观（主要涉及到对整个 &lt;strong&gt;persons&lt;/strong&gt; 的遍历次数，使用 &lt;strong&gt;reduce&lt;/strong&gt; 只需要对 &lt;strong&gt;persons&lt;/strong&gt; 遍历一次，具体可以参考那篇文章）。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="Swift" scheme="http://stevenocean.github.io/categories/Swift/"/>
-    
-    
-    <category term="Swift" scheme="http://stevenocean.github.io/tags/Swift/"/>
-    
-    <category term="reduce" scheme="http://stevenocean.github.io/tags/reduce/"/>
     
   </entry>
   

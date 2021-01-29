@@ -197,6 +197,91 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://stevenocean.github.io/2018/03/16/swift-reduce-example.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Steven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="未来边缘">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/03/16/swift-reduce-example.html" class="post-title-link" itemprop="url">Swift中使用reduce函数的一个小示例</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-03-16 22:12:00" itemprop="dateCreated datePublished" datetime="2018-03-16T22:12:00+08:00">2018-03-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-03-17 16:56:27" itemprop="dateModified" datetime="2018-03-17T16:56:27+08:00">2018-03-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Swift/" itemprop="url" rel="index"><span itemprop="name">Swift</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>今天看到一篇通过一个比较有意思的示例来讲解 reduce 函数使用的文章 <a target="_blank" rel="noopener" href="http://appventure.me/2015/11/30/reduce-all-the-things/">reduce all the things</a>，自己也依葫芦画瓢的在 Swift 4.0 下实现了一遍 :)</p>
+<p>示例大致是这样的: </p>
+<p>如下为美国各个城市的 persons 列表，其中每个 person 的结构包括姓名、所属城市（其中城市名字符串的逗号之后为州名，如 CA 为加利福尼亚州）、平均年龄。请使用 map/flatmap/filter/reduce 等函数来封装一个查询指定州的总人数和平均年龄，其中函数输入参数为州名，persons 列表。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> persons: [[<span class="type">String</span>: <span class="keyword">Any</span>]] <span class="operator">=</span> [</span><br><span class="line">    [<span class="string">&quot;name&quot;</span>: <span class="string">&quot;Carl Saxon&quot;</span>, <span class="string">&quot;city&quot;</span>: <span class="string">&quot;New York, NY&quot;</span>, <span class="string">&quot;age&quot;</span>: <span class="number">44</span>],</span><br><span class="line">    [<span class="string">&quot;name&quot;</span>: <span class="string">&quot;Travis Downing&quot;</span>, <span class="string">&quot;city&quot;</span>: <span class="string">&quot;El Segundo, CA&quot;</span>, <span class="string">&quot;age&quot;</span>: <span class="number">34</span>],</span><br><span class="line">    [<span class="string">&quot;name&quot;</span>: <span class="string">&quot;Liz Parker&quot;</span>, <span class="string">&quot;city&quot;</span>: <span class="string">&quot;San Francisco, CA&quot;</span>, <span class="string">&quot;age&quot;</span>: <span class="number">32</span>],</span><br><span class="line">    [<span class="string">&quot;name&quot;</span>: <span class="string">&quot;John Newden&quot;</span>, <span class="string">&quot;city&quot;</span>: <span class="string">&quot;New Jersey, NY&quot;</span>, <span class="string">&quot;age&quot;</span>: <span class="number">21</span>],</span><br><span class="line">    [<span class="string">&quot;name&quot;</span>: <span class="string">&quot;Hector Simons&quot;</span>, <span class="string">&quot;city&quot;</span>: <span class="string">&quot;San Diego, CA&quot;</span>, <span class="string">&quot;age&quot;</span>: <span class="number">37</span>],</span><br><span class="line">    [<span class="string">&quot;name&quot;</span>: <span class="string">&quot;Hector Simons&quot;</span>, <span class="string">&quot;city&quot;</span>: <span class="string">&quot;Douglas County, CO&quot;</span>, <span class="string">&quot;age&quot;</span>: <span class="number">39</span>],</span><br><span class="line">    [<span class="string">&quot;name&quot;</span>: <span class="string">&quot;Brian Neo&quot;</span>, <span class="string">&quot;age&quot;</span>: <span class="number">27</span>],</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>这个示例如果是用 map/flatmap/filter 等函数组合起来也是可以实现的，只是比较啰嗦不够优雅，而且在这个 <strong>persons</strong> 量级上升后，性能也会不那么乐观（主要涉及到对整个 <strong>persons</strong> 的遍历次数，使用 <strong>reduce</strong> 只需要对 <strong>persons</strong> 遍历一次，具体可以参考那篇文章）。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/03/16/swift-reduce-example.html#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://stevenocean.github.io/2018/03/15/firewall-cmd-common-use.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -354,7 +439,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
